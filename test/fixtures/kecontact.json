@@ -1,0 +1,313 @@
+{
+  "kecontact.0.p": {
+    "_id": "kecontact.0.p",
+    "type": "state",
+    "common": {
+      "name": "Power",
+      "type": "number",
+      "role": "value",
+      "unit": "mW",
+      "read": true,
+      "write": false,
+      "desc": "Current power in mW (Real Power)."
+    },
+    "native": {
+      "udpKey": "P"
+    }
+  },
+  "kecontact.0.state": {
+    "_id": "kecontact.0.state",
+    "type": "state",
+    "common": {
+      "name": "State",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "desc": "Current state of the wallbox",
+      "states": {
+        "0": "startup",
+        "1": "not ready for charging",
+        "2": "ready for charging, waiting for vehicle",
+        "3": "charging",
+        "4": "error present",
+        "5": "charging temporarily interrupted due temperature, RFID auth or other"
+      }
+    },
+    "native": {
+      "udpKey": "State"
+    }
+  },
+  "kecontact.0.plug": {
+    "_id": "kecontact.0.plug",
+    "type": "state",
+    "common": {
+      "name": "Plug",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "desc": "Current condition of the loading connection",
+      "states": {
+        "0": "no cable plugged",
+        "1": "cable plugged in charging station, unlocked",
+        "3": "cable plugged in charging station and locked",
+        "5": "cable plugged in charging station and vehicle, unlocked",
+        "7": "cable plugged in charging station and vehicle and locked"
+      }
+    },
+    "native": {
+      "udpKey": "Plug"
+    }
+  },
+  "kecontact.0.ePres": {
+    "_id": "kecontact.0.ePres",
+    "type": "state",
+    "common": {
+      "name": "Power Consumption",
+      "type": "number",
+      "role": "value",
+      "unit": "Wh",
+      "read": true,
+      "write": false,
+      "desc": "Power consumption of the current loading session in Wh."
+    },
+    "native": {
+      "udpKey": "E pres",
+      "udpMultiplier": 0.1
+    }
+  },
+  "kecontact.0.eTotal": {
+    "_id": "kecontact.0.eTotal",
+    "type": "state",
+    "common": {
+      "name": "Total Power Consumption",
+      "type": "number",
+      "role": "value",
+      "unit": "Wh",
+      "read": true,
+      "write": false,
+      "desc": "Total power consumption (persistent) without current loading session in Wh."
+    },
+    "native": {
+      "udpKey": "E total",
+      "udpMultiplier": 0.1
+    }
+  },
+  "kecontact.0.currentUser": {
+    "_id": "kecontact.0.currentUser",
+    "type": "state",
+    "common": {
+      "name": "Current User",
+      "type": "number",
+      "role": "level",
+      "unit": "mA",
+      "read": true,
+      "write": true,
+      "desc": "Current preset value of the user via UDP; Default = 63000mA."
+    },
+    "native": {
+      "udpKey": "Curr user"
+    }
+  },
+  "kecontact.0.enableUser": {
+    "_id": "kecontact.0.enableUser",
+    "type": "state",
+    "common": {
+      "name": "Enable User",
+      "type": "boolean",
+      "role": "switch",
+      "read": true,
+      "write": true,
+      "desc": "Enable condition via UDP."
+    },
+    "native": {
+      "udpKey": "Enable user"
+    }
+  },
+  "kecontact.0.info": {
+    "_id": "kecontact.0.info",
+    "type": "channel",
+    "common": {
+      "name": "Information"
+    },
+    "native": {}
+  },
+  "kecontact.0.info.connection": {
+    "_id": "kecontact.0.info.connection",
+    "type": "state",
+    "common": {
+      "name": "is wallbox connected?",
+      "type": "boolean",
+      "role": "indicator.connected",
+      "read": true,
+      "write": false,
+      "def": false
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic": {
+    "_id": "kecontact.0.automatic",
+    "type": "channel",
+    "common": {
+      "name": "miscellaneous automatics"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.photovoltaics": {
+    "_id": "kecontact.0.automatic.photovoltaics",
+    "type": "state",
+    "common": {
+      "name": "photovoltaics automatic enabled",
+      "type": "boolean",
+      "role": "switch.mode.auto",
+      "read": true,
+      "write": true,
+      "def": true,
+      "desc": "Switch to load vehicle according to surplus of photovoltaics (true); otherwise load with maximum power (false)."
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.pauseWallbox": {
+    "_id": "kecontact.0.automatic.pauseWallbox",
+    "type": "state",
+    "common": {
+      "name": "pause charging of vehicle",
+      "type": "boolean",
+      "role": "switch.power",
+      "read": true,
+      "write": true,
+      "def": false,
+      "desc": "Switch to stop charging of vehicle. This switch has higher priority than photovoltaics and should be used to stop charging of vehicle"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.targetSoC": {
+    "_id": "kecontact.0.automatic.targetSoC",
+    "type": "state",
+    "common": {
+      "name": "vehicle shall be charged to that SoC without PV automatics",
+      "type": "number",
+      "role": "level",
+      "unit": "%",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "Set this value to temporarily charge vehicle without PV automatics unless vehicle SoC (state of charge) has reached this value"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.resetTargetSoC": {
+    "_id": "kecontact.0.automatic.resetTargetSoC",
+    "type": "state",
+    "common": {
+      "name": "reset target SoC after reaching this value",
+      "type": "boolean",
+      "role": "switch",
+      "read": true,
+      "write": true,
+      "def": true,
+      "desc": "set this option if taget SoC should be cleared after target SoC is reached by vehible"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.addPower": {
+    "_id": "kecontact.0.automatic.addPower",
+    "type": "state",
+    "common": {
+      "name": "additional regard to run charging session",
+      "type": "number",
+      "role": "level.max",
+      "unit": "W",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "additional grid consumption to run charging session (> 0) or surplus to be reservied for other belongings (> 0)"
+    },
+    "native": {}
+  },
+  "kecontact.0.statistics": {
+    "_id": "kecontact.0.statistics",
+    "type": "channel",
+    "common": {
+      "name": "additional statistic information"
+    },
+    "native": {}
+  },
+  "kecontact.0.statistics.lastChargeAmount": {
+    "_id": "kecontact.0.statistics.lastChargeAmount",
+    "type": "state",
+    "common": {
+      "name": "charge amount of last charging process",
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0,
+      "desc": "Power consumption of the last loading session in Wh."
+    },
+    "native": {}
+  },
+  "kecontact.0.statistics.surplus": {
+    "_id": "kecontact.0.statistics.surplus",
+    "type": "state",
+    "common": {
+      "name": "current surplus for PV automatics",
+      "type": "number",
+      "role": "value.power.produced",
+      "unit": "W",
+      "read": true,
+      "write": false,
+      "def": 0,
+      "desc": "Surplus used for last calculation of PV automatics",
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "debounceTime": 0,
+          "blockTime": 0,
+          "changesOnly": true,
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "retention": 604800,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false,
+          "debounce": "1000"
+        }
+      }
+    },
+    "native": {}
+  },
+  "kecontact.0.serial": {
+    "_id": "kecontact.0.serial",
+    "type": "state",
+    "common": {
+      "name": "Serial Number",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "udpKey": "Serial"
+    }
+  },
+  "kecontact.0.display": {
+    "_id": "kecontact.0.display",
+    "type": "state",
+    "common": {
+      "name": "Text to display on wallbox",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": true,
+      "desc": "Message to display on wallbox for a certain (short) time (max. 23 characters)"
+    }
+  }
+}

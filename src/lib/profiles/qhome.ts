@@ -1,5 +1,5 @@
 import type { SvEnergySystem } from '../../shared/protocol';
-import { ref, type EnergyProfile } from './types';
+import { ref, type AdapterProfile } from './types';
 
 /**
  * QCells Q.HOME+ ESS HYB-G2 (Adapter: github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2)
@@ -8,9 +8,10 @@ import { ref, type EnergyProfile } from './types';
  * GridPwPurchaseWb/GridPwFeedInWb (W), BtPwCharge/BtPwDisCharge (W), PvPw/ConsPw (kW).
  * Energiezähler unter counters.day.* (kWh / %).
  */
-export const qhomeProfile: EnergyProfile = {
+export const qhomeProfile: AdapterProfile = {
     adapter: 'qhome-ess-hyb-g2',
-    detect(instance, objects): SvEnergySystem | null {
+    claimsInstance: true,
+    detect(instance, objects) {
         const id = (s: string): string => `${instance}.${s}`;
         const pv = ref(objects, id('PvPw'), 'PV');
         if (!pv) {
@@ -18,7 +19,7 @@ export const qhomeProfile: EnergyProfile = {
         }
         const day = (s: string): string => id(`counters.day.${s}`);
 
-        return {
+        const energy: SvEnergySystem = {
             id: instance,
             name: 'Q.HOME Speicher',
             adapter: 'qhome-ess-hyb-g2',
@@ -46,5 +47,6 @@ export const qhomeProfile: EnergyProfile = {
             },
             connected: ref(objects, id('info.connection'), 'Verbunden'),
         };
+        return { energy };
     },
 };

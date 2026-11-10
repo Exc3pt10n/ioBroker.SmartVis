@@ -1,7 +1,11 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
-import type { SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
-import { detectEnergy, energyStateRefs } from './profiles';
-import { DEFAULT_ROOM_NAMES, guessRoom, slug, stripRoomFromName } from './rooms';
+import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
+import { getName } from './names';
+import { profileStateRefs, runProfiles } from './profiles';
+import { HUE_IGNORED_GROUP_ROLES, hueRoomHints } from './profiles/hueRooms';
+import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
+
+export { getName };
 
 export interface DiscoveryOptions {
     /** Sprache für mehrsprachige Namen */
@@ -20,28 +24,55 @@ export interface DiscoveryResult {
 
 type ObjectMap = Record<string, ioBroker.Object>;
 
-/** Liest den Namen eines Objekts in der gewünschten Sprache */
-export function getName(obj: ioBroker.Object | undefined, lang: string): string | undefined {
-    const name = obj?.common?.name;
-    if (!name) {
-        return undefined;
-    }
-    if (typeof name === 'string') {
-        return name;
-    }
-    const translated = name as Record<string, string>;
-    return translated[lang] || translated.en || Object.values(translated)[0];
-}
+const LIGHT_TYPES = new Set<string>([
+    Types.light,
+    Types.dimmer,
+    Types.ct,
+    Types.hue,
+    Types.rgb,
+    Types.rgbSingle,
+    Types.rgbwSingle,
+    Types.cie,
+]);
 
 function parentId(id: string): string {
     return id.substring(0, id.lastIndexOf('.'));
 }
 
+/** Raumverwaltung: führt Räume aus Enums, Adaptern und Namen anhand des Namens zusammen */
+class RoomRegistry {
+    readonly rooms = new Map<string, SvRoom>();
+    private byName = new Map<string, string>();
+
+    add(id: string, name: string, source: RoomSource): string {
+        const key = normalize(name);
+        const existing = this.byName.get(key);
+        if (existing) {
+            return existing;
+        }
+        this.rooms.set(id, { id, name, source });
+        this.byName.set(key, id);
+        return id;
+    }
+
+    /** Raum anhand des Namens finden oder neu anlegen */
+    ensure(name: string, source: RoomSource): string {
+        return this.add(`auto.${slug(name)}`, name, source);
+    }
+
+    names(): string[] {
+        return [...this.rooms.values()].map(r => r.name);
+    }
+}
+
 /**
  * Erzeugt aus allen ioBroker-Objekten das Device-Model der Visualisierung.
  * Reine Funktion – erleichtert Tests mit exportierten Objekt-Dumps.
+ *
+ * Reihenfolge der Raumquellen: enum.rooms → Adapter (Hue-Räume) → Gerätename.
  */
 export function discover(objects: ObjectMap, options: DiscoveryOptions): DiscoveryResult {
+    const lang = options.language;
     const ignore = new Set(options.ignoreAdapters.map(a => a.trim()).filter(Boolean));
     const isIgnored = (id: string): boolean => ignore.has(id.split('.')[0]);
 
@@ -52,19 +83,21 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
-    // 1. Räume aus Enums
-    const rooms = new Map<string, SvRoom>();
+    // 1. Räume aus Enums (z. B. von hm-rega aus der CCU synchronisiert)
+    const rooms = new RoomRegistry();
     const memberToRoom = new Map<string, string>();
     for (const [id, obj] of Object.entries(filtered)) {
         if (!id.startsWith('enum.rooms.') || obj.type !== 'enum') {
             continue;
         }
-        rooms.set(id, { id, name: getName(obj, options.language) || id.split('.').pop()!, source: 'enum' });
+        const roomId = rooms.add(id, getName(obj, lang) || id.split('.').pop()!, 'enum');
         for (const member of (obj.common as ioBroker.EnumCommon).members || []) {
-            memberToRoom.set(member, id);
+            memberToRoom.set(member, roomId);
         }
     }
-    const roomNames = [...new Set([...[...rooms.values()].map(r => r.name), ...DEFAULT_ROOM_NAMES])];
+
+    // 2. Räume aus Adaptern
+    const adapterHints = hueRoomHints(filtered, lang);
 
     const keys = Object.keys(filtered).sort();
     const usedIds: string[] = [];
@@ -72,11 +105,11 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     const stateIds = new Set<string>();
     const writableIds = new Set<string>();
 
-    // 2. Adapter-Profile (PV, Speicher, Wallbox …) – vor dem type-detector,
+    // 3. Adapter-Profile (PV, Speicher, Wallbox …) – vor dem type-detector,
     //    damit deren States nicht zusätzlich als generische Kacheln auftauchen
-    const energy = detectEnergy(filtered, options.language, isIgnored);
-    for (const system of energy) {
-        for (const s of energyStateRefs(system)) {
+    const profiles = runProfiles(filtered, lang, isIgnored);
+    for (const item of [...profiles.energy, ...profiles.wallboxes]) {
+        for (const s of profileStateRefs(item)) {
             stateIds.add(s.id);
             usedIds.push(s.id);
             if (s.write) {
@@ -84,10 +117,10 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             }
         }
     }
+    const claimed = profiles.claimedInstances.map(i => `${i}.`);
+    const isClaimed = (id: string): boolean => claimed.some(prefix => id.startsWith(prefix));
 
-    // 3. Gerätetypen erkennen
-    const detector = new ChannelDetector();
-
+    // 4. Gerätetypen erkennen
     // Kandidaten: alle Kanäle sowie Geräte, die States direkt (ohne Kanal-Ebene) enthalten.
     // Geräte mit Kanälen (z. B. Homematic) würden sonst doppelt erkannt.
     const hasChannels = new Set<string>();
@@ -97,10 +130,17 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
     const candidates = keys.filter(id => {
-        const type = filtered[id].type;
-        return type === 'channel' || (type === 'device' && !hasChannels.has(id));
+        const obj = filtered[id];
+        if (isClaimed(id)) {
+            return false;
+        }
+        if (id.startsWith('hue.') && HUE_IGNORED_GROUP_ROLES.has(String(obj.common?.role))) {
+            return false;
+        }
+        return obj.type === 'channel' || (obj.type === 'device' && !hasChannels.has(id));
     });
 
+    const detector = new ChannelDetector();
     for (const id of candidates) {
         let controls: PatternControl[] | null = null;
         try {
@@ -122,7 +162,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
         for (const [index, control] of controls.entries()) {
             const deviceId = controls.length > 1 ? `${id}#${index}` : id;
-            const device = toDevice(id, deviceId, control, filtered, options, memberToRoom, rooms, roomNames);
+            const device = toDevice(id, deviceId, control, filtered, lang, memberToRoom, adapterHints, rooms);
             if (!device) {
                 continue;
             }
@@ -136,11 +176,17 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
-    devices.sort((a, b) => a.name.localeCompare(b.name, options.language));
-    const roomList = [...rooms.values()].sort((a, b) => a.name.localeCompare(b.name, options.language));
+    devices.sort((a, b) => a.name.localeCompare(b.name, lang));
+    const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
 
     return {
-        model: { rooms: roomList, devices, energy, generatedAt: Date.now() },
+        model: {
+            rooms: roomList,
+            devices,
+            energy: profiles.energy,
+            wallboxes: profiles.wallboxes,
+            generatedAt: Date.now(),
+        },
         stateIds: [...stateIds],
         writableIds,
     };
@@ -151,10 +197,10 @@ function toDevice(
     deviceId: string,
     control: PatternControl,
     objects: ObjectMap,
-    options: DiscoveryOptions,
+    lang: string,
     memberToRoom: Map<string, string>,
-    rooms: Map<string, SvRoom>,
-    roomNames: string[],
+    adapterHints: Map<string, string>,
+    rooms: RoomRegistry,
 ): SvDevice | null {
     const states: SvStateRef[] = [];
     for (const s of control.states) {
@@ -180,20 +226,18 @@ function toDevice(
 
     const obj = objects[id];
     const parent = objects[parentId(id)];
-    let name = getName(obj, options.language) || id.split('.').pop()!;
+    let name = getName(obj, lang) || id.split('.').pop()!;
     const parentName =
-        parent && (parent.type === 'device' || parent.type === 'channel')
-            ? getName(parent, options.language)
-            : undefined;
+        parent && (parent.type === 'device' || parent.type === 'channel') ? getName(parent, lang) : undefined;
 
     // Homematic: Kanalnamen sind oft "Gerät:1" → Gerätenamen verwenden
     if (/:\d+$/.test(name) && parentName) {
         name = parentName;
     }
 
-    // Raum: erst Enum (State, Kanal, Gerät), dann Name
+    // Raum: Enum (Kanal, Gerät, States) → Adapter → Name
     let roomId: string | null = null;
-    let roomSource: SvDevice['roomSource'] = null;
+    let roomSource: RoomSource | null = null;
     for (const candidate of [id, parentId(id), ...states.map(s => s.id)]) {
         const enumRoom = memberToRoom.get(candidate);
         if (enumRoom) {
@@ -203,20 +247,27 @@ function toDevice(
         }
     }
     if (!roomId) {
-        const guess = guessRoom([name, parentName, id], roomNames);
+        const hint = adapterHints.get(id) || adapterHints.get(parentId(id));
+        if (hint) {
+            roomId = rooms.ensure(hint, 'adapter');
+            roomSource = 'adapter';
+        }
+    }
+    if (!roomId) {
+        const guess = guessRoom([name, parentName, id], [...new Set([...rooms.names(), ...DEFAULT_ROOM_NAMES])]);
         if (guess) {
-            const existing = [...rooms.values()].find(r => r.name === guess.name);
-            if (existing) {
-                roomId = existing.id;
-            } else {
-                roomId = `auto.${slug(guess.name)}`;
-                rooms.set(roomId, { id: roomId, name: guess.name, source: 'name' });
-            }
+            roomId = rooms.ensure(guess.name, 'name');
             roomSource = 'name';
         }
     }
     if (roomId) {
-        name = stripRoomFromName(name, rooms.get(roomId)!.name);
+        const roomName = rooms.rooms.get(roomId)!.name;
+        if (normalize(name) !== normalize(roomName)) {
+            name = stripRoomFromName(name, roomName);
+        } else if (LIGHT_TYPES.has(control.type)) {
+            // Raumgruppe (z. B. Hue-Raum "Küche") → "Alle Lichter"
+            name = 'Alle Lichter';
+        }
     }
 
     return {

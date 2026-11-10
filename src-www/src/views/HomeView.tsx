@@ -1,7 +1,7 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { isActive, warnings } from '../device';
-import { formatPower, snapshot } from '../energy';
+import { formatPower, snapshot, wallboxSnapshot } from '../energy';
 import { DeviceTile } from '../components/DeviceTile';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
@@ -18,7 +18,8 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const open = model.devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
     const problems = model.devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = model.devices.filter(d => !d.roomId).length;
-    const energy = model.energy[0] ? snapshot(model.energy[0], states) : undefined;
+    const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
+    const charging = model.wallboxes.map(w => wallboxSnapshot(w, states)).filter(w => w.status === 'charging');
 
     return (
         <>
@@ -36,6 +37,16 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                         {energy.soc !== undefined ? ` · 🔋 ${Math.round(energy.soc)} %` : ''}
                     </button>
                 )}
+                {charging.map((w, i) => (
+                    <button
+                        key={i}
+                        type="button"
+                        className="chip"
+                        onClick={() => onNavigate('energy')}
+                    >
+                        🚗 lädt {formatPower(w.power)}
+                    </button>
+                ))}
                 {problems.length > 0 && <span className="chip chip--warn">⚠️ {problems.length} Störungen</span>}
             </div>
 

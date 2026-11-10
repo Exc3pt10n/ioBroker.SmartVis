@@ -1,16 +1,26 @@
-import type { SvEnergySystem, SvStateRef } from '../../shared/protocol';
+import type { SvEnergySystem, SvStateRef, SvWallbox } from '../../shared/protocol';
 
 export type ObjectMap = Record<string, ioBroker.Object>;
+
+export interface ProfileResult {
+    energy?: SvEnergySystem;
+    wallbox?: SvWallbox;
+}
 
 /**
  * Adapter-Profil: erkennt Systeme, die der type-detector nicht abdeckt
  * (PV-Anlagen, Speicher, Wallboxen …), anhand bekannter State-IDs eines Adapters.
  */
-export interface EnergyProfile {
+export interface AdapterProfile {
     /** Adapter-Name, z. B. "qhome-ess-hyb-g2" */
     adapter: string;
+    /**
+     * true: Die Instanz wird vollständig vom Profil abgebildet – der type-detector
+     * überspringt sie (verhindert zufällige Kacheln aus Konfigurations-States).
+     */
+    claimsInstance: boolean;
     /** Wird je gefundener Instanz aufgerufen (z. B. "qhome-ess-hyb-g2.0") */
-    detect(instance: string, objects: ObjectMap, lang: string): SvEnergySystem | null;
+    detect(instance: string, objects: ObjectMap, lang: string): ProfileResult | null;
 }
 
 /** Baut eine State-Referenz, falls das Objekt existiert */

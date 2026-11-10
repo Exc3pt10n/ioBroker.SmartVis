@@ -1,32 +1,53 @@
-import type { SvEnergySystem, SvStateRef } from '../../shared/protocol';
+import type { SvEnergySystem, SvStateRef, SvWallbox } from '../../shared/protocol';
+import { kecontactProfile } from './kecontact';
 import { qhomeProfile } from './qhome';
-import { instancesOf, type EnergyProfile, type ObjectMap } from './types';
+import { instancesOf, type AdapterProfile, type ObjectMap } from './types';
 
-export const ENERGY_PROFILES: EnergyProfile[] = [qhomeProfile];
+export const PROFILES: AdapterProfile[] = [qhomeProfile, kecontactProfile];
 
-/** Führt alle Energie-Profile aus */
-export function detectEnergy(objects: ObjectMap, lang: string, isIgnored: (id: string) => boolean): SvEnergySystem[] {
-    const systems: SvEnergySystem[] = [];
-    for (const profile of ENERGY_PROFILES) {
+export interface ProfilesResult {
+    energy: SvEnergySystem[];
+    wallboxes: SvWallbox[];
+    /** Instanzen, die vollständig von einem Profil abgebildet werden */
+    claimedInstances: string[];
+}
+
+/** Führt alle Adapter-Profile aus */
+export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: string) => boolean): ProfilesResult {
+    const result: ProfilesResult = { energy: [], wallboxes: [], claimedInstances: [] };
+    for (const profile of PROFILES) {
         if (isIgnored(profile.adapter)) {
             continue;
         }
         for (const instance of instancesOf(profile.adapter, objects)) {
-            const system = profile.detect(instance, objects, lang);
-            if (system) {
-                systems.push(system);
+            const found = profile.detect(instance, objects, lang);
+            if (!found) {
+                continue;
+            }
+            if (found.energy) {
+                result.energy.push(found.energy);
+            }
+            if (found.wallbox) {
+                result.wallboxes.push(found.wallbox);
+            }
+            if (profile.claimsInstance) {
+                result.claimedInstances.push(instance);
             }
         }
     }
-    return systems;
+    return result;
 }
 
-/** Alle State-Referenzen eines Energiesystems (für Abos) */
-export function energyStateRefs(system: SvEnergySystem): SvStateRef[] {
-    return [
-        ...Object.values(system.flows),
-        ...Object.values(system.battery || {}),
-        ...Object.values(system.today || {}),
-        system.connected,
-    ].filter((r): r is SvStateRef => !!r);
+/** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */
+export function profileStateRefs(item: SvEnergySystem | SvWallbox): SvStateRef[] {
+    const refs: unknown[] =
+        'flows' in item
+            ? [
+                  ...Object.values(item.flows),
+                  ...Object.values(item.battery || {}),
+                  ...Object.values(item.today || {}),
+                  item.connected,
+              ]
+            : Object.values(item);
+    return refs.filter((r): r is SvStateRef => !!r && typeof r === 'object' && 'id' in r && 'write' in r);
 }

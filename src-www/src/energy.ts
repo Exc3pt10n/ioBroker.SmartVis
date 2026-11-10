@@ -1,4 +1,4 @@
-import type { SvEnergySystem, SvStateRef, SvStateValue } from '../../src/shared/protocol';
+import type { SvEnergySystem, SvStateRef, SvStateValue, SvWallbox, SvWallboxStatus } from '../../src/shared/protocol';
 
 type States = Record<string, SvStateValue | null>;
 
@@ -12,7 +12,9 @@ export function watts(ref: SvStateRef | undefined, states: States): number | und
         return undefined;
     }
     const unit = (ref.unit || 'W').trim().toLowerCase();
-    const factor = unit === 'kw' ? 1000 : unit === 'mw' ? 1_000_000 : 1;
+    // Achtung: "mW" (Milliwatt, z. B. Keba) ≠ "MW" (Megawatt) – daher Groß-/Kleinschreibung prüfen
+    const rawUnit = (ref.unit || 'W').trim();
+    const factor = rawUnit === 'mW' ? 0.001 : rawUnit === 'MW' ? 1_000_000 : unit === 'kw' ? 1000 : 1;
     return Math.max(0, raw * factor);
 }
 
@@ -34,7 +36,65 @@ export function num(ref: SvStateRef | undefined, states: States): number | undef
     return Number.isFinite(v) ? v : undefined;
 }
 
+/** Energie in kWh (Wh/kWh-State) */
+export function kwh(ref: SvStateRef | undefined, states: States): number | undefined {
+    const v = num(ref, states);
+    if (v === undefined || !ref) {
+        return undefined;
+    }
+    return (ref.unit || '').trim().toLowerCase() === 'wh' ? v / 1000 : v;
+}
+
+export interface WallboxSnapshot {
+    power?: number;
+    status?: SvWallboxStatus;
+    plugged: boolean;
+    sessionKwh?: number;
+    lastKwh?: number;
+    pvAutomatic?: boolean;
+    paused?: boolean;
+    online: boolean;
+}
+
+export function wallboxSnapshot(wb: SvWallbox, states: States): WallboxSnapshot {
+    const statusVal = wb.status ? states[wb.status.id]?.val : undefined;
+    const plugVal = num(wb.plug, states);
+    return {
+        power: watts(wb.power, states),
+        status: statusVal !== undefined && statusVal !== null ? wb.statusMap?.[String(statusVal)] : undefined,
+        plugged: plugVal !== undefined && (wb.vehiclePluggedValues || []).includes(plugVal),
+        sessionKwh: kwh(wb.sessionEnergy, states),
+        lastKwh: kwh(wb.lastSessionEnergy, states),
+        pvAutomatic: wb.pvAutomatic ? states[wb.pvAutomatic.id]?.val === true : undefined,
+        paused: wb.pause ? states[wb.pause.id]?.val === true : undefined,
+        online: !wb.connected || states[wb.connected.id]?.val !== false,
+    };
+}
+
+export function wallboxLabel(s: WallboxSnapshot): string {
+    if (!s.online) {
+        return 'Keine Verbindung';
+    }
+    switch (s.status) {
+        case 'charging':
+            return 'Lädt';
+        case 'error':
+            return 'Störung';
+        case 'interrupted':
+            return 'Unterbrochen';
+        case 'starting':
+            return 'Startet';
+        default:
+            if (s.paused) {
+                return 'Pausiert';
+            }
+            return s.plugged ? 'Fahrzeug verbunden' : 'Kein Fahrzeug';
+    }
+}
+
 export interface FlowSnapshot {
+    /** Ladeleistung Auto (Wallbox) */
+    car?: number;
     pv?: number;
     home?: number;
     gridImport?: number;
@@ -44,11 +104,20 @@ export interface FlowSnapshot {
     soc?: number;
 }
 
-export function snapshot(system: SvEnergySystem, states: States): FlowSnapshot {
+/**
+ * Momentaufnahme der Flüsse. Ist eine Wallbox vorhanden, wird ihre Leistung aus dem
+ * Hausverbrauch herausgerechnet: Der Speicher misst am Netzanschluss, sein Verbrauchswert
+ * enthält also auch das Laden des Autos.
+ */
+export function snapshot(system: SvEnergySystem, states: States, wallboxes: SvWallbox[] = []): FlowSnapshot {
     const f = system.flows;
+    const carValues = wallboxes.map(w => watts(w.power, states)).filter((v): v is number => v !== undefined);
+    const car = carValues.length ? carValues.reduce((a, b) => a + b, 0) : undefined;
+    const home = watts(f.home, states);
     return {
+        car,
         pv: watts(f.pv, states),
-        home: watts(f.home, states),
+        home: home !== undefined && car !== undefined ? Math.max(0, home - car) : home,
         gridImport: watts(f.gridImport, states),
         gridExport: watts(f.gridExport, states),
         batteryCharge: watts(f.batteryCharge, states),

@@ -10,9 +10,15 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 ## Funktionen (aktueller Stand)
 
 - Automatische Geräteerkennung über [`@iobroker/type-detector`](https://github.com/ioBroker/ioBroker.type-detector)
-- Räume aus `enum.rooms` **oder** – wenn nicht gepflegt – aus Geräte­namen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
+- Räume aus mehreren Quellen, gleichnamige Räume werden zusammengeführt:
+  1. `enum.rooms` – z. B. die Räume der Homematic-CCU, wenn `hm-rega` sie synchronisiert
+  2. Hue-Räume aus dem `hue`-Adapter (Zonen werden bewusst nicht als Raum verwendet)
+  3. Gerätenamen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
-- **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz) und Tageswerten über Adapter-Profile – aktuell für [ioBroker.qhome-ess-hyb-g2](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) (QCells Q.HOME+ ESS HYB-G2)
+- **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz, Auto) und Tageswerten über Adapter-Profile:
+  - [ioBroker.qhome-ess-hyb-g2](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) (QCells Q.HOME+ ESS HYB-G2)
+  - `kecontact` (KEBA KeContact P20/P30): Status, Ladeleistung, geladene Energie, PV-Überschussladen und Pause schaltbar
+  - Ist eine Wallbox vorhanden, wird ihre Leistung aus dem Hausverbrauch des Speichers herausgerechnet (der Speicher misst am Netzanschluss)
 - Neu-Erkennung bei Objektänderungen
 - Responsive Oberfläche: Bottom-Navigation auf dem Handy, Seitenleiste ab Tablet, Hell/Dunkel automatisch
 
@@ -68,6 +74,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 
 - (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
 - (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
+- (Exc3pt10n) KEBA-Wallbox-Profil, Hue-Räume als Raumquelle, Zusammenführen gleichnamiger Räume
 
 ## License
 

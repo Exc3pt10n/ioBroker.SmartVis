@@ -17,6 +17,7 @@ const NODES: Record<string, Node> = {
     grid: { key: 'grid', label: 'Netz', x: 46, y: 160, icon: '🔌' },
     home: { key: 'home', label: 'Haus', x: 274, y: 160, icon: '🏠' },
     battery: { key: 'battery', label: 'Batterie', x: 160, y: 274, icon: '🔋' },
+    car: { key: 'car', label: 'Auto', x: 274, y: 274, icon: '🚗' },
 };
 const HUB = { x: 160, y: 160 };
 const R = 40;
@@ -47,7 +48,10 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
     const batOut = (flow.batteryDischarge ?? 0) >= (flow.batteryCharge ?? 0);
     const batPower = batOut ? (flow.batteryDischarge ?? 0) : (flow.batteryCharge ?? 0);
 
+    const hasCar = flow.car !== undefined;
+    const nodes = Object.values(NODES).filter(n => n.key !== 'car' || hasCar);
     const values: Record<string, { value: string; sub?: string }> = {
+        car: { value: formatPower(flow.car), sub: (flow.car ?? 0) >= THRESHOLD_W ? 'lädt' : undefined },
         pv: { value: formatPower(flow.pv) },
         grid: {
             value: formatPower(gridPower),
@@ -87,13 +91,20 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
                 power={flow.home ?? 0}
                 direction="out"
             />
+            {hasCar && (
+                <Line
+                    node={NODES.car}
+                    power={flow.car ?? 0}
+                    direction="out"
+                />
+            )}
             <circle
                 cx={HUB.x}
                 cy={HUB.y}
                 r={5}
                 className="flow__hub"
             />
-            {Object.values(NODES).map(n => (
+            {nodes.map(n => (
                 <g
                     key={n.key}
                     className={`flow__node flow__node--${n.key}`}

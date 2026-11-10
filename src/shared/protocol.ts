@@ -5,8 +5,8 @@
 
 export const PROTOCOL_VERSION = 1;
 
-/** Woher stammt eine Raumzuordnung? */
-export type RoomSource = 'enum' | 'name';
+/** Woher stammt eine Raumzuordnung? enum = ioBroker-Aufzählung, adapter = z. B. Hue-Raum, name = aus dem Gerätenamen */
+export type RoomSource = 'enum' | 'adapter' | 'name';
 
 export interface SvRoom {
     /** enum-ID (z. B. "enum.rooms.living") oder generiert ("auto.wohnzimmer") */
@@ -81,11 +81,39 @@ export interface SvEnergySystem {
     connected?: SvStateRef;
 }
 
+/** Wallbox (Ladestation) */
+export interface SvWallbox {
+    /** Instanz-ID, z. B. "kecontact.0" */
+    id: string;
+    name: string;
+    adapter: string;
+    /** Aktuelle Ladeleistung (Einheit im State, z. B. mW bei Keba) */
+    power?: SvStateRef;
+    /** Ladezustand der Wallbox, normalisiert über statusMap */
+    status?: SvStateRef;
+    statusMap?: Record<string, SvWallboxStatus>;
+    /** Steckerzustand; Werte in vehiclePluggedValues = Fahrzeug verbunden */
+    plug?: SvStateRef;
+    vehiclePluggedValues?: number[];
+    /** Geladene Energie der laufenden Sitzung */
+    sessionEnergy?: SvStateRef;
+    /** Energie der letzten abgeschlossenen Sitzung */
+    lastSessionEnergy?: SvStateRef;
+    /** Schalter: Laden nach PV-Überschuss */
+    pvAutomatic?: SvStateRef;
+    /** Schalter: Laden pausieren */
+    pause?: SvStateRef;
+    connected?: SvStateRef;
+}
+
+export type SvWallboxStatus = 'starting' | 'notReady' | 'ready' | 'charging' | 'error' | 'interrupted';
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
     /** Über Adapter-Profile erkannte Energiesysteme (PV, Speicher …) */
     energy: SvEnergySystem[];
+    wallboxes: SvWallbox[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
 }

@@ -29,7 +29,7 @@ const TABS = [
 export function App(): React.JSX.Element {
     const [route, navigate] = useRoute();
     const { status, model } = useConnection();
-    const tabs = TABS.filter(t => !t.needsEnergy || !!model?.energy.length);
+    const tabs = TABS.filter(t => !t.needsEnergy || !!model?.energy.length || !!model?.wallboxes.length);
     const [tab = 'home', param] = route;
 
     let view: React.JSX.Element;

@@ -1,5 +1,6 @@
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { EnergyFlow } from '../components/EnergyFlow';
+import { WallboxCard } from '../components/WallboxCard';
 import { useConnection } from '../connection';
 import { num, snapshot } from '../energy';
 
@@ -12,7 +13,7 @@ export function EnergyView(): React.JSX.Element {
     if (!model) {
         return <p className="empty">Lade …</p>;
     }
-    if (!model.energy.length) {
+    if (!model.energy.length && !model.wallboxes.length) {
         return (
             <>
                 <h1 className="title">Energie</h1>
@@ -25,7 +26,8 @@ export function EnergyView(): React.JSX.Element {
         <>
             <h1 className="title">Energie</h1>
             {model.energy.map(system => {
-                const flow = snapshot(system, states);
+                // Wallboxen fließen in das erste Energiesystem ein
+                const flow = snapshot(system, states, system === model.energy[0] ? model.wallboxes : []);
                 const today = system.today || {};
                 const value = (ref: SvStateRef | undefined): number | undefined => num(ref, states);
                 const remaining = value(system.battery?.remaining);
@@ -54,39 +56,55 @@ export function EnergyView(): React.JSX.Element {
                                     </p>
                                 ) : null}
                             </div>
-                            <div className="card">
-                                <h2 className="subtitle">Heute</h2>
-                                <div className="stats">
-                                    <Stat
-                                        label="PV-Erzeugung"
-                                        value={fmt(value(today.pv), 'kWh')}
-                                    />
-                                    <Stat
-                                        label="Verbrauch"
-                                        value={fmt(value(today.home), 'kWh')}
-                                    />
-                                    <Stat
-                                        label="Netzbezug"
-                                        value={fmt(value(today.gridImport), 'kWh')}
-                                    />
-                                    <Stat
-                                        label="Einspeisung"
-                                        value={fmt(value(today.gridExport), 'kWh')}
-                                    />
-                                    <Stat
-                                        label="Autarkie"
-                                        value={fmt(value(today.autarky), '%', 0)}
-                                    />
-                                    <Stat
-                                        label="Eigenverbrauch"
-                                        value={fmt(value(today.selfConsumption), '%', 0)}
-                                    />
+                            <div className="energy__side">
+                                {system === model.energy[0] &&
+                                    model.wallboxes.map(wb => (
+                                        <WallboxCard
+                                            key={wb.id}
+                                            wallbox={wb}
+                                        />
+                                    ))}
+                                <div className="card">
+                                    <h2 className="subtitle">Heute</h2>
+                                    <div className="stats">
+                                        <Stat
+                                            label="PV-Erzeugung"
+                                            value={fmt(value(today.pv), 'kWh')}
+                                        />
+                                        <Stat
+                                            label="Verbrauch"
+                                            value={fmt(value(today.home), 'kWh')}
+                                        />
+                                        <Stat
+                                            label="Netzbezug"
+                                            value={fmt(value(today.gridImport), 'kWh')}
+                                        />
+                                        <Stat
+                                            label="Einspeisung"
+                                            value={fmt(value(today.gridExport), 'kWh')}
+                                        />
+                                        <Stat
+                                            label="Autarkie"
+                                            value={fmt(value(today.autarky), '%', 0)}
+                                        />
+                                        <Stat
+                                            label="Eigenverbrauch"
+                                            value={fmt(value(today.selfConsumption), '%', 0)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </section>
                 );
             })}
+            {!model.energy.length &&
+                model.wallboxes.map(wb => (
+                    <WallboxCard
+                        key={wb.id}
+                        wallbox={wb}
+                    />
+                ))}
         </>
     );
 }

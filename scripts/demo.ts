@@ -3,6 +3,7 @@
  *   npm run demo   →  http://localhost:8099
  * Nützlich für Frontend-Entwicklung (zusammen mit "npm run dev:www").
  */
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { discover } from '../src/lib/discovery';
 import { SmartVisServer } from '../src/lib/server';
@@ -56,15 +57,55 @@ folder('hm-rpc.0.MEQ005', 'device', 'Steckdose Kaffeemaschine');
 folder('hm-rpc.0.MEQ005.1', 'channel', 'Steckdose Kaffeemaschine:1', 'switch');
 state('hm-rpc.0.MEQ005.1.STATE', 'switch', 'boolean', true, false);
 
-// Philips Hue
-for (const [key, name, on] of [
-    ['Wohnzimmer_Stehlampe', 'Wohnzimmer Stehlampe', true],
-    ['Kueche_Spots', 'Küche Spots', false],
-    ['Flur_Decke', 'Flur Decke', false],
-] as const) {
-    folder(`hue.0.${key}`, 'channel', name, 'light.color');
+// Philips Hue: Räume kommen aus den Hue-Raumgruppen, nicht aus den Lampennamen
+const hueLights: [string, string, string, boolean][] = [
+    ['1', 'Stehlampe', 'Stehlampe', true],
+    ['2', 'Spots', 'Spots', false],
+    ['3', 'Pendelleuchte', 'Pendelleuchte', false],
+    ['4', 'Deckenlampe', 'Deckenlampe_Flur', false],
+];
+for (const [hueId, name, key, on] of hueLights) {
+    folder(`hue.0.${key}`, 'channel', name, 'light.dimmer');
+    objects[`hue.0.${key}`].native = { id: hueId };
     state(`hue.0.${key}.on`, 'switch.light', 'boolean', true, on);
     state(`hue.0.${key}.level`, 'level.dimmer', 'number', true, on ? 80 : 0, { min: 0, max: 100, unit: '%' });
+}
+for (const [gid, name, lights] of [
+    ['1', 'Wohnzimmer', ['1']],
+    ['2', 'Küche', ['2', '3']],
+    ['3', 'Flur', ['4']],
+] as const) {
+    folder(`hue.0.${name}`, 'channel', name, 'Room');
+    objects[`hue.0.${name}`].native = { id: gid, type: 'Room', lights };
+    state(`hue.0.${name}.on`, 'switch.light', 'boolean', true, false);
+    state(`hue.0.${name}.level`, 'level.dimmer', 'number', true, 0, { min: 0, max: 100, unit: '%' });
+}
+
+// CCU-Raum, wie ihn hm-rega als Aufzählung anlegt
+objects['enum.rooms.Buero'] = {
+    _id: 'enum.rooms.Buero',
+    type: 'enum',
+    common: { name: 'Büro', members: ['hm-rpc.0.MEQ005.1'] },
+    native: {},
+} as unknown as Obj;
+
+// KEBA KeContact (reduzierter echter Objektbaum)
+const keba = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'kecontact.json'), 'utf8')) as Record<
+    string,
+    Obj
+>;
+Object.assign(objects, keba);
+for (const [key, val] of Object.entries({
+    p: 0,
+    state: 2,
+    plug: 7,
+    ePres: 0,
+    'statistics.lastChargeAmount': 18.4,
+    'automatic.photovoltaics': true,
+    'automatic.pauseWallbox': false,
+    'info.connection': true,
+})) {
+    states[`kecontact.0.${key}`] = { val, ack: true, ts: Date.now() };
 }
 
 // QCells Q.HOME+ ESS HYB-G2 (Struktur wie ioBroker.qhome-ess-hyb-g2)
@@ -120,7 +161,18 @@ function simulateEnergy(): void {
         server.queueState(id, states[id]);
     };
     const pv = Math.max(0, 4.2 + Math.sin(Date.now() / 20000) * 2.5 + (Math.random() - 0.5) * 0.3);
-    const cons = 0.8 + Math.random() * 0.8;
+    // Wallbox lädt mit PV-Überschuss, sobald genug Sonne da ist
+    const carW =
+        pv > 3.5 && states['kecontact.0.automatic.pauseWallbox']?.val !== true ? Math.round((pv - 1.8) * 1000) : 0;
+    const setKeba = (key: string, val: number): void => {
+        const kid = `kecontact.0.${key}`;
+        states[kid] = { val, ack: true, ts: Date.now() };
+        server.queueState(kid, states[kid]);
+    };
+    setKeba('p', carW * 1000); // mW
+    setKeba('state', carW > 0 ? 3 : 2);
+    setKeba('ePres', Number(states['kecontact.0.ePres']?.val || 0) + (carW * 2) / 3600);
+    const cons = 0.8 + Math.random() * 0.8 + carW / 1000;
     const surplus = (pv - cons) * 1000;
     const charge = Math.min(Math.max(surplus, 0), 2500);
     const discharge = surplus < 0 ? Math.min(-surplus, 2500) : 0;
