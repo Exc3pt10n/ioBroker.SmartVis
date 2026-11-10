@@ -114,7 +114,9 @@ class SmartVis extends utils.Adapter {
     }
 
     private onObjectChange(id: string): void {
-        if (id.startsWith(`${this.namespace}.`) || id.startsWith('system.')) {
+        // Eigene Objekte und System-Objekte ignorieren – außer Instanz-Konfigurationen (z. B. shuttercontrol)
+        const isInstanceConfig = /^system\.adapter\.[^.]+\.\d+$/.test(id);
+        if (id.startsWith(`${this.namespace}.`) || (id.startsWith('system.') && !isInstanceConfig)) {
             return;
         }
         if (this.rediscoverTimer) {

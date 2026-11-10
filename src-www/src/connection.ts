@@ -44,6 +44,11 @@ class Connection {
         this.send({ t: 'set', id, val });
     }
 
+    /** Wert nur lokal anzeigen (z. B. gespiegelte States), bis die echte Bestätigung kommt */
+    preview(id: string, val: ioBrokerValue): void {
+        this.update({ states: { ...this.snapshot.states, [id]: { val, ack: false, ts: Date.now() } } });
+    }
+
     private connect(): void {
         this.ws?.close();
         const url = new URL('ws', window.location.href);

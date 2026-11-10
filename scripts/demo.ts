@@ -112,6 +112,98 @@ for (const [id, val] of Object.entries({
     states[id] = { val, ack: true, ts: Date.now() };
 }
 
+// shuttercontrol (echter Objektbaum + Instanz-Konfiguration) mit passenden HmIP-Rollladenaktoren
+const sc = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'shuttercontrol.json'), 'utf8')) as Record<
+    string,
+    Obj
+>;
+Object.assign(objects, sc);
+const scEvents = (sc['system.adapter.shuttercontrol.0'].native as { events: { shutterName: string; name: string }[] })
+    .events;
+for (const [i, e] of scEvents.entries()) {
+    const channel = e.name.replace(/\.LEVEL$/, '');
+    const device = channel.replace(/\.\d+$/, '');
+    folder(device, 'device', 'Rollladenaktor');
+    objects[device].native = { TYPE: 'HmIPW-DRBL4' };
+    folder(channel, 'channel', e.shutterName, 'blind');
+    objects[channel].native = { TYPE: 'BLIND_VIRTUAL_RECEIVER' };
+    // Vor jedem Ausgang liegt bei HmIP der Status-Kanal (BLIND_TRANSMITTER)
+    const transmitter = `${device}.${Number(channel.split('.').pop()) - 1}`;
+    folder(transmitter, 'channel', `Rollladenaktor:${transmitter.split('.').pop()}`);
+    objects[transmitter].native = { TYPE: 'BLIND_TRANSMITTER' };
+    state(e.name, 'level.blind', 'number', true, i % 3 === 0 ? 30 : 100, { unit: '%', min: 0, max: 100 });
+    const key = e.shutterName.replace(/[.;, ]/g, '_');
+    states[`shuttercontrol.0.shutters.autoState.${key}`] = {
+        val: i % 3 === 0 ? 'sunProtect' : 'up',
+        ack: true,
+        ts: Date.now(),
+    };
+    for (const f of ['autoUp', 'autoDown', 'autoSun']) {
+        states[`shuttercontrol.0.shutters.${f}.${key}`] = {
+            val: !(f === 'autoSun' && i === 4),
+            ack: true,
+            ts: Date.now(),
+        };
+    }
+}
+for (const [key, val] of Object.entries({
+    'control.autoLiving': true,
+    'control.autoSleep': true,
+    'control.autoChildren': false,
+    'control.Holiday': false,
+    'control.schoolfree': false,
+    'info.Sunrise': '07:52',
+    'info.Sunset': '16:58',
+    'info.Elevation': 18.4,
+    'info.Azimut': 203.7,
+    'info.upTimeLiving': '07:30',
+    'info.downTimeLiving': '21:45',
+    'info.upTimeSleep': '07:45',
+    'info.downTimeSleep': '21:45',
+    'info.upTimeChildren': '09:00',
+    'info.downTimeChildren': '21:45',
+})) {
+    states[`shuttercontrol.0.${key}`] = { val, ack: true, ts: Date.now() };
+}
+for (const k of ['autoLiving', 'autoSleep', 'autoChildren', 'Holiday']) {
+    states[`0_userdata.0.Rollladen.${k}`] = { ...states[`shuttercontrol.0.control.${k}`]! };
+}
+
+/** Reaktion der Demo auf shuttercontrol-Tasten und gespiegelte Trigger-Datenpunkte */
+function simulateShutterControl(id: string, val: SvStateValue['val']): void {
+    const push = (sid: string, v: SvStateValue['val']): void => {
+        states[sid] = { val: v, ack: true, ts: Date.now() };
+        // Wird erst nach dem Serverstart aufgerufen
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        server.queueState(sid, states[sid]);
+    };
+    const mirror = /^0_userdata\.0\.Rollladen\.(.+)$/.exec(id);
+    if (mirror) {
+        push(`shuttercontrol.0.control.${mirror[1]}`, val);
+        return;
+    }
+    const m = /^shuttercontrol\.0\.control\.(open|close|sunProtect)(All|Living|Sleep|Children)?$/.exec(id);
+    if (!m || val !== true) {
+        return;
+    }
+    const [, action, scope = 'All'] = m;
+    const native = sc['system.adapter.shuttercontrol.0'].native as {
+        events: { shutterName: string; name: string; typeUp: string }[];
+    };
+    for (const e of native.events) {
+        if (scope !== 'All' && !e.typeUp.startsWith(scope.toLowerCase())) {
+            continue;
+        }
+        const key = e.shutterName.replace(/[.;, ]/g, '_');
+        push(e.name, action === 'open' ? 100 : action === 'close' ? 0 : 30);
+        push(
+            `shuttercontrol.0.shutters.autoState.${key}`,
+            action === 'open' ? 'up' : action === 'close' ? 'down' : 'sunProtect',
+        );
+    }
+    push(id, false);
+}
+
 // KEBA KeContact (reduzierter echter Objektbaum)
 const keba = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'kecontact.json'), 'utf8')) as Record<
     string,
@@ -169,6 +261,7 @@ const server = new SmartVisServer(
             setTimeout(() => {
                 states[id] = { val, ack: true, ts: Date.now() };
                 server.queueState(id, states[id]);
+                simulateShutterControl(id, val);
             }, 300);
             return Promise.resolve();
         },

@@ -136,6 +136,66 @@ export interface SvWeather {
     lowBat?: SvStateRef;
 }
 
+/** Schalter, dessen Anzeige- und Schreib-State verschieden sein können (z. B. gespiegelte Trigger-Datenpunkte) */
+export interface SvSwitch {
+    /** Angezeigter Zustand */
+    value: SvStateRef;
+    /** Wohin geschrieben wird (Quell-Datenpunkt, falls konfiguriert, sonst value) */
+    write: SvStateRef;
+}
+
+export type SvShutterArea = 'living' | 'sleep' | 'children';
+
+export interface SvShutterAreaInfo {
+    key: SvShutterArea;
+    label: string;
+    /** Automatik des Bereichs ein/aus */
+    auto?: SvSwitch;
+    open?: SvStateRef;
+    close?: SvStateRef;
+    sunProtect?: SvStateRef;
+    /** Nächste Fahrzeiten (Text, z. B. "07:30") */
+    upTime?: SvStateRef;
+    downTime?: SvStateRef;
+}
+
+/** Ein von der Rollladen-Automatik gesteuerter Rollladen */
+export interface SvAutoShutter {
+    name: string;
+    /** Zugehöriger Level-State (verknüpft mit der Rollladen-Kachel) */
+    level?: SvStateRef;
+    area?: SvShutterArea;
+    heightUp: number;
+    heightDown: number;
+    enabled: boolean;
+    autoUp?: SvStateRef;
+    autoDown?: SvStateRef;
+    autoSun?: SvStateRef;
+    /** Aktueller Automatik-Status (up, down, sunProtect, Manu_Mode …) */
+    autoState?: SvStateRef;
+}
+
+/** Rollladen-Automatik (Adapter shuttercontrol) */
+export interface SvShutterControl {
+    id: string;
+    name: string;
+    adapter: string;
+    openAll?: SvStateRef;
+    closeAll?: SvStateRef;
+    sunProtectAll?: SvStateRef;
+    autoAll?: SvStateRef;
+    holiday?: SvSwitch;
+    schoolfree?: SvSwitch;
+    areas: SvShutterAreaInfo[];
+    shutters: SvAutoShutter[];
+    sun: {
+        sunrise?: SvStateRef;
+        sunset?: SvStateRef;
+        elevation?: SvStateRef;
+        azimuth?: SvStateRef;
+    };
+}
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
@@ -144,6 +204,7 @@ export interface SvModel {
     wallboxes: SvWallbox[];
     /** Lokale Wetterstationen; die erste wird auf der Startseite angezeigt */
     weather: SvWeather[];
+    shutterControl: SvShutterControl[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
 }

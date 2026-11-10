@@ -6,6 +6,7 @@ import { HomeView } from './views/HomeView';
 import { MoreView } from './views/MoreView';
 import { RoomView } from './views/RoomView';
 import { RoomsView } from './views/RoomsView';
+import { ShutterView } from './views/ShutterView';
 
 /** Einfaches Hash-Routing: #/home, #/rooms, #/rooms/<id>, #/more */
 function useRoute(): [string[], (path: string) => void] {
@@ -22,14 +23,20 @@ function useRoute(): [string[], (path: string) => void] {
 const TABS = [
     { id: 'home', label: 'Home', icon: 'home' },
     { id: 'rooms', label: 'Räume', icon: 'rooms' },
-    { id: 'energy', label: 'Energie', icon: 'energy', needsEnergy: true },
+    { id: 'energy', label: 'Energie', icon: 'energy', needs: 'energy' },
+    { id: 'shutters', label: 'Beschattung', icon: 'blind', needs: 'shutters' },
     { id: 'more', label: 'Mehr', icon: 'more' },
 ];
 
 export function App(): React.JSX.Element {
     const [route, navigate] = useRoute();
     const { status, model } = useConnection();
-    const tabs = TABS.filter(t => !t.needsEnergy || !!model?.energy.length || !!model?.wallboxes.length);
+    const tabs = TABS.filter(
+        t =>
+            !t.needs ||
+            (t.needs === 'energy' && (!!model?.energy.length || !!model?.wallboxes.length)) ||
+            (t.needs === 'shutters' && !!model?.shutterControl.length),
+    );
     const [tab = 'home', param] = route;
 
     let view: React.JSX.Element;
@@ -42,6 +49,8 @@ export function App(): React.JSX.Element {
         );
     } else if (tab === 'rooms') {
         view = <RoomsView onNavigate={navigate} />;
+    } else if (tab === 'shutters') {
+        view = <ShutterView />;
     } else if (tab === 'energy') {
         view = <EnergyView />;
     } else if (tab === 'more') {

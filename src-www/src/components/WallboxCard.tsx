@@ -1,5 +1,6 @@
-import type { SvStateRef, SvWallbox } from '../../../src/shared/protocol';
-import { connection, useConnection } from '../connection';
+import type { SvWallbox } from '../../../src/shared/protocol';
+import { useConnection } from '../connection';
+import { Toggle } from './Toggle';
 import { formatPower, wallboxLabel, wallboxSnapshot } from '../energy';
 
 function fmtKwh(v: number | undefined): string {
@@ -39,7 +40,6 @@ export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Elem
                 {wallbox.pvAutomatic && (
                     <Toggle
                         state={wallbox.pvAutomatic}
-                        on={s.pvAutomatic === true}
                         label="PV-Überschussladen"
                         hint={s.pvAutomatic ? 'Lädt nur mit Solarüberschuss' : 'Lädt mit voller Leistung'}
                     />
@@ -47,41 +47,10 @@ export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Elem
                 {wallbox.pause && (
                     <Toggle
                         state={wallbox.pause}
-                        on={s.paused === true}
                         label="Laden pausieren"
                     />
                 )}
             </div>
         </section>
-    );
-}
-
-function Toggle({
-    state,
-    on,
-    label,
-    hint,
-}: {
-    state: SvStateRef;
-    on: boolean;
-    label: string;
-    hint?: string;
-}): React.JSX.Element {
-    const { states } = useConnection();
-    const pending = states[state.id]?.ack === false;
-    return (
-        <button
-            type="button"
-            role="switch"
-            aria-checked={on}
-            className={`toggle${pending ? ' toggle--pending' : ''}`}
-            onClick={() => connection.setState(state.id, !on)}
-        >
-            <span className="toggle__text">
-                <span>{label}</span>
-                {hint && <span className="toggle__hint">{hint}</span>}
-            </span>
-            <span className={`switch${on ? ' switch--on' : ''}`} />
-        </button>
     );
 }

@@ -2,6 +2,7 @@ import type { SvDevice } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { isActive, warnings } from '../device';
 import { formatPower, snapshot, wallboxSnapshot } from '../energy';
+import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
 import { WeatherCard } from '../components/WeatherCard';
 
@@ -20,6 +21,14 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const problems = model.devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = model.devices.filter(d => !d.roomId).length;
     const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
+    const autoShutters = model.shutterControl.flatMap(sc => sc.shutters);
+    const sunProtected = autoShutters.filter(
+        s => s.autoState && ['sunProtect', 'manu_sunProtect'].includes(String(states[s.autoState.id]?.val)),
+    ).length;
+    const shutterAlarm = autoShutters
+        .map(s => (s.autoState ? String(states[s.autoState.id]?.val) : ''))
+        .find(v => ['wind1', 'wind2', 'rain', 'frost', 'fire'].includes(v));
+    const holiday = model.shutterControl.some(sc => sc.holiday && states[sc.holiday.value.id]?.val === true);
     const charging = model.wallboxes.map(w => wallboxSnapshot(w, states)).filter(w => w.status === 'charging');
 
     return (
@@ -54,6 +63,33 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                         🚗 lädt {formatPower(w.power)}
                     </button>
                 ))}
+                {sunProtected > 0 && (
+                    <button
+                        type="button"
+                        className="chip"
+                        onClick={() => onNavigate('shutters')}
+                    >
+                        🕶️ {sunProtected} im Sonnenschutz
+                    </button>
+                )}
+                {shutterAlarm && (
+                    <button
+                        type="button"
+                        className="chip chip--warn"
+                        onClick={() => onNavigate('shutters')}
+                    >
+                        {autoStateInfo(shutterAlarm)?.icon} {autoStateInfo(shutterAlarm)?.label}
+                    </button>
+                )}
+                {holiday && (
+                    <button
+                        type="button"
+                        className="chip"
+                        onClick={() => onNavigate('shutters')}
+                    >
+                        🏖️ Urlaubszeiten aktiv
+                    </button>
+                )}
                 {problems.length > 0 && <span className="chip chip--warn">⚠️ {problems.length} Störungen</span>}
             </div>
 

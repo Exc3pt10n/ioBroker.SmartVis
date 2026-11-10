@@ -83,6 +83,8 @@ Räume sind in **CCU und Hue-App gepflegt**, aber kaum in ioBroker-Enums. Raumqu
 - Ohne Regeln erzeugte der type-detector 727 Kacheln (238 Tasten, Lampen 3-fach als rgb/hue/ct, Alexa-Wecker, HmIP-Wartungs- und virtuelle Kanäle); mit Regeln 146, davon 30 ohne Raum.
 - **Wetter:** kein Wetter-Adapter, aber HmIP-SWO-PL im Garten + HmIP-STHO im Vorgarten + CCU-Tagesvariablen für Regen/Sonne. Keine Vorhersage vorhanden → optional später ein Vorhersage-Adapter (z. B. DWD/Bright Sky).
 
+**Rollladen-Automatik (`shuttercontrol` 2.1.2):** ✅ `src/lib/profiles/shuttercontrol.ts`. 13 Rollläden in drei Bereichen (Wohnen/Schlafen/Kinder, jeweils „-auto“). Die Instanz-Konfiguration (`system.adapter.shuttercontrol.0` → `native.events`) verknüpft jeden Rollladen mit seinem HmIP-Level-State – darüber zeigt die Rollladen-Kachel den Automatik-Status und übernimmt den Namen. Automatik-Schalter und Urlaub sind auf `0_userdata.0.Rollladen.*` gespiegelt → Schreiben auf die Quelle. Eigener Tab „Beschattung“.
+
 Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → Haus/Batterie/Netz/Auto, Tageswerte, Wallbox-Steuerung. Die Wallbox- und PV-Profile werden als konfigurierbare Zuordnungen umgesetzt (Profil schlägt States vor, Nutzer bestätigt/korrigiert), da sich State-Namen je nach Adapter/Firmware unterscheiden.
 
 ## 4. Bedienkonzept (Mobile First)

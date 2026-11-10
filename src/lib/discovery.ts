@@ -1,7 +1,7 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
 import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
 import { getName } from './names';
-import { profileStateRefs, runProfiles } from './profiles';
+import { profileStateRefs, runProfiles, shutterControlRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
@@ -103,7 +103,8 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
 
     const filtered: ObjectMap = {};
     for (const [id, obj] of Object.entries(objects)) {
-        if (obj && (id.startsWith('enum.') || !isIgnored(id))) {
+        // Instanz-Objekte (system.adapter.*) werden für die Konfiguration einiger Profile benötigt
+        if (obj && (id.startsWith('enum.') || id.startsWith('system.adapter.') || !isIgnored(id))) {
             filtered[id] = obj;
         }
     }
@@ -141,6 +142,14 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
                 writableIds.add(s.id);
             }
         }
+    }
+    for (const sc of profiles.shutterControl) {
+        const refs = shutterControlRefs(sc);
+        refs.read.forEach(r => stateIds.add(r.id));
+        refs.write.forEach(r => {
+            stateIds.add(r.id);
+            writableIds.add(r.id);
+        });
     }
     // Wetter: nur lesend abonnieren, die Station darf trotzdem als normale Kachel erscheinen
     for (const item of profiles.weather) {
@@ -223,6 +232,26 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     }
 
     devices.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+    // Namen aus der Rollladen-Automatik für nicht umbenannte Kanäle ("Küche Eckfenster Seite" statt "Rollladen 2")
+    for (const sc of profiles.shutterControl) {
+        for (const shutter of sc.shutters) {
+            const device = shutter.level && devices.find(d => d.states.some(st => st.id === shutter.level!.id));
+            const record = device as unknown as Record<string, string> | undefined;
+            if (device && !device.roomId) {
+                // Raum aus dem Rollladennamen der Automatik ableiten ("Küche Seite" → Küche)
+                const guess = guessRoom([shutter.name], [...new Set([...rooms.names(), ...DEFAULT_ROOM_NAMES])]);
+                if (guess) {
+                    device.roomId = rooms.ensure(guess.name, 'name');
+                    device.roomSource = 'name';
+                }
+            }
+            if (device && record?.[GENERIC]) {
+                delete record[GENERIC];
+                const roomName = device.roomId ? rooms.rooms.get(device.roomId)?.name : undefined;
+                device.name = roomName ? stripRoomFromName(shutter.name, roomName) : shutter.name;
+            }
+        }
+    }
     renameGenericChannels(devices);
     devices.sort((a, b) => a.name.localeCompare(b.name, lang));
     const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
@@ -234,6 +263,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             energy: profiles.energy,
             wallboxes: profiles.wallboxes,
             weather: profiles.weather,
+            shutterControl: profiles.shutterControl,
             generatedAt: Date.now(),
         },
         stateIds: [...stateIds],

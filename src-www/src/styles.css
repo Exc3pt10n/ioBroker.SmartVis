@@ -699,3 +699,164 @@ button.chip {
     font-size: 13px;
     color: var(--warn);
 }
+
+/* ===== Beschattung ===== */
+.shutters {
+    display: grid;
+    gap: 16px;
+}
+
+.shutters .card {
+    margin-bottom: 0;
+}
+
+@media (min-width: 1100px) {
+    .shutters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+    }
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px 0;
+}
+
+.actions--small {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-top: 8px;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 48px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.action:active {
+    transform: scale(0.97);
+}
+
+.action--primary {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.toggle--compact {
+    min-height: 44px;
+}
+
+.sun {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 4px;
+}
+
+.sun dt {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.sun dd {
+    margin: 2px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.area__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.area__times {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.shutter-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.shutter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--surface-2);
+}
+
+.shutter--disabled {
+    opacity: 0.5;
+}
+
+.shutter__main {
+    flex: 1;
+    min-width: 0;
+}
+
+.shutter__name {
+    font-weight: 600;
+}
+
+.shutter__meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 2px 0 6px;
+}
+
+.shutter__drive {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.shutter__drive .iconbtn {
+    background: var(--surface-2);
+    box-shadow: none;
+    font-size: 14px;
+}
+
+.chips--small {
+    gap: 6px;
+}
+
+.flag {
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 1px solid var(--surface-2);
+    border-radius: 999px;
+    background: none;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.flag--on {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.tile__auto {
+    font-size: 12px;
+    color: var(--text-muted);
+}

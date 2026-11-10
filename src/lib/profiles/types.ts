@@ -1,4 +1,4 @@
-import type { SvEnergySystem, SvStateRef, SvWallbox, SvWeather } from '../../shared/protocol';
+import type { SvEnergySystem, SvShutterControl, SvStateRef, SvWallbox, SvWeather } from '../../shared/protocol';
 
 export type ObjectMap = Record<string, ioBroker.Object>;
 
@@ -6,6 +6,7 @@ export interface ProfileResult {
     energy?: SvEnergySystem;
     wallbox?: SvWallbox;
     weather?: SvWeather[];
+    shutterControl?: SvShutterControl;
 }
 
 /**
