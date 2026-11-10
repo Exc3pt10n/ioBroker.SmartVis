@@ -14,6 +14,12 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   1. `enum.rooms` – z. B. die Räume der Homematic-CCU, wenn `hm-rega` sie synchronisiert
   2. Hue-Räume aus dem `hue`-Adapter (Zonen werden bewusst nicht als Raum verwendet)
   3. Gerätenamen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
+- **Detailansicht** je Gerät (Bottom-Sheet auf dem Handy, Dialog am Desktop; öffnet per ⋯-Knopf, langem Drücken oder Tap auf Geräte ohne Schaltfunktion; Zurück-Taste schließt):
+  - Licht: Ein/Aus, Helligkeit, Farbtemperatur (Mired oder Kelvin), Farbe
+  - Rollladen: Position, Auf/Stopp/Zu, Automatik aus shuttercontrol
+  - Thermostat: Ist-/Solltemperatur, ± in 0,5-°C-Schritten, Slider, Boost
+  - Alle übrigen Werte des Geräts; Slider senden erst beim Loslassen
+- **PV-Prognose** aus `pvforecast`: heute/morgen erwartet, Rest des Tages, je Anlage (z. B. Ost/West), Abgleich mit der tatsächlichen Erzeugung, Tagesverlauf als Diagramm mit Istwert, Tooltip und Tabellenansicht
 - **Wetter auf der Startseite** aus der lokalen Wetterstation (HmIP-SWO-PL/-PR/-B, HM-WDS100; Fallback Außensensor HmIP-STHO): Temperatur, Wetterlage, Luftfeuchte, Wind, Regen und Sonnenscheindauer heute. Die Tageswerte stammen aus den Systemvariablen, die die CCU automatisch anlegt (`svHmIPRainCounterToday_…`, `svHmIPSunshineCounterToday_…`).
 - **Beschattung** über [shuttercontrol](https://github.com/simatec/ioBroker.shuttercontrol):
   - Alle öffnen/schließen, Sonnenschutz, alle auf Automatik; Urlaub und Schulfrei schaltbar
@@ -84,6 +90,8 @@ scripts/demo.ts Demo-Server ohne ioBroker
 - (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
 - (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
 - (Exc3pt10n) KEBA-Wallbox-Profil, Hue-Räume als Raumquelle, Zusammenführen gleichnamiger Räume
+- (Exc3pt10n) Detailansicht mit Slidern für Licht, Rollladen und Thermostat
+- (Exc3pt10n) PV-Prognose aus pvforecast in der Energie-Sicht
 - (Exc3pt10n) Beschattung mit shuttercontrol: Steuerung, Automatik je Bereich und Rollladen, Status an den Rollladen-Kacheln
 - (Exc3pt10n) Wetter auf der Startseite (Homematic-Wetterstation + CCU-Tageswerte); Erkennung gegen einen echten Objektbaum mit ~8.800 Objekten abgestimmt (727 → 146 Kacheln)
 

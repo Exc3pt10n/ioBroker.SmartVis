@@ -1,7 +1,7 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
 import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
 import { getName } from './names';
-import { profileStateRefs, runProfiles, shutterControlRefs } from './profiles';
+import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
@@ -151,6 +151,10 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             writableIds.add(r.id);
         });
     }
+    // PV-Prognose: nur lesend
+    for (const pv of profiles.pvForecast) {
+        pvForecastRefs(pv).forEach(r => stateIds.add(r.id));
+    }
     // Wetter: nur lesend abonnieren, die Station darf trotzdem als normale Kachel erscheinen
     for (const item of profiles.weather) {
         for (const s of profileStateRefs(item)) {
@@ -262,6 +266,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             devices,
             energy: profiles.energy,
             wallboxes: profiles.wallboxes,
+            pvForecast: profiles.pvForecast,
             weather: profiles.weather,
             shutterControl: profiles.shutterControl,
             generatedAt: Date.now(),

@@ -860,3 +860,510 @@ button.chip {
     font-size: 12px;
     color: var(--text-muted);
 }
+
+/* ===== Kachel-Details ===== */
+.tile-wrap {
+    position: relative;
+    display: grid;
+}
+
+.tile__more {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.tile__more:hover,
+.tile__more:focus-visible {
+    background: var(--surface-2);
+}
+
+.tile-wrap:has(.tile__more) .tile__warn {
+    right: 46px;
+}
+
+/* ===== Sheet (Bottom-Sheet / Dialog) ===== */
+.sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgb(0 0 0 / 40%);
+    animation: sheet-fade 0.15s ease-out;
+}
+
+.sheet__panel {
+    width: 100%;
+    max-height: 88dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
+    border-radius: 22px 22px 0 0;
+    background: var(--bg);
+    box-shadow: 0 -4px 24px rgb(0 0 0 / 20%);
+    animation: sheet-up 0.2s ease-out;
+    outline: none;
+}
+
+.sheet__handle {
+    width: 40px;
+    height: 5px;
+    margin: 4px auto 8px;
+    border-radius: 3px;
+    background: var(--surface-2);
+}
+
+.sheet__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.sheet__title {
+    margin: 4px 0 0;
+    font-size: 22px;
+}
+
+.sheet__subtitle {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+@media (min-width: 900px) {
+    .sheet {
+        align-items: center;
+    }
+
+    .sheet__panel {
+        width: 480px;
+        max-height: 80dvh;
+        padding: 16px 24px 24px;
+        border-radius: 22px;
+        animation: sheet-fade 0.15s ease-out;
+    }
+
+    .sheet__handle {
+        display: none;
+    }
+}
+
+@keyframes sheet-up {
+    from {
+        transform: translateY(30%);
+    }
+}
+
+@keyframes sheet-fade {
+    from {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sheet,
+    .sheet__panel {
+        animation: none;
+    }
+}
+
+.detail__controls {
+    display: grid;
+    gap: 8px;
+    padding: 4px 16px 12px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.detail__controls > .toggle:first-child {
+    border-top: 0;
+}
+
+.detail__section .subtitle {
+    margin: 12px 0 4px;
+}
+
+.detail__note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.detail__more {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.detail__more summary {
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 32px;
+}
+
+.detail__more .facts {
+    margin-top: 8px;
+}
+
+.facts__row--control {
+    grid-column: 1 / -1;
+}
+
+/* ===== Slider ===== */
+.slider {
+    display: grid;
+    gap: 8px;
+    padding: 12px 0 4px;
+}
+
+.slider__head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+}
+
+.slider__value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.slider--pending .slider__value,
+.thermo__value.slider--pending {
+    opacity: 0.6;
+}
+
+.slider input[type='range'] {
+    --track: linear-gradient(
+        to right,
+        var(--accent) 0 var(--percent),
+        var(--surface-2) var(--percent) 100%
+    );
+    appearance: none;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    background: none;
+    cursor: pointer;
+    touch-action: pan-y;
+}
+
+.slider--warm input[type='range'] {
+    --track: linear-gradient(to right, #f59e0b 0 var(--percent), var(--surface-2) var(--percent) 100%);
+}
+
+.slider--ct input[type='range'] {
+    --track: linear-gradient(to right, #cfe3ff, #fff6e0 45%, #ffb347);
+}
+
+.slider--hue input[type='range'] {
+    --track: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+
+.slider input[type='range']::-webkit-slider-runnable-track {
+    height: 12px;
+    border-radius: 6px;
+    background: var(--track);
+}
+
+.slider input[type='range']::-moz-range-track {
+    height: 12px;
+    border-radius: 6px;
+    background: var(--track);
+}
+
+.slider input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    margin-top: -8px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+        0 0 0 1px rgb(0 0 0 / 10%),
+        0 2px 6px rgb(0 0 0 / 30%);
+}
+
+.slider input[type='range']::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+        0 0 0 1px rgb(0 0 0 / 10%),
+        0 2px 6px rgb(0 0 0 / 30%);
+}
+
+.slider input[type='range']:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+/* ===== Thermostat ===== */
+.thermo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+}
+
+.thermo__label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.thermo__value {
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.thermo__set {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.thermo__set .iconbtn {
+    background: var(--surface-2);
+    box-shadow: none;
+    font-size: 22px;
+}
+
+/* ===== PV-Prognose ===== */
+:root {
+    /* Diagrammfarbe PV: geprüft (Helligkeitsband, Kontrast ≥ 3:1) für hell und dunkel */
+    --chart-pv: #d97706;
+    --chart-grid: var(--surface-2);
+}
+
+.forecast {
+    margin-top: 16px;
+}
+
+.progress {
+    margin-top: 12px;
+}
+
+.progress__text {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.progress__track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+
+.progress__bar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--chart-pv);
+}
+
+.plants {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.plants th,
+.plants td {
+    padding: 6px 4px;
+    text-align: right;
+    border-top: 1px solid var(--surface-2);
+}
+
+.plants th:first-child,
+.plants thead th:first-child {
+    text-align: left;
+}
+
+.plants thead th {
+    font-weight: 500;
+    color: var(--text-muted);
+    border-top: 0;
+}
+
+.segmented {
+    display: inline-flex;
+    gap: 2px;
+    margin: 16px 0 8px;
+    padding: 3px;
+    border-radius: 12px;
+    background: var(--surface-2);
+}
+
+.segmented button {
+    min-width: 88px;
+    min-height: 36px;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.segmented .segmented--active {
+    background: var(--surface);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+
+.fchart {
+    position: relative;
+    width: 100%;
+}
+
+.fchart svg {
+    display: block;
+    touch-action: pan-y;
+    outline: none;
+}
+
+.fchart svg:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.fchart__grid {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+}
+
+.fchart__axis {
+    fill: var(--text-muted);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.fchart__line {
+    fill: none;
+    stroke: var(--chart-pv);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.fchart__area {
+    fill: var(--chart-pv);
+    opacity: 0.1;
+}
+
+.fchart__now,
+.fchart__cross {
+    stroke: var(--text-muted);
+    stroke-width: 1;
+}
+
+.fchart__actual {
+    fill: var(--text);
+    stroke: var(--surface);
+    stroke-width: 2;
+}
+
+.fchart__dot {
+    fill: var(--chart-pv);
+    stroke: var(--surface);
+    stroke-width: 2;
+}
+
+.fchart__tip {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.fchart__tip-time {
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.fchart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.fchart__key {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.fchart__key--line {
+    width: 14px;
+    height: 2px;
+    background: var(--chart-pv);
+}
+
+.fchart__key--dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--text);
+}
+
+.fchart__table {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.fchart__table summary {
+    color: var(--text-muted);
+    cursor: pointer;
+    min-height: 32px;
+}
+
+.fchart__table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.fchart__table th,
+.fchart__table td {
+    padding: 4px;
+    text-align: right;
+}
+
+.fchart__table th:first-child,
+.fchart__table td:first-child {
+    text-align: left;
+}

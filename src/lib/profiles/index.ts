@@ -1,31 +1,48 @@
 import type {
     SvEnergySystem,
+    SvPvForecast,
+    SvPvForecastValues,
     SvShutterControl,
     SvStateRef,
     SvSwitch,
     SvWallbox,
     SvWeather,
 } from '../../shared/protocol';
+import { pvforecastProfile } from './pvforecast';
 import { shuttercontrolProfile } from './shuttercontrol';
 import { hmWeatherProfile } from './hmWeather';
 import { kecontactProfile } from './kecontact';
 import { qhomeProfile } from './qhome';
 import { instancesOf, type AdapterProfile, type ObjectMap } from './types';
 
-export const PROFILES: AdapterProfile[] = [qhomeProfile, kecontactProfile, hmWeatherProfile, shuttercontrolProfile];
+export const PROFILES: AdapterProfile[] = [
+    qhomeProfile,
+    kecontactProfile,
+    hmWeatherProfile,
+    shuttercontrolProfile,
+    pvforecastProfile,
+];
 
 export interface ProfilesResult {
     energy: SvEnergySystem[];
     wallboxes: SvWallbox[];
     weather: SvWeather[];
     shutterControl: SvShutterControl[];
+    pvForecast: SvPvForecast[];
     /** Instanzen, die vollständig von einem Profil abgebildet werden */
     claimedInstances: string[];
 }
 
 /** Führt alle Adapter-Profile aus */
 export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: string) => boolean): ProfilesResult {
-    const result: ProfilesResult = { energy: [], wallboxes: [], weather: [], shutterControl: [], claimedInstances: [] };
+    const result: ProfilesResult = {
+        energy: [],
+        wallboxes: [],
+        weather: [],
+        shutterControl: [],
+        pvForecast: [],
+        claimedInstances: [],
+    };
     for (const profile of PROFILES) {
         if (isIgnored(profile.adapter)) {
             continue;
@@ -43,6 +60,9 @@ export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: st
             }
             if (found.weather) {
                 result.weather.push(...found.weather);
+            }
+            if (found.pvForecast) {
+                result.pvForecast.push(found.pvForecast);
             }
             if (found.shutterControl) {
                 result.shutterControl.push(found.shutterControl);
@@ -96,6 +116,12 @@ export function shutterControlRefs(sc: SvShutterControl): { read: SvStateRef[]; 
         add(s.level, !!s.level?.write);
     }
     return { read, write };
+}
+
+/** Nur lesende State-Referenzen der PV-Prognose */
+export function pvForecastRefs(pv: SvPvForecast): SvStateRef[] {
+    const vals = (v: SvPvForecastValues): unknown[] => Object.values(v);
+    return [...vals(pv.summary), ...pv.plants.flatMap(vals), pv.curve, pv.lastUpdated].filter(isRef);
 }
 
 /** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */

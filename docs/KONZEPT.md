@@ -85,6 +85,8 @@ Räume sind in **CCU und Hue-App gepflegt**, aber kaum in ioBroker-Enums. Raumqu
 
 **Rollladen-Automatik (`shuttercontrol` 2.1.2):** ✅ `src/lib/profiles/shuttercontrol.ts`. 13 Rollläden in drei Bereichen (Wohnen/Schlafen/Kinder, jeweils „-auto“). Die Instanz-Konfiguration (`system.adapter.shuttercontrol.0` → `native.events`) verknüpft jeden Rollladen mit seinem HmIP-Level-State – darüber zeigt die Rollladen-Kachel den Automatik-Status und übernimmt den Namen. Automatik-Schalter und Urlaub sind auf `0_userdata.0.Rollladen.*` gespiegelt → Schreiben auf die Quelle. Eigener Tab „Beschattung“.
 
+**PV-Prognose (`pvforecast`):** ✅ `src/lib/profiles/pvforecast.ts`, zwei Anlagen (Osten/Westen). Verlauf aus `summary.JSONData` (`[{t, y}]`, Einheit wie `summary.power.now`). Anzeige in der Energie-Sicht inkl. Abgleich mit der Q.HOME-Tageserzeugung.
+
 Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → Haus/Batterie/Netz/Auto, Tageswerte, Wallbox-Steuerung. Die Wallbox- und PV-Profile werden als konfigurierbare Zuordnungen umgesetzt (Profil schlägt States vor, Nutzer bestätigt/korrigiert), da sich State-Namen je nach Adapter/Firmware unterscheiden.
 
 ## 4. Bedienkonzept (Mobile First)
@@ -120,7 +122,7 @@ Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → H
 | Phase | Inhalt |
 |---|---|
 | **0 – Grundgerüst** ✅ | Adapter-Scaffold, Discovery (Enums + type-detector + Namens-Heuristik), WebSocket-API, PWA-Shell mit Home/Räume/Mehr, Kacheln mit Tap-Aktion, Demo-Server, CI (Lint, Typen, Unit-, Paket- und Integrationstest). |
-| **1 – MVP** | Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht** (✅ QCells, ✅ Keba inkl. Auto im Energiefluss), Authentifizierung. |
+| **1 – MVP** | ✅ Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht** (✅ QCells, ✅ Keba inkl. Auto im Energiefluss), Authentifizierung. |
 | **2 – Komfort** | Bearbeiten-Modus + Overrides, Favoriten, Home-Übersicht, Status-Sicht, Farblicht, Szenen. |
 | **3 – Ausbau** | Verlaufsdiagramme (history/influxdb/sql), Media, Kamera, Schloss, Kiosk-Modus, Benutzerprofile, Push-Benachrichtigungen. |
 

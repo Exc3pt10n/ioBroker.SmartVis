@@ -1,8 +1,9 @@
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { EnergyFlow } from '../components/EnergyFlow';
+import { ForecastCard } from '../components/ForecastCard';
 import { WallboxCard } from '../components/WallboxCard';
 import { useConnection } from '../connection';
-import { num, snapshot } from '../energy';
+import { kwh, num, snapshot } from '../energy';
 
 function fmt(value: number | undefined, unit: string, digits = 1): string {
     return value === undefined ? '–' : `${value.toLocaleString('de-DE', { maximumFractionDigits: digits })} ${unit}`;
@@ -13,7 +14,7 @@ export function EnergyView(): React.JSX.Element {
     if (!model) {
         return <p className="empty">Lade …</p>;
     }
-    if (!model.energy.length && !model.wallboxes.length) {
+    if (!model.energy.length && !model.wallboxes.length && !model.pvForecast.length) {
         return (
             <>
                 <h1 className="title">Energie</h1>
@@ -105,6 +106,17 @@ export function EnergyView(): React.JSX.Element {
                         wallbox={wb}
                     />
                 ))}
+            {model.pvForecast.map(pv => {
+                const main = model.energy[0];
+                return (
+                    <ForecastCard
+                        key={pv.id}
+                        pv={pv}
+                        actualPvW={main ? snapshot(main, states).pv : undefined}
+                        producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
+                    />
+                );
+            })}
         </>
     );
 }

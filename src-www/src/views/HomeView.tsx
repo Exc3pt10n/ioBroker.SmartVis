@@ -1,7 +1,7 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { isActive, warnings } from '../device';
-import { formatPower, snapshot, wallboxSnapshot } from '../energy';
+import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
 import { WeatherCard } from '../components/WeatherCard';
@@ -21,6 +21,9 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const problems = model.devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = model.devices.filter(d => !d.roomId).length;
     const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
+    const pv = model.pvForecast[0];
+    const forecastToday = pv ? kwh(pv.summary.energyToday, states) : undefined;
+    const forecastTomorrow = pv ? kwh(pv.summary.energyTomorrow, states) : undefined;
     const autoShutters = model.shutterControl.flatMap(sc => sc.shutters);
     const sunProtected = autoShutters.filter(
         s => s.autoState && ['sunProtect', 'manu_sunProtect'].includes(String(states[s.autoState.id]?.val)),
@@ -63,6 +66,16 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                         🚗 lädt {formatPower(w.power)}
                     </button>
                 ))}
+                {forecastTomorrow !== undefined && (
+                    <button
+                        type="button"
+                        className="chip"
+                        onClick={() => onNavigate('energy')}
+                    >
+                        🔮 PV heute {forecastToday?.toLocaleString('de-DE', { maximumFractionDigits: 0 }) ?? '–'} ·
+                        morgen {forecastTomorrow.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh
+                    </button>
+                )}
                 {sunProtected > 0 && (
                     <button
                         type="button"

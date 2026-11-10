@@ -65,6 +65,31 @@ export interface SvEnergyTotals {
     selfConsumption?: SvStateRef;
 }
 
+/** PV-Prognose einer Anlage bzw. der Summe (Adapter pvforecast) */
+export interface SvPvForecastValues {
+    name: string;
+    /** Prognostizierte Leistung jetzt */
+    powerNow?: SvStateRef;
+    /** Energie heute bis jetzt */
+    energyNow?: SvStateRef;
+    /** Energie von jetzt bis Tagesende */
+    energyRemaining?: SvStateRef;
+    energyToday?: SvStateRef;
+    energyTomorrow?: SvStateRef;
+    installed?: SvStateRef;
+}
+
+export interface SvPvForecast {
+    id: string;
+    name: string;
+    adapter: string;
+    summary: SvPvForecastValues;
+    plants: SvPvForecastValues[];
+    /** Verlauf als JSON-String: [{ t: ms, y: Leistung }] in der Einheit von summary.powerNow */
+    curve?: SvStateRef;
+    lastUpdated?: SvStateRef;
+}
+
 export interface SvEnergySystem {
     /** Instanz-ID, z. B. "qhome-ess-hyb-g2.0" */
     id: string;
@@ -202,6 +227,7 @@ export interface SvModel {
     /** Über Adapter-Profile erkannte Energiesysteme (PV, Speicher …) */
     energy: SvEnergySystem[];
     wallboxes: SvWallbox[];
+    pvForecast: SvPvForecast[];
     /** Lokale Wetterstationen; die erste wird auf der Startseite angezeigt */
     weather: SvWeather[];
     shutterControl: SvShutterControl[];

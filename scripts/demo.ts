@@ -204,6 +204,55 @@ function simulateShutterControl(id: string, val: SvStateValue['val']): void {
     push(id, false);
 }
 
+// pvforecast (echter Objektbaum, zwei Anlagen) mit erzeugter Prognosekurve für heute und morgen
+Object.assign(
+    objects,
+    JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'pvforecast.json'), 'utf8')) as Record<
+        string,
+        Obj
+    >,
+);
+{
+    const curve: { t: number; y: number }[] = [];
+    const midnight = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    for (let day = 0; day < 2; day++) {
+        for (let h = 0; h < 24; h += 0.5) {
+            // Glockenkurve 7–18 Uhr, morgen etwas sonniger
+            const x = (h - 12.5) / 3.2;
+            const y = h < 7 || h > 18 ? 0 : (day ? 7.4 : 6.1) * Math.exp(-x * x);
+            curve.push({ t: midnight.getTime() + (day * 24 + h) * 3600_000, y: Math.round(y * 1000) / 1000 });
+        }
+    }
+    const hour = new Date().getHours() + new Date().getMinutes() / 60;
+    const todayKwh = curve.slice(0, 48).reduce((a, p) => a + p.y * 0.5, 0);
+    const sofar = curve.slice(0, Math.floor(hour * 2)).reduce((a, p) => a + p.y * 0.5, 0);
+    const tomorrowKwh = curve.slice(48).reduce((a, p) => a + p.y * 0.5, 0);
+    const nowKw = curve[Math.floor(hour * 2)]?.y ?? 0;
+    const pvValues: Record<string, SvStateValue['val']> = {
+        'summary.JSONData': JSON.stringify(curve),
+        'summary.power.now': nowKw,
+        'summary.power.installed': 9.6,
+        'summary.energy.today': Math.round(todayKwh * 10) / 10,
+        'summary.energy.now': Math.round(sofar * 10) / 10,
+        'summary.energy.nowUntilEndOfDay': Math.round((todayKwh - sofar) * 10) / 10,
+        'summary.energy.tomorrow': Math.round(tomorrowKwh * 10) / 10,
+        'summary.lastUpdated': Date.now() - 25 * 60_000,
+        'plants.osten.power.now': Math.round(nowKw * 0.55 * 100) / 100,
+        'plants.osten.energy.today': Math.round(todayKwh * 0.52 * 10) / 10,
+        'plants.osten.energy.tomorrow': Math.round(tomorrowKwh * 0.52 * 10) / 10,
+        'plants.westen.power.now': Math.round(nowKw * 0.45 * 100) / 100,
+        'plants.westen.energy.today': Math.round(todayKwh * 0.48 * 10) / 10,
+        'plants.westen.energy.tomorrow': Math.round(tomorrowKwh * 0.48 * 10) / 10,
+    };
+    for (const [key, val] of Object.entries(pvValues)) {
+        states[`pvforecast.0.${key}`] = { val, ack: true, ts: Date.now() };
+    }
+}
+
+// Farbtemperatur für die Stehlampe (Hue: Mired 153–500)
+state('hue.0.Stehlampe.ct', 'level.color.temperature', 'number', true, 370, { min: 153, max: 500 });
+
 // KEBA KeContact (reduzierter echter Objektbaum)
 const keba = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'kecontact.json'), 'utf8')) as Record<
     string,
