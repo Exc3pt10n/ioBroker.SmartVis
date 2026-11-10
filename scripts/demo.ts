@@ -67,6 +67,51 @@ for (const [key, name, on] of [
     state(`hue.0.${key}.level`, 'level.dimmer', 'number', true, on ? 80 : 0, { min: 0, max: 100, unit: '%' });
 }
 
+// QCells Q.HOME+ ESS HYB-G2 (Struktur wie ioBroker.qhome-ess-hyb-g2)
+const Q = 'qhome-ess-hyb-g2.0';
+for (const [key, unit, val] of [
+    ['PvPw', 'kW', 4.2],
+    ['ConsPw', 'kW', 1.1],
+    ['GridPwPurchaseWb', 'W', 0],
+    ['GridPwFeedInWb', 'W', 1300],
+    ['BtPwCharge', 'W', 1800],
+    ['BtPwDisCharge', 'W', 0],
+    ['BtSoc', '%', 64],
+    ['BtLast', 'Min', 48],
+    ['counters.day.PvGen', 'kWh', 12.4],
+    ['counters.day.Cons', 'kWh', 7.9],
+    ['counters.day.GridPurchase', 'kWh', 1.2],
+    ['counters.day.GridFeedIn', 'kWh', 4.6],
+    ['counters.day.BtCharged', 'kWh', 3.1],
+    ['counters.day.BtDischarged', 'kWh', 1.4],
+    ['counters.day.Autarky', '%', 85],
+    ['counters.day.SelfConsRate', '%', 63],
+] as const) {
+    state(`${Q}.${key}`, key === 'BtSoc' ? 'value.battery' : 'value', 'number', false, val, { unit });
+}
+state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
+
+/** Simuliert schwankende PV-Leistung und leitet die übrigen Flüsse daraus ab */
+function simulateEnergy(): void {
+    const set = (key: string, val: number): void => {
+        const id = `${Q}.${key}`;
+        states[id] = { val: Math.round(val * 100) / 100, ack: true, ts: Date.now() };
+        server.queueState(id, states[id]);
+    };
+    const pv = Math.max(0, 4.2 + Math.sin(Date.now() / 20000) * 2.5 + (Math.random() - 0.5) * 0.3);
+    const cons = 0.8 + Math.random() * 0.8;
+    const surplus = (pv - cons) * 1000;
+    const charge = Math.min(Math.max(surplus, 0), 2500);
+    const discharge = surplus < 0 ? Math.min(-surplus, 2500) : 0;
+    const rest = surplus - charge + discharge;
+    set('PvPw', pv);
+    set('ConsPw', cons);
+    set('BtPwCharge', charge);
+    set('BtPwDisCharge', discharge);
+    set('GridPwFeedInWb', Math.max(rest, 0));
+    set('GridPwPurchaseWb', Math.max(-rest, 0));
+}
+
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
 const server = new SmartVisServer(
     { port: Number(process.env.PORT) || 8099, bind: '0.0.0.0', wwwDir: join(__dirname, '..', 'www'), version: 'demo' },
@@ -87,6 +132,8 @@ const server = new SmartVisServer(
         log: console as unknown as ioBroker.Logger,
     },
 );
+
+setInterval(simulateEnergy, 2000);
 
 void server.start().then(() => {
     console.log(

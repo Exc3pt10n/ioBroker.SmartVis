@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Icon } from './components/Icon';
 import { useConnection } from './connection';
+import { EnergyView } from './views/EnergyView';
 import { HomeView } from './views/HomeView';
 import { MoreView } from './views/MoreView';
 import { RoomView } from './views/RoomView';
@@ -21,12 +22,14 @@ function useRoute(): [string[], (path: string) => void] {
 const TABS = [
     { id: 'home', label: 'Home', icon: 'home' },
     { id: 'rooms', label: 'Räume', icon: 'rooms' },
+    { id: 'energy', label: 'Energie', icon: 'energy', needsEnergy: true },
     { id: 'more', label: 'Mehr', icon: 'more' },
 ];
 
 export function App(): React.JSX.Element {
     const [route, navigate] = useRoute();
-    const { status } = useConnection();
+    const { status, model } = useConnection();
+    const tabs = TABS.filter(t => !t.needsEnergy || !!model?.energy.length);
     const [tab = 'home', param] = route;
 
     let view: React.JSX.Element;
@@ -39,6 +42,8 @@ export function App(): React.JSX.Element {
         );
     } else if (tab === 'rooms') {
         view = <RoomsView onNavigate={navigate} />;
+    } else if (tab === 'energy') {
+        view = <EnergyView />;
     } else if (tab === 'more') {
         view = <MoreView />;
     } else {
@@ -52,7 +57,7 @@ export function App(): React.JSX.Element {
                 aria-label="Hauptnavigation"
             >
                 <div className="nav__brand">SmartVis</div>
-                {TABS.map(t => (
+                {tabs.map(t => (
                     <a
                         key={t.id}
                         href={`#/${t.id}`}

@@ -75,7 +75,7 @@ Räume/Funktionen sind kaum in Enums gepflegt → **Namens-Heuristik und Adapter
 | Homematic | `hm-rpc` (+ `hm-rega`) | type-detector klappt gut (saubere Rollen) | Kanal 0 = Wartung (`UNREACH`, `LOW_BAT`) → wird dem Gerät als Indikator zugeordnet. Kanalnamen „Gerät:1“ → Gerätename. **Tipp:** Sind Räume/Gewerke in der CCU gepflegt, kann `hm-rega` sie als Enums synchronisieren – dann kommen die Räume gratis. |
 | Philips Hue | `hue` | Lichter über `switch.light`/`level.dimmer` | Hue-Räume/Zonen (Gruppen) als Raumquelle nutzen → eigenes Profil. Gruppen selbst als „Alle Lichter im Raum“. |
 | Keba KeContact | `kecontact` | type-detector kennt keine Wallbox | Eigenes Profil „Wallbox“: Status, Ladeleistung, Energie der Sitzung, Freigabe/Ladestrom (schreibbar), PV-Überschussladen. |
-| QCells Q.HOME | ❓ (Modbus / eigener Adapter?) | kein Standardtyp | Eigenes Profil „PV/Speicher“: PV-Leistung, Netzbezug/-einspeisung, Hausverbrauch, Batterie-SoC/-Leistung. |
+| QCells Q.HOME+ ESS HYB-G2 | [`qhome-ess-hyb-g2`](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) | Rollen überwiegend `value` → type-detector greift nicht | ✅ Profil `src/lib/profiles/qhome.ts`: feste State-IDs je Instanz. Flüsse aus den richtungsgetrennten States (`GridPwPurchaseWb`/`GridPwFeedInWb`, `BtPwCharge`/`BtPwDisCharge`, `PvPw`, `ConsPw`), SoC, Restlaufzeit, Tageszähler `counters.day.*`. |
 
 Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → Haus/Batterie/Netz/Auto, Tageswerte, Wallbox-Steuerung. Die Wallbox- und PV-Profile werden als konfigurierbare Zuordnungen umgesetzt (Profil schlägt States vor, Nutzer bestätigt/korrigiert), da sich State-Namen je nach Adapter/Firmware unterscheiden.
 
@@ -112,12 +112,12 @@ Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → H
 | Phase | Inhalt |
 |---|---|
 | **0 – Grundgerüst** ✅ | Adapter-Scaffold, Discovery (Enums + type-detector + Namens-Heuristik), WebSocket-API, PWA-Shell mit Home/Räume/Mehr, Kacheln mit Tap-Aktion, Demo-Server, CI (Lint, Typen, Unit-, Paket- und Integrationstest). |
-| **1 – MVP** | Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht mit Keba- und QCells-Profil**, Authentifizierung. |
+| **1 – MVP** | Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht** (✅ QCells-Profil, offen: Keba-Profil + Wallbox im Energiefluss), Authentifizierung. |
 | **2 – Komfort** | Bearbeiten-Modus + Overrides, Favoriten, Home-Übersicht, Status-Sicht, Farblicht, Szenen. |
 | **3 – Ausbau** | Verlaufsdiagramme (history/influxdb/sql), Media, Kamera, Schloss, Kiosk-Modus, Benutzerprofile, Push-Benachrichtigungen. |
 
 ## 8. Offene Fragen
-1. Über welchen Adapter ist die QCells-Anlage angebunden (Modbus, eigener Adapter, MQTT …)?
+1. ~~QCells-Adapter~~ → `qhome-ess-hyb-g2` (erledigt).
 2. Sind in der CCU Räume gepflegt (dann `hm-rega`-Enum-Sync)? Und in der Hue-App?
 3. Objekt-Export (anonymisiert) je Adapter als Testdaten für die Profile.
 4. Mehrbenutzer/Rechte schon im MVP oder später?

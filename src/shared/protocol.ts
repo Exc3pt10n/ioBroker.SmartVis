@@ -43,9 +43,49 @@ export interface SvDevice {
     states: SvStateRef[];
 }
 
+/** Leistungsflüsse eines Energiesystems (je Richtung ein State, Werte ≥ 0) */
+export interface SvEnergyFlows {
+    pv?: SvStateRef;
+    home?: SvStateRef;
+    gridImport?: SvStateRef;
+    gridExport?: SvStateRef;
+    batteryCharge?: SvStateRef;
+    batteryDischarge?: SvStateRef;
+}
+
+/** Energiemengen eines Zeitraums (z. B. heute) */
+export interface SvEnergyTotals {
+    pv?: SvStateRef;
+    home?: SvStateRef;
+    gridImport?: SvStateRef;
+    gridExport?: SvStateRef;
+    batteryCharge?: SvStateRef;
+    batteryDischarge?: SvStateRef;
+    autarky?: SvStateRef;
+    selfConsumption?: SvStateRef;
+}
+
+export interface SvEnergySystem {
+    /** Instanz-ID, z. B. "qhome-ess-hyb-g2.0" */
+    id: string;
+    name: string;
+    adapter: string;
+    flows: SvEnergyFlows;
+    battery?: {
+        soc?: SvStateRef;
+        /** Restlaufzeit bis voll/leer */
+        remaining?: SvStateRef;
+    };
+    today?: SvEnergyTotals;
+    /** Verbindung zum Gerät (true = verbunden) */
+    connected?: SvStateRef;
+}
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
+    /** Über Adapter-Profile erkannte Energiesysteme (PV, Speicher …) */
+    energy: SvEnergySystem[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
 }

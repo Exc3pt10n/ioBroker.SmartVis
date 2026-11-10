@@ -1,5 +1,6 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
 import type { SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
+import { detectEnergy, energyStateRefs } from './profiles';
 import { DEFAULT_ROOM_NAMES, guessRoom, slug, stripRoomFromName } from './rooms';
 
 export interface DiscoveryOptions {
@@ -65,13 +66,27 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     }
     const roomNames = [...new Set([...[...rooms.values()].map(r => r.name), ...DEFAULT_ROOM_NAMES])];
 
-    // 2. Gerätetypen erkennen
-    const detector = new ChannelDetector();
     const keys = Object.keys(filtered).sort();
     const usedIds: string[] = [];
     const devices: SvDevice[] = [];
     const stateIds = new Set<string>();
     const writableIds = new Set<string>();
+
+    // 2. Adapter-Profile (PV, Speicher, Wallbox …) – vor dem type-detector,
+    //    damit deren States nicht zusätzlich als generische Kacheln auftauchen
+    const energy = detectEnergy(filtered, options.language, isIgnored);
+    for (const system of energy) {
+        for (const s of energyStateRefs(system)) {
+            stateIds.add(s.id);
+            usedIds.push(s.id);
+            if (s.write) {
+                writableIds.add(s.id);
+            }
+        }
+    }
+
+    // 3. Gerätetypen erkennen
+    const detector = new ChannelDetector();
 
     // Kandidaten: alle Kanäle sowie Geräte, die States direkt (ohne Kanal-Ebene) enthalten.
     // Geräte mit Kanälen (z. B. Homematic) würden sonst doppelt erkannt.
@@ -125,7 +140,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     const roomList = [...rooms.values()].sort((a, b) => a.name.localeCompare(b.name, options.language));
 
     return {
-        model: { rooms: roomList, devices, generatedAt: Date.now() },
+        model: { rooms: roomList, devices, energy, generatedAt: Date.now() },
         stateIds: [...stateIds],
         writableIds,
     };

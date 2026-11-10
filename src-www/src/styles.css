@@ -369,3 +369,149 @@ button {
     margin: 0;
     text-align: right;
 }
+
+/* ===== Energie ===== */
+button.chip {
+    border: 0;
+    cursor: pointer;
+}
+
+.energy__layout {
+    display: grid;
+    gap: 16px;
+}
+
+@media (min-width: 900px) {
+    .energy__layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        align-items: start;
+    }
+}
+
+.energy__flow {
+    padding: 12px;
+}
+
+.energy__note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 4px 0 8px;
+}
+
+.flow {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.flow__node circle {
+    fill: var(--surface-2);
+    stroke: var(--surface-2);
+    stroke-width: 3;
+}
+
+.flow__node--pv circle {
+    stroke: #f59e0b;
+}
+
+.flow__node--grid circle {
+    stroke: #8b5cf6;
+}
+
+.flow__node--home circle {
+    stroke: var(--accent);
+}
+
+.flow__node--battery circle {
+    stroke: #10b981;
+}
+
+.flow text {
+    text-anchor: middle;
+    fill: var(--text);
+}
+
+.flow__icon {
+    font-size: 16px;
+}
+
+.flow__value {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.flow__label {
+    font-size: 10px;
+    fill: var(--text-muted) !important;
+}
+
+.flow__hub {
+    fill: var(--text-muted);
+}
+
+.flow__line {
+    stroke: var(--surface-2);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.flow__line--active {
+    stroke-dasharray: 6 8;
+    animation: flow 0.9s linear infinite;
+}
+
+.flow__line--active.flow__line--pv {
+    stroke: #f59e0b;
+}
+
+.flow__line--active.flow__line--grid {
+    stroke: #8b5cf6;
+}
+
+.flow__line--active.flow__line--home {
+    stroke: var(--accent);
+}
+
+.flow__line--active.flow__line--battery {
+    stroke: #10b981;
+}
+
+@keyframes flow {
+    to {
+        stroke-dashoffset: -14;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .flow__line--active {
+        animation: none;
+    }
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding-bottom: 4px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--surface-2);
+}
+
+.stat__value {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.stat__label {
+    font-size: 13px;
+    color: var(--text-muted);
+}

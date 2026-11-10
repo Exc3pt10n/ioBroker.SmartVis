@@ -12,6 +12,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Automatische Geräteerkennung über [`@iobroker/type-detector`](https://github.com/ioBroker/ioBroker.type-detector)
 - Räume aus `enum.rooms` **oder** – wenn nicht gepflegt – aus Geräte­namen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
+- **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz) und Tageswerten über Adapter-Profile – aktuell für [ioBroker.qhome-ess-hyb-g2](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) (QCells Q.HOME+ ESS HYB-G2)
 - Neu-Erkennung bei Objektänderungen
 - Responsive Oberfläche: Bottom-Navigation auf dem Handy, Seitenleiste ab Tablet, Hell/Dunkel automatisch
 
@@ -48,6 +49,7 @@ src/            Adapter (TypeScript)
   main.ts         Lebenszyklus, Abos, Schreibzugriffe
   lib/discovery   Geräte-/Raumerkennung (reine Funktion, testbar)
   lib/rooms       Raumnamen-Heuristik
+  lib/profiles    Adapter-Profile für Systeme ohne Standard-Rollen (PV, Speicher, Wallbox)
   lib/server      HTTP + WebSocket
   shared/         Protokoll-Typen (von Backend und Frontend genutzt)
 src-www/        Frontend (React + Vite) → baut nach www/
@@ -65,6 +67,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 ### **WORK IN PROGRESS**
 
 - (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
+- (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
 
 ## License
 
