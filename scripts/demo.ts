@@ -91,27 +91,6 @@ for (const [key, unit, val] of [
 }
 state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
 
-/** Simuliert schwankende PV-Leistung und leitet die übrigen Flüsse daraus ab */
-function simulateEnergy(): void {
-    const set = (key: string, val: number): void => {
-        const id = `${Q}.${key}`;
-        states[id] = { val: Math.round(val * 100) / 100, ack: true, ts: Date.now() };
-        server.queueState(id, states[id]);
-    };
-    const pv = Math.max(0, 4.2 + Math.sin(Date.now() / 20000) * 2.5 + (Math.random() - 0.5) * 0.3);
-    const cons = 0.8 + Math.random() * 0.8;
-    const surplus = (pv - cons) * 1000;
-    const charge = Math.min(Math.max(surplus, 0), 2500);
-    const discharge = surplus < 0 ? Math.min(-surplus, 2500) : 0;
-    const rest = surplus - charge + discharge;
-    set('PvPw', pv);
-    set('ConsPw', cons);
-    set('BtPwCharge', charge);
-    set('BtPwDisCharge', discharge);
-    set('GridPwFeedInWb', Math.max(rest, 0));
-    set('GridPwPurchaseWb', Math.max(-rest, 0));
-}
-
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
 const server = new SmartVisServer(
     { port: Number(process.env.PORT) || 8099, bind: '0.0.0.0', wwwDir: join(__dirname, '..', 'www'), version: 'demo' },
@@ -132,6 +111,27 @@ const server = new SmartVisServer(
         log: console as unknown as ioBroker.Logger,
     },
 );
+
+/** Simuliert schwankende PV-Leistung und leitet die übrigen Flüsse daraus ab */
+function simulateEnergy(): void {
+    const set = (key: string, val: number): void => {
+        const id = `${Q}.${key}`;
+        states[id] = { val: Math.round(val * 100) / 100, ack: true, ts: Date.now() };
+        server.queueState(id, states[id]);
+    };
+    const pv = Math.max(0, 4.2 + Math.sin(Date.now() / 20000) * 2.5 + (Math.random() - 0.5) * 0.3);
+    const cons = 0.8 + Math.random() * 0.8;
+    const surplus = (pv - cons) * 1000;
+    const charge = Math.min(Math.max(surplus, 0), 2500);
+    const discharge = surplus < 0 ? Math.min(-surplus, 2500) : 0;
+    const rest = surplus - charge + discharge;
+    set('PvPw', pv);
+    set('ConsPw', cons);
+    set('BtPwCharge', charge);
+    set('BtPwDisCharge', discharge);
+    set('GridPwFeedInWb', Math.max(rest, 0));
+    set('GridPwPurchaseWb', Math.max(-rest, 0));
+}
 
 setInterval(simulateEnergy, 2000);
 
