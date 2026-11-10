@@ -2,7 +2,8 @@ import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-dete
 import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
 import { getName } from './names';
 import { profileStateRefs, runProfiles } from './profiles';
-import { HUE_IGNORED_GROUP_ROLES, hueRoomHints } from './profiles/hueRooms';
+import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
+import { hueRoomHints } from './profiles/hueRooms';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
 
 export { getName };
@@ -23,6 +24,30 @@ export interface DiscoveryResult {
 }
 
 type ObjectMap = Record<string, ioBroker.Object>;
+
+/** Interne Markierung für Geräte mit generischem Kanalnamen (Wert: Eltern-Geräte-ID) */
+const GENERIC = '__genericParent';
+
+const TYPE_NAMES: Record<string, string> = {
+    blind: 'Rollladen',
+    light: 'Licht',
+    dimmer: 'Licht',
+    socket: 'Schalter',
+    thermostat: 'Thermostat',
+    window: 'Fenster',
+    windowTilt: 'Fenster',
+    door: 'Tür',
+    percentage: 'Ausgang',
+};
+
+/** Typen, die neben einem "echten" Gerät im selben Kanal nur Hilfswerte sind */
+const SECONDARY_TYPES = new Set<string>([
+    Types.slider,
+    Types.percentage,
+    Types.volume,
+    Types.button,
+    Types.illuminance,
+]);
 
 const LIGHT_TYPES = new Set<string>([
     Types.light,
@@ -97,7 +122,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     }
 
     // 2. Räume aus Adaptern
-    const adapterHints = hueRoomHints(filtered, lang);
+    const hue = hueRoomHints(filtered, lang, [...new Set([...rooms.names(), ...DEFAULT_ROOM_NAMES])]);
 
     const keys = Object.keys(filtered).sort();
     const usedIds: string[] = [];
@@ -117,6 +142,12 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             }
         }
     }
+    // Wetter: nur lesend abonnieren, die Station darf trotzdem als normale Kachel erscheinen
+    for (const item of profiles.weather) {
+        for (const s of profileStateRefs(item)) {
+            stateIds.add(s.id);
+        }
+    }
     const claimed = profiles.claimedInstances.map(i => `${i}.`);
     const isClaimed = (id: string): boolean => claimed.some(prefix => id.startsWith(prefix));
 
@@ -134,10 +165,8 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         if (isClaimed(id)) {
             return false;
         }
-        if (id.startsWith('hue.') && HUE_IGNORED_GROUP_ROLES.has(String(obj.common?.role))) {
-            return false;
-        }
-        return obj.type === 'channel' || (obj.type === 'device' && !hasChannels.has(id));
+        const structural = obj.type === 'channel' || (obj.type === 'device' && !hasChannels.has(id));
+        return structural && isCandidate(id, obj, filtered, hue.stale);
     });
 
     const detector = new ChannelDetector();
@@ -151,8 +180,12 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
                 _keysOptionalSorted: true,
                 _usedIdsOptional: usedIds,
                 ignoreIndicators: ['UNREACH_STICKY'],
-                // "info" fasst beliebige Werte zusammen – zu unspezifisch für automatische Kacheln
-                excludedTypes: [Types.info],
+                // "info" fasst beliebige Werte zusammen – zu unspezifisch für automatische Kacheln.
+                // "buttonSensor"/"button" sind Tasten von Fernbedienungen/Wandtastern bzw. Befehlstrigger:
+                // automatisch erkannt fast nur Rauschen (später manuell hinzufügbar).
+                excludedTypes: [Types.info, Types.buttonSensor, Types.button],
+                // Eine Lampe nur einmal erkennen (nicht zusätzlich als rgb, hue, ct …)
+                limitTypesToOneOf: [['light', 'dimmer', 'ct', 'rgb', 'rgbSingle', 'rgbwSingle', 'hue', 'cie']],
             });
         } catch {
             controls = null;
@@ -160,9 +193,22 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         if (!controls) {
             continue;
         }
+        const allowed = ADAPTER_ALLOWED_TYPES[id.split('.')[0]];
+        controls = controls.filter(c => !allowed || allowed.includes(c.type));
+        // Mehrere Treffer in einem Kanal: Hilfs-Slider/Prozentwerte neben einem Hauptgerät verwerfen
+        if (controls.length > 1) {
+            const primary = controls.filter(c => !SECONDARY_TYPES.has(c.type));
+            if (primary.length) {
+                controls = primary;
+            }
+            // Thermostate (z. B. HmIP-WTH) melden den Fensterstatus mit – keine eigene Fenster-Kachel
+            if (controls.some(c => c.type === Types.thermostat)) {
+                controls = controls.filter(c => c.type !== Types.window && c.type !== Types.windowTilt);
+            }
+        }
         for (const [index, control] of controls.entries()) {
             const deviceId = controls.length > 1 ? `${id}#${index}` : id;
-            const device = toDevice(id, deviceId, control, filtered, lang, memberToRoom, adapterHints, rooms);
+            const device = toDevice(id, deviceId, control, filtered, lang, memberToRoom, hue, rooms);
             if (!device) {
                 continue;
             }
@@ -176,6 +222,8 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
+    devices.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+    renameGenericChannels(devices);
     devices.sort((a, b) => a.name.localeCompare(b.name, lang));
     const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
 
@@ -185,6 +233,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             devices,
             energy: profiles.energy,
             wallboxes: profiles.wallboxes,
+            weather: profiles.weather,
             generatedAt: Date.now(),
         },
         stateIds: [...stateIds],
@@ -199,7 +248,7 @@ function toDevice(
     objects: ObjectMap,
     lang: string,
     memberToRoom: Map<string, string>,
-    adapterHints: Map<string, string>,
+    hue: { hints: Map<string, string>; roomGroups: Set<string> },
     rooms: RoomRegistry,
 ): SvDevice | null {
     const states: SvStateRef[] = [];
@@ -230,9 +279,12 @@ function toDevice(
     const parentName =
         parent && (parent.type === 'device' || parent.type === 'channel') ? getName(parent, lang) : undefined;
 
-    // Homematic: Kanalnamen sind oft "Gerät:1" → Gerätenamen verwenden
+    // Homematic: Kanalnamen sind oft "Gerät:1" (in der CCU nicht umbenannt) → Gerätenamen verwenden.
+    // Hat das Gerät mehrere Ausgänge, wird der Name später durch den Gerätetyp ersetzt.
+    let genericName = false;
     if (/:\d+$/.test(name) && parentName) {
         name = parentName;
+        genericName = true;
     }
 
     // Raum: Enum (Kanal, Gerät, States) → Adapter → Name
@@ -247,7 +299,7 @@ function toDevice(
         }
     }
     if (!roomId) {
-        const hint = adapterHints.get(id) || adapterHints.get(parentId(id));
+        const hint = hue.hints.get(id) || hue.hints.get(parentId(id));
         if (hint) {
             roomId = rooms.ensure(hint, 'adapter');
             roomSource = 'adapter';
@@ -262,7 +314,10 @@ function toDevice(
     }
     if (roomId) {
         const roomName = rooms.rooms.get(roomId)!.name;
-        if (normalize(name) !== normalize(roomName)) {
+        if (hue.roomGroups.has(id) && LIGHT_TYPES.has(control.type)) {
+            // Hue-Raumgruppe → "Alle Lichter"
+            name = 'Alle Lichter';
+        } else if (normalize(name) !== normalize(roomName)) {
             name = stripRoomFromName(name, roomName);
         } else if (LIGHT_TYPES.has(control.type)) {
             // Raumgruppe (z. B. Hue-Raum "Küche") → "Alle Lichter"
@@ -278,5 +333,37 @@ function toDevice(
         roomSource,
         adapter: id.split('.')[0],
         states,
+        ...(genericName ? { [GENERIC]: parentId(id) } : {}),
     };
+}
+
+/**
+ * Geräte mit mehreren Ausgängen (z. B. 4-fach-Rollladenaktor) und nicht umbenannten Kanälen
+ * erhalten statt "Rollladenaktor" den Gerätetyp als Namen, bei Bedarf je Raum durchnummeriert.
+ */
+function renameGenericChannels(devices: SvDevice[]): void {
+    // Anzahl unterschiedlicher Kanäle je Gerät (mehrere Treffer in einem Kanal zählen einmal)
+    const channelsPerParent = new Map<string, Set<string>>();
+    for (const d of devices) {
+        const parent = (d as unknown as Record<string, string>)[GENERIC];
+        if (parent) {
+            const set = channelsPerParent.get(parent) || new Set<string>();
+            set.add(d.id.split('#')[0]);
+            channelsPerParent.set(parent, set);
+        }
+    }
+    const used = new Map<string, number>();
+    for (const d of devices) {
+        const record = d as unknown as Record<string, string>;
+        const parent = record[GENERIC];
+        delete record[GENERIC];
+        const base = TYPE_NAMES[d.type];
+        if (!parent || !base || (channelsPerParent.get(parent)?.size || 0) < 2) {
+            continue;
+        }
+        const key = `${d.roomId}|${base}`;
+        const n = (used.get(key) || 0) + 1;
+        used.set(key, n);
+        d.name = n === 1 ? base : `${base} ${n}`;
+    }
 }

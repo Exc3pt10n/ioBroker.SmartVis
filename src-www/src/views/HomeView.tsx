@@ -3,6 +3,7 @@ import { useConnection } from '../connection';
 import { isActive, warnings } from '../device';
 import { formatPower, snapshot, wallboxSnapshot } from '../energy';
 import { DeviceTile } from '../components/DeviceTile';
+import { WeatherCard } from '../components/WeatherCard';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 const OPENING_TYPES = ['window', 'windowTilt', 'door'];
@@ -24,6 +25,12 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     return (
         <>
             <h1 className="title">Zuhause</h1>
+            {model.weather[0] && (
+                <WeatherCard
+                    weather={model.weather[0]}
+                    extra={model.weather.slice(1)}
+                />
+            )}
             <div className="chips">
                 <span className="chip">💡 {lightsOn.length} Lichter an</span>
                 <span className="chip">🪟 {open.length} offen</span>

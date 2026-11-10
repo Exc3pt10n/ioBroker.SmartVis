@@ -89,6 +89,29 @@ objects['enum.rooms.Buero'] = {
     native: {},
 } as unknown as Obj;
 
+// HmIP-SWO-PL Wetterstation + CCU-Tagesvariablen (reduzierter echter Objektbaum)
+const weatherObjs = JSON.parse(
+    readFileSync(join(__dirname, '..', 'test', 'fixtures', 'hmip-weather.json'), 'utf8'),
+) as Record<string, Obj>;
+Object.assign(objects, weatherObjs);
+const WS = 'hm-rpc.0.0000000000WS01';
+for (const [id, val] of Object.entries({
+    [`${WS}.1.ACTUAL_TEMPERATURE`]: 8.4,
+    [`${WS}.1.HUMIDITY`]: 82,
+    [`${WS}.1.WIND_SPEED`]: 14,
+    [`${WS}.1.WIND_THRESHOLD_OVERRUN`]: false,
+    [`${WS}.1.RAINING`]: false,
+    [`${WS}.1.ILLUMINATION`]: 5400,
+    [`${WS}.1.SUNSHINE_THRESHOLD_OVERRUN`]: true,
+    [`${WS}.0.UNREACH`]: false,
+    [`${WS}.0.LOW_BAT`]: false,
+    'hm-rega.0.5755': 2.3,
+    'hm-rega.0.5753': 6.1,
+    'hm-rega.0.5738': 134,
+})) {
+    states[id] = { val, ack: true, ts: Date.now() };
+}
+
 // KEBA KeContact (reduzierter echter Objektbaum)
 const keba = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'kecontact.json'), 'utf8')) as Record<
     string,

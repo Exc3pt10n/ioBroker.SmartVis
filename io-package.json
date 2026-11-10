@@ -85,7 +85,7 @@
         "port": 8099,
         "bind": "0.0.0.0",
         "language": "de",
-        "ignoreAdapters": "system,admin,discovery,backitup,history,influxdb,sql,web,vis,vis-2,material",
+        "ignoreAdapters": "system,admin,discovery,backitup,history,influxdb,sql,web,vis,vis-2,material,iot,shuttercontrol",
         "rediscoverDelay": 10
     },
     "objects": [],

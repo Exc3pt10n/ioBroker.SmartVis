@@ -14,6 +14,8 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   1. `enum.rooms` – z. B. die Räume der Homematic-CCU, wenn `hm-rega` sie synchronisiert
   2. Hue-Räume aus dem `hue`-Adapter (Zonen werden bewusst nicht als Raum verwendet)
   3. Gerätenamen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
+- **Wetter auf der Startseite** aus der lokalen Wetterstation (HmIP-SWO-PL/-PR/-B, HM-WDS100; Fallback Außensensor HmIP-STHO): Temperatur, Wetterlage, Luftfeuchte, Wind, Regen und Sonnenscheindauer heute. Die Tageswerte stammen aus den Systemvariablen, die die CCU automatisch anlegt (`svHmIPRainCounterToday_…`, `svHmIPSunshineCounterToday_…`).
+- Adapterspezifische Regeln gegen Kachel-Rauschen: Homematic IP nur den ersten virtuellen Kanal je Ausgang (keine Wartungs-, Tasten-, Wochenprofil- oder Schwellwert-Kanäle), Hue ohne Sensoren, Smart Scenes, Entertainment-Bereiche und Altlasten der alten Objektstruktur, Alexa nur Player
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
 - **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz, Auto) und Tageswerten über Adapter-Profile:
   - [ioBroker.qhome-ess-hyb-g2](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) (QCells Q.HOME+ ESS HYB-G2)
@@ -30,7 +32,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 | Port | `8099` | Aufruf: `http://<iobroker>:8099` |
 | Sprache | `de` | Sprache für mehrsprachige Objektnamen |
 | Neu-Erkennung | `10` s | Wartezeit nach Objektänderungen |
-| Ignorierte Adapter | `system,admin,…` | Werden bei der Erkennung übersprungen |
+| Ignorierte Adapter | `system,admin,…,iot,shuttercontrol` | Werden bei der Erkennung übersprungen |
 
 ## Entwicklung
 
@@ -75,6 +77,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 - (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
 - (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
 - (Exc3pt10n) KEBA-Wallbox-Profil, Hue-Räume als Raumquelle, Zusammenführen gleichnamiger Räume
+- (Exc3pt10n) Wetter auf der Startseite (Homematic-Wetterstation + CCU-Tageswerte); Erkennung gegen einen echten Objektbaum mit ~8.800 Objekten abgestimmt (727 → 146 Kacheln)
 
 ## License
 

@@ -108,12 +108,42 @@ export interface SvWallbox {
 
 export type SvWallboxStatus = 'starting' | 'notReady' | 'ready' | 'charging' | 'error' | 'interrupted';
 
+/** Aktuelle Wetterdaten einer lokalen Wetterstation */
+export interface SvWeather {
+    /** Geräte-ID, z. B. "hm-rpc.0.00181BE98EF40A" */
+    id: string;
+    name: string;
+    adapter: string;
+    /** Gerätemodell, z. B. "HmIP-SWO-PL" */
+    model?: string;
+    temperature?: SvStateRef;
+    humidity?: SvStateRef;
+    windSpeed?: SvStateRef;
+    /** Windrichtung in Grad (nur Modelle mit Windfahne) */
+    windDirection?: SvStateRef;
+    /** Schwellwert Wind überschritten (Sturmwarnung der Station) */
+    windAlarm?: SvStateRef;
+    raining?: SvStateRef;
+    /** Niederschlag heute in mm (CCU-Systemvariable) */
+    rainToday?: SvStateRef;
+    rainYesterday?: SvStateRef;
+    illumination?: SvStateRef;
+    /** Sonnenschein-Schwelle überschritten = Sonne scheint gerade */
+    sunshine?: SvStateRef;
+    /** Sonnenscheindauer heute in Minuten (CCU-Systemvariable) */
+    sunshineToday?: SvStateRef;
+    unreach?: SvStateRef;
+    lowBat?: SvStateRef;
+}
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
     /** Über Adapter-Profile erkannte Energiesysteme (PV, Speicher …) */
     energy: SvEnergySystem[];
     wallboxes: SvWallbox[];
+    /** Lokale Wetterstationen; die erste wird auf der Startseite angezeigt */
+    weather: SvWeather[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
 }

@@ -62,7 +62,7 @@ Pipeline, läuft beim Start und bei Objektänderungen (debounced):
 5. **Änderungen melden** – neue Geräte erscheinen als „Neu gefunden“-Hinweis statt still im Layout.
 
 Zusätzlich **generierte Sichten**:
-- **Übersicht/Home:** Lichter an (n), offene Fenster, Raumtemperaturen, Anwesenheit, Warnungen.
+- **Übersicht/Home:** ✅ Wetterkarte (lokale Station), Lichter an (n), offene Fenster, PV/Batterie, Wallbox, Warnungen.
 - **Status:** leere Batterien, nicht erreichbare Geräte.
 - **Nach Funktion:** alle Lichter, alle Rollläden, … (inkl. „alle aus/zu“).
 
@@ -76,6 +76,12 @@ Räume sind in **CCU und Hue-App gepflegt**, aber kaum in ioBroker-Enums. Raumqu
 | Philips Hue | `hue` | Lichter über `switch.light`/`level.dimmer` | ✅ `src/lib/profiles/hueRooms.ts`: Gruppen mit `common.role = "Room"` + `native.lights` → Raum der Lampen (`native.id`). Raumgruppe erscheint als „Alle Lichter“, Zonen sind kein Raum, Entertainment-Bereiche werden ausgeblendet. |
 | Keba KeContact P30 | `kecontact` | type-detector liefert nur Zufallstreffer aus `automatic.*` | ✅ `src/lib/profiles/kecontact.ts` (gegen echten Objektbaum getestet): `p` (mW), `state`, `plug`, `ePres` (Wh), `statistics.lastChargeAmount`, Schalter `automatic.photovoltaics` + `automatic.pauseWallbox`. Instanz wird komplett vom Profil übernommen. Offen: Ladestrom-Vorgabe (kollidiert mit der PV-Automatik des Adapters). |
 | QCells Q.HOME+ ESS HYB-G2 | [`qhome-ess-hyb-g2`](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) | Rollen überwiegend `value` → type-detector greift nicht | ✅ Profil `src/lib/profiles/qhome.ts`: feste State-IDs je Instanz. Flüsse aus den richtungsgetrennten States (`GridPwPurchaseWb`/`GridPwFeedInWb`, `BtPwCharge`/`BtPwDisCharge`, `PvPw`, `ConsPw`), SoC, Restlaufzeit, Tageszähler `counters.day.*`. |
+
+**Erkenntnisse aus dem vollständigen Objektbaum (~8.800 Objekte):**
+- `enum.rooms` ist doch gut gefüllt (CCU-Räume via `hm-rega` + englische IDs aus `iot`/Alexa, z. B. `enum.rooms.living_room` = „Wohnzimmer“) → Zusammenführen gleichnamiger Räume ist Pflicht.
+- Viele Hue-„Räume“ sind eigentlich Lampen-Gruppen („Licht Küche“ mit einer Lampe) → werden auf bekannte Räume abgebildet, Gruppen mit nur einer Lampe nicht als eigene Kachel.
+- Ohne Regeln erzeugte der type-detector 727 Kacheln (238 Tasten, Lampen 3-fach als rgb/hue/ct, Alexa-Wecker, HmIP-Wartungs- und virtuelle Kanäle); mit Regeln 146, davon 30 ohne Raum.
+- **Wetter:** kein Wetter-Adapter, aber HmIP-SWO-PL im Garten + HmIP-STHO im Vorgarten + CCU-Tagesvariablen für Regen/Sonne. Keine Vorhersage vorhanden → optional später ein Vorhersage-Adapter (z. B. DWD/Bright Sky).
 
 Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → Haus/Batterie/Netz/Auto, Tageswerte, Wallbox-Steuerung. Die Wallbox- und PV-Profile werden als konfigurierbare Zuordnungen umgesetzt (Profil schlägt States vor, Nutzer bestätigt/korrigiert), da sich State-Namen je nach Adapter/Firmware unterscheiden.
 

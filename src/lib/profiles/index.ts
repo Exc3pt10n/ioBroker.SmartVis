@@ -1,20 +1,22 @@
-import type { SvEnergySystem, SvStateRef, SvWallbox } from '../../shared/protocol';
+import type { SvEnergySystem, SvStateRef, SvWallbox, SvWeather } from '../../shared/protocol';
+import { hmWeatherProfile } from './hmWeather';
 import { kecontactProfile } from './kecontact';
 import { qhomeProfile } from './qhome';
 import { instancesOf, type AdapterProfile, type ObjectMap } from './types';
 
-export const PROFILES: AdapterProfile[] = [qhomeProfile, kecontactProfile];
+export const PROFILES: AdapterProfile[] = [qhomeProfile, kecontactProfile, hmWeatherProfile];
 
 export interface ProfilesResult {
     energy: SvEnergySystem[];
     wallboxes: SvWallbox[];
+    weather: SvWeather[];
     /** Instanzen, die vollständig von einem Profil abgebildet werden */
     claimedInstances: string[];
 }
 
 /** Führt alle Adapter-Profile aus */
 export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: string) => boolean): ProfilesResult {
-    const result: ProfilesResult = { energy: [], wallboxes: [], claimedInstances: [] };
+    const result: ProfilesResult = { energy: [], wallboxes: [], weather: [], claimedInstances: [] };
     for (const profile of PROFILES) {
         if (isIgnored(profile.adapter)) {
             continue;
@@ -30,6 +32,9 @@ export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: st
             if (found.wallbox) {
                 result.wallboxes.push(found.wallbox);
             }
+            if (found.weather) {
+                result.weather.push(...found.weather);
+            }
             if (profile.claimsInstance) {
                 result.claimedInstances.push(instance);
             }
@@ -39,7 +44,7 @@ export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: st
 }
 
 /** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */
-export function profileStateRefs(item: SvEnergySystem | SvWallbox): SvStateRef[] {
+export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): SvStateRef[] {
     const refs: unknown[] =
         'flows' in item
             ? [
