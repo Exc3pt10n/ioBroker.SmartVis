@@ -9,10 +9,14 @@ export const PROTOCOL_VERSION = 1;
 export type RoomSource = 'enum' | 'adapter' | 'name';
 
 export interface SvRoom {
-    /** enum-ID (z. B. "enum.rooms.living") oder generiert ("auto.wohnzimmer") */
+    /** enum-ID (z. B. "enum.rooms.living"), generiert ("auto.wohnzimmer") oder selbst angelegt ("custom.…") */
     id: string;
     name: string;
-    source: RoomSource;
+    source: RoomSource | 'custom';
+    /** Vom Nutzer ausgeblendet (nur im Bearbeiten-Modus sichtbar) */
+    hidden?: boolean;
+    /** Name vor einer Umbenennung durch den Nutzer */
+    originalName?: string;
 }
 
 export interface SvStateRef {
@@ -41,6 +45,14 @@ export interface SvDevice {
     /** Quell-Adapter, z. B. "hm-rpc", "hue" */
     adapter: string;
     states: SvStateRef[];
+    /** Vom Nutzer ausgeblendet (nur im Bearbeiten-Modus sichtbar) */
+    hidden?: boolean;
+    favorite?: boolean;
+    /** Position in den Favoriten */
+    favoriteOrder?: number;
+    /** Name/Raum laut Erkennung, falls der Nutzer sie geändert hat */
+    originalName?: string;
+    originalRoomId?: string | null;
 }
 
 /** Leistungsflüsse eines Energiesystems (je Richtung ein State, Werte ≥ 0) */
@@ -221,6 +233,47 @@ export interface SvShutterControl {
     };
 }
 
+/** Nutzer-Anpassungen; überleben Neu-Erkennungen (Schlüssel: stabile Objekt-IDs) */
+export interface SvDeviceOverride {
+    name?: string;
+    /** Raum-ID oder null für "Ohne Raum" */
+    roomId?: string | null;
+    hidden?: boolean;
+    favorite?: boolean;
+    /** Position innerhalb des Raums */
+    order?: number;
+    /** Position innerhalb der Favoriten */
+    favoriteOrder?: number;
+}
+
+export interface SvRoomOverride {
+    name?: string;
+    hidden?: boolean;
+    order?: number;
+    /** Vom Nutzer angelegter Raum */
+    custom?: boolean;
+}
+
+export interface SvOverrides {
+    version: 1;
+    devices: Record<string, SvDeviceOverride>;
+    rooms: Record<string, SvRoomOverride>;
+}
+
+/**
+ * Änderung aus dem Bearbeiten-Modus; null löscht ein Feld (zurück zur Erkennung).
+ * Ausnahme roomId: null = "Ohne Raum", '' = zurück zum erkannten Raum.
+ */
+export type SvEdit =
+    | { kind: 'device'; id: string; patch: { [K in keyof SvDeviceOverride]?: SvDeviceOverride[K] | null } }
+    | { kind: 'room'; id: string; patch: { [K in keyof SvRoomOverride]?: SvRoomOverride[K] | null } }
+    | { kind: 'deviceOrder'; ids: string[] }
+    | { kind: 'favoriteOrder'; ids: string[] }
+    | { kind: 'roomOrder'; ids: string[] }
+    | { kind: 'createRoom'; name: string; /** Gerät gleich in den neuen Raum verschieben */ deviceId?: string }
+    | { kind: 'deleteRoom'; id: string }
+    | { kind: 'resetDevice'; id: string };
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
@@ -233,6 +286,8 @@ export interface SvModel {
     shutterControl: SvShutterControl[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
+    /** Darf die App Anpassungen speichern? */
+    editable: boolean;
 }
 
 export interface SvStateValue {
@@ -251,4 +306,4 @@ export type ServerMessage =
     | { t: 'error'; message: string };
 
 /** Nachrichten Client → Server */
-export type ClientMessage = { t: 'set'; id: string; val: ioBrokerValue } | { t: 'ping' };
+export type ClientMessage = { t: 'set'; id: string; val: ioBrokerValue } | { t: 'edit'; edit: SvEdit } | { t: 'ping' };

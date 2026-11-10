@@ -6,6 +6,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { discover } from '../src/lib/discovery';
+import { applyEdit, applyOverrides, emptyOverrides } from '../src/lib/overrides';
 import { SmartVisServer } from '../src/lib/server';
 import type { SvStateValue } from '../src/shared/protocol';
 
@@ -297,10 +298,20 @@ for (const [key, unit, val] of [
 state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
 
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
+// Anpassungen aus dem Bearbeiten-Modus (in der Demo nur im Speicher)
+let overrides = emptyOverrides();
+let model = applyOverrides(result.model, overrides, true);
+
 const server = new SmartVisServer(
     { port: Number(process.env.PORT) || 8099, bind: '0.0.0.0', wwwDir: join(__dirname, '..', 'www'), version: 'demo' },
     {
-        getModel: () => result.model,
+        getModel: () => model,
+        edit: edit => {
+            overrides = applyEdit(overrides, edit);
+            model = applyOverrides(result.model, overrides, true);
+            server.publishModel(model, false);
+            return Promise.resolve();
+        },
         getStates: () => states,
         setState: (id, val) => {
             if (!result.writableIds.has(id)) {

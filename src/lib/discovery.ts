@@ -270,6 +270,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             weather: profiles.weather,
             shutterControl: profiles.shutterControl,
             generatedAt: Date.now(),
+            editable: false,
         },
         stateIds: [...stateIds],
         writableIds,

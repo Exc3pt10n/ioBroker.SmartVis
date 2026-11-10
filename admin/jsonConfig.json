@@ -36,8 +36,14 @@
             "type": "select",
             "label": "Sprache für Gerätenamen",
             "options": [
-                { "label": "Deutsch", "value": "de" },
-                { "label": "English", "value": "en" }
+                {
+                    "label": "Deutsch",
+                    "value": "de"
+                },
+                {
+                    "label": "English",
+                    "value": "en"
+                }
             ],
             "xs": 12,
             "sm": 12,
@@ -63,6 +69,21 @@
             "sm": 12,
             "md": 12,
             "lg": 8
+        },
+        "_ui": {
+            "type": "header",
+            "text": "Oberfläche",
+            "size": 3,
+            "newLine": true
+        },
+        "allowEdit": {
+            "type": "checkbox",
+            "label": "Bearbeiten-Modus erlauben",
+            "help": "Umbenennen, Ausblenden, Verschieben und Favoriten in der App. Solange es keinen Login gibt, kann jeder im Netz Anpassungen speichern.",
+            "xs": 12,
+            "sm": 12,
+            "md": 12,
+            "lg": 12
         }
     }
 }

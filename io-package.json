@@ -43,8 +43,16 @@
             "uk": "Самоналаштовувана візуалізація для мобільних пристроїв",
             "zh-cn": "自动配置、移动优先的可视化"
         },
-        "authors": ["Exc3pt10n"],
-        "keywords": ["visualization", "vis", "mobile", "pwa", "dashboard"],
+        "authors": [
+            "Exc3pt10n"
+        ],
+        "keywords": [
+            "visualization",
+            "vis",
+            "mobile",
+            "pwa",
+            "dashboard"
+        ],
         "licenseInformation": {
             "type": "free",
             "license": "MIT"
@@ -86,7 +94,8 @@
         "bind": "0.0.0.0",
         "language": "de",
         "ignoreAdapters": "system,admin,discovery,backitup,history,influxdb,sql,web,vis,vis-2,material,iot",
-        "rediscoverDelay": 10
+        "rediscoverDelay": 10,
+        "allowEdit": true
     },
     "objects": [],
     "instanceObjects": [

@@ -4,6 +4,8 @@ import { isActive, warnings } from '../device';
 import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
+import { EditBanner, EditButton } from '../components/EditButton';
+import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
@@ -11,15 +13,20 @@ const OPENING_TYPES = ['window', 'windowTilt', 'door'];
 
 export function HomeView({ onNavigate }: { onNavigate: (path: string) => void }): React.JSX.Element {
     const { model, states } = useConnection();
+    const { editing } = useEditing();
     if (!model) {
         return <p className="empty">Lade Geräte …</p>;
     }
     const roomName = (id: string | null): string | undefined => model.rooms.find(r => r.id === id)?.name;
+    // Statuslisten zeigen nie ausgeblendete Geräte
+    const devices = visibleDevices(model, false);
+    const favs = favorites(model, editing);
+    const favIds = favs.map(d => d.id);
 
-    const lightsOn = model.devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
-    const open = model.devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
-    const problems = model.devices.filter(d => warnings(d, states).length > 0);
-    const withoutRoom = model.devices.filter(d => !d.roomId).length;
+    const lightsOn = devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
+    const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
+    const problems = devices.filter(d => warnings(d, states).length > 0);
+    const withoutRoom = devices.filter(d => !d.roomId).length;
     const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
     const pv = model.pvForecast[0];
     const forecastToday = pv ? kwh(pv.summary.energyToday, states) : undefined;
@@ -36,12 +43,37 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
 
     return (
         <>
-            <h1 className="title">Zuhause</h1>
+            <div className="titlebar titlebar--split">
+                <h1 className="title">Zuhause</h1>
+                <EditButton />
+            </div>
+            <EditBanner text="Favoriten mit ← → sortieren, Kachel antippen zum Anpassen" />
             {model.weather[0] && (
                 <WeatherCard
                     weather={model.weather[0]}
                     extra={model.weather.slice(1)}
                 />
+            )}
+            {(favs.length > 0 || editing) && (
+                <section>
+                    <h2 className="subtitle">⭐ Favoriten</h2>
+                    {favs.length ? (
+                        <div className="grid">
+                            {favs.map(d => (
+                                <DeviceTile
+                                    key={d.id}
+                                    device={d}
+                                    showRoom={roomName(d.roomId)}
+                                    reorder={{ ids: favIds, kind: 'favoriteOrder' }}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="hint hint--static">
+                            Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
+                        </p>
+                    )}
+                </section>
             )}
             <div className="chips">
                 <span className="chip">💡 {lightsOn.length} Lichter an</span>

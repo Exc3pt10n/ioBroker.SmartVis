@@ -1367,3 +1367,196 @@ button.chip {
 .fchart__table td:first-child {
     text-align: left;
 }
+
+/* ===== Bearbeiten-Modus ===== */
+.titlebar--split {
+    justify-content: space-between;
+}
+
+.titlebar__spacer {
+    flex: 1;
+}
+
+.editbtn {
+    flex: none;
+    min-height: 40px;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.editbtn--active {
+    background: var(--accent);
+    color: #fff;
+}
+
+.editbanner {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.is-editing .tile {
+    outline: 2px dashed color-mix(in srgb, var(--accent) 50%, transparent);
+    outline-offset: -2px;
+}
+
+.is-hidden .tile,
+.is-hidden .room {
+    opacity: 0.5;
+}
+
+.badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+.tile .badge {
+    margin: 0;
+}
+
+.movebtns {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: flex;
+    gap: 4px;
+}
+
+.movebtns button {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.movebtns button:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.room-wrap {
+    position: relative;
+    display: grid;
+}
+
+.room--add {
+    align-items: center;
+    justify-content: center;
+    min-height: 72px;
+    border: 2px dashed var(--surface-2);
+    background: none;
+    box-shadow: none;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.hint--static {
+    cursor: default;
+    margin-top: 0;
+}
+
+.sheet__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.star {
+    font-size: 20px;
+    color: var(--text-muted);
+}
+
+.star--on {
+    color: #d97706;
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+    padding: 12px 0 4px;
+}
+
+.field--inline {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+
+.field__label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.field__input {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--surface-2);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 16px; /* verhindert Zoom auf iOS */
+}
+
+.field__input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.field__hint {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.field__reset {
+    justify-self: start;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.action--danger {
+    width: 100%;
+    margin-top: 16px;
+    color: var(--warn);
+}
+
+/* Platz für die Verschiebe-Knöpfe, damit sie keinen Text verdecken */
+.tile-wrap.is-editing .tile {
+    padding-bottom: 54px;
+}
+
+.room-wrap.is-editing .room {
+    padding-right: 100px;
+}
+
+.room-wrap .movebtns {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+}
+
+section + .chips {
+    margin-top: 16px;
+}

@@ -8,11 +8,14 @@ export function Sheet({
     title,
     subtitle,
     onClose,
+    actions,
     children,
 }: {
     title: string;
     subtitle?: string;
     onClose: () => void;
+    /** Zusätzliche Knöpfe in der Kopfzeile (z. B. Favorit) */
+    actions?: React.ReactNode;
     children: React.ReactNode;
 }): React.JSX.Element {
     const panel = useRef<HTMLDivElement>(null);
@@ -74,14 +77,17 @@ export function Sheet({
                         <h2 className="sheet__title">{title}</h2>
                         {subtitle && <p className="sheet__subtitle">{subtitle}</p>}
                     </div>
-                    <button
-                        type="button"
-                        className="iconbtn"
-                        onClick={onClose}
-                        aria-label="Schließen"
-                    >
-                        ✕
-                    </button>
+                    <div className="sheet__actions">
+                        {actions}
+                        <button
+                            type="button"
+                            className="iconbtn"
+                            onClick={onClose}
+                            aria-label="Schließen"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 </header>
                 <div className="sheet__body">{children}</div>
             </div>

@@ -7,6 +7,7 @@ declare global {
             language: string;
             ignoreAdapters: string;
             rediscoverDelay: number;
+            allowEdit: boolean;
         }
     }
 }

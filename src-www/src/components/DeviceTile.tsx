@@ -2,12 +2,24 @@ import type { SvDevice } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
 import { TYPE_LABELS, formatValue, isActive, tapAction, valueState, warnings } from '../device';
 import { useOpenDetail } from '../detail';
+import { moved, useEditing } from '../editing';
 import { useRef } from 'react';
+import { MoveButtons } from './EditButton';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 import { Icon, iconForType } from './Icon';
 
-export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: string }): React.JSX.Element {
+export function DeviceTile({
+    device,
+    showRoom,
+    reorder,
+}: {
+    device: SvDevice;
+    showRoom?: string;
+    /** Reihenfolge, in der die Kachel im Bearbeiten-Modus verschoben werden kann */
+    reorder?: { ids: string[]; kind: 'deviceOrder' | 'favoriteOrder' };
+}): React.JSX.Element {
     const { states, model } = useConnection();
+    const { editing } = useEditing();
     const action = tapAction(device);
     const value = valueState(device);
     const active = isActive(device, states);
@@ -29,6 +41,9 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
     const longPressed = useRef(false);
     const startPress = (): void => {
         longPressed.current = false;
+        if (editing) {
+            return;
+        }
         pressTimer.current = window.setTimeout(() => {
             longPressed.current = true;
             openDetail(device.id);
@@ -41,7 +56,10 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
             longPressed.current = false;
             return;
         }
-        if (action) {
+        // Im Bearbeiten-Modus öffnet ein Tap die Anpassungen (App zeigt dann das Bearbeiten-Fenster)
+        if (editing) {
+            openDetail(device.id);
+        } else if (action) {
             connection.setState(action.state.id, action.next(states[action.state.id]));
         } else {
             openDetail(device.id);
@@ -49,10 +67,10 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
     };
 
     return (
-        <div className="tile-wrap">
+        <div className={`tile-wrap${device.hidden ? ' is-hidden' : ''}${editing ? ' is-editing' : ''}`}>
             <button
                 type="button"
-                className={`tile${active ? ' tile--active' : ''}${pending ? ' tile--pending' : ''}`}
+                className={`tile${active && !editing ? ' tile--active' : ''}${pending ? ' tile--pending' : ''}`}
                 onClick={onClick}
                 onPointerDown={startPress}
                 onPointerUp={endPress}
@@ -62,7 +80,7 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
                     e.preventDefault();
                     openDetail(device.id);
                 }}
-                aria-pressed={action ? active : undefined}
+                aria-pressed={action && !editing ? active : undefined}
             >
                 <span className="tile__icon">
                     <Icon name={iconForType(device.type)} />
@@ -78,7 +96,11 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
                         />
                     </span>
                 )}
-                <span className="tile__name">{device.name}</span>
+                <span className="tile__name">
+                    {device.favorite && !reorder?.kind.startsWith('favorite') ? '⭐ ' : ''}
+                    {device.name}
+                </span>
+                {editing && device.hidden && <span className="badge">ausgeblendet</span>}
                 <span className="tile__value">
                     {formatValue(value, value ? states[value.id] : undefined)}
                     {showRoom ? ` · ${showRoom}` : ` · ${TYPE_LABELS[device.type] || device.type}`}
@@ -89,7 +111,20 @@ export function DeviceTile({ device, showRoom }: { device: SvDevice; showRoom?: 
                     </span>
                 )}
             </button>
-            {action && (
+            {editing && reorder && (
+                <MoveButtons
+                    label={device.name}
+                    canBack={reorder.ids.indexOf(device.id) > 0}
+                    canForward={reorder.ids.indexOf(device.id) < reorder.ids.length - 1}
+                    onMove={delta => {
+                        const ids = moved(reorder.ids, device.id, delta);
+                        if (ids) {
+                            connection.edit({ kind: reorder.kind, ids });
+                        }
+                    }}
+                />
+            )}
+            {action && !editing && (
                 <button
                     type="button"
                     className="tile__more"

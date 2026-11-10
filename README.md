@@ -14,6 +14,12 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   1. `enum.rooms` – z. B. die Räume der Homematic-CCU, wenn `hm-rega` sie synchronisiert
   2. Hue-Räume aus dem `hue`-Adapter (Zonen werden bewusst nicht als Raum verwendet)
   3. Gerätenamen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
+- **Bearbeiten-Modus** (✎ in Startseite, Raumliste und Räumen):
+  - Geräte umbenennen, in einen anderen oder neuen Raum verschieben, ausblenden, als Favorit markieren, mit ← → sortieren; alles einzeln zurücksetzbar
+  - Räume umbenennen, ausblenden, sortieren, selbst anlegen und wieder löschen
+  - Favoriten oben auf der Startseite (auch per ☆ in der Detailansicht)
+  - Gespeichert im ioBroker-Dateispeicher (`smartvis.0/overrides.json`, Teil von Backups); Anpassungen hängen an stabilen Objekt-IDs und überleben Neu-Erkennungen
+  - Im Admin abschaltbar („Bearbeiten-Modus erlauben“) – solange es keinen Login gibt, kann sonst jeder im Netz Anpassungen speichern
 - **Detailansicht** je Gerät (Bottom-Sheet auf dem Handy, Dialog am Desktop; öffnet per ⋯-Knopf, langem Drücken oder Tap auf Geräte ohne Schaltfunktion; Zurück-Taste schließt):
   - Licht: Ein/Aus, Helligkeit, Farbtemperatur (Mired oder Kelvin), Farbe
   - Rollladen: Position, Auf/Stopp/Zu, Automatik aus shuttercontrol
@@ -46,6 +52,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 | Sprache | `de` | Sprache für mehrsprachige Objektnamen |
 | Neu-Erkennung | `10` s | Wartezeit nach Objektänderungen |
 | Ignorierte Adapter | `system,admin,…,iot` | Werden bei der Erkennung übersprungen |
+| Bearbeiten-Modus erlauben | an | Anpassungen aus der App speichern |
 
 ## Entwicklung
 
@@ -90,6 +97,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 - (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
 - (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
 - (Exc3pt10n) KEBA-Wallbox-Profil, Hue-Räume als Raumquelle, Zusammenführen gleichnamiger Räume
+- (Exc3pt10n) Bearbeiten-Modus: umbenennen, verschieben, ausblenden, Favoriten, Reihenfolge, eigene Räume
 - (Exc3pt10n) Detailansicht mit Slidern für Licht, Rollladen und Thermostat
 - (Exc3pt10n) PV-Prognose aus pvforecast in der Energie-Sicht
 - (Exc3pt10n) Beschattung mit shuttercontrol: Steuerung, Automatik je Bereich und Rollladen, Status an den Rollladen-Kacheln

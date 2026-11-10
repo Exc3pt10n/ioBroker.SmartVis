@@ -6,6 +6,7 @@ import {
     PROTOCOL_VERSION,
     type ClientMessage,
     type ServerMessage,
+    type SvEdit,
     type SvModel,
     type SvStateValue,
     type ioBrokerValue,
@@ -36,6 +37,8 @@ export interface ServerHandlers {
     getModel(): SvModel;
     getStates(): Record<string, SvStateValue | null>;
     setState(id: string, val: ioBrokerValue): Promise<void>;
+    /** Änderung aus dem Bearbeiten-Modus speichern (wirft bei Fehlern) */
+    edit?(edit: SvEdit): Promise<void>;
     onClientCountChange?(count: number): void;
     log: ioBroker.Logger;
 }
@@ -80,10 +83,12 @@ export class SmartVisServer {
         await new Promise<void>(r => (this.http ? this.http.close(() => r()) : r()));
     }
 
-    /** Neues Model an alle Clients senden */
-    publishModel(model: SvModel): void {
+    /** Neues Model an alle Clients senden (nach einer Neu-Erkennung auch alle Werte) */
+    publishModel(model: SvModel, withStates = true): void {
         this.broadcast({ t: 'model', model });
-        this.broadcast({ t: 'states', states: this.handlers.getStates() });
+        if (withStates) {
+            this.broadcast({ t: 'states', states: this.handlers.getStates() });
+        }
     }
 
     /** State-Änderung vormerken; wird gebündelt verschickt */
@@ -116,12 +121,17 @@ export class SmartVisServer {
             } catch {
                 return send(ws, { t: 'error', message: 'invalid json' });
             }
-            if (msg.t === 'set') {
-                try {
+            try {
+                if (msg.t === 'set') {
                     await this.handlers.setState(msg.id, msg.val);
-                } catch (e) {
-                    send(ws, { t: 'error', message: (e as Error).message });
+                } else if (msg.t === 'edit') {
+                    if (!this.handlers.edit) {
+                        throw new Error('Bearbeiten ist nicht verfügbar');
+                    }
+                    await this.handlers.edit(msg.edit);
                 }
+            } catch (e) {
+                send(ws, { t: 'error', message: (e as Error).message });
             }
         });
         ws.on('close', () => this.handlers.onClientCountChange?.(this.wss!.clients.size));

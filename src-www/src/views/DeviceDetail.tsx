@@ -185,6 +185,21 @@ export function DeviceDetail({
             title={device.name}
             subtitle={[room, TYPE_LABELS[device.type] || device.type].filter(Boolean).join(' · ')}
             onClose={onClose}
+            actions={
+                model.editable ? (
+                    <button
+                        type="button"
+                        className={`iconbtn star${device.favorite ? ' star--on' : ''}`}
+                        aria-pressed={!!device.favorite}
+                        aria-label={device.favorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+                        onClick={() =>
+                            connection.edit({ kind: 'device', id: device.id, patch: { favorite: !device.favorite } })
+                        }
+                    >
+                        {device.favorite ? '★' : '☆'}
+                    </button>
+                ) : null
+            }
         >
             {warn.length > 0 && <div className="banner banner--offline">⚠️ {warn.join(', ')}</div>}
             {main}

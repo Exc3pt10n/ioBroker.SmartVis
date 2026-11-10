@@ -1,5 +1,12 @@
 import { useSyncExternalStore } from 'react';
-import type { ClientMessage, ServerMessage, SvModel, SvStateValue, ioBrokerValue } from '../../src/shared/protocol';
+import type {
+    ClientMessage,
+    ServerMessage,
+    SvEdit,
+    SvModel,
+    SvStateValue,
+    ioBrokerValue,
+} from '../../src/shared/protocol';
 
 export type ConnectionStatus = 'connecting' | 'online' | 'offline';
 
@@ -42,6 +49,12 @@ class Connection {
         // Optimistisch anzeigen, Bestätigung (ack) kommt per Update
         this.update({ states: { ...this.snapshot.states, [id]: { val, ack: false, ts: Date.now() } } });
         this.send({ t: 'set', id, val });
+    }
+
+    /** Anpassung aus dem Bearbeiten-Modus senden; der Server antwortet mit neuem Model */
+    edit(edit: SvEdit): void {
+        this.update({ lastError: undefined });
+        this.send({ t: 'edit', edit });
     }
 
     /** Wert nur lokal anzeigen (z. B. gespiegelte States), bis die echte Bestätigung kommt */

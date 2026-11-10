@@ -1,12 +1,21 @@
 import * as utils from '@iobroker/adapter-core';
 import { join } from 'node:path';
 import { discover, type DiscoveryResult } from './lib/discovery';
+import { applyEdit, applyOverrides, emptyOverrides, parseOverrides } from './lib/overrides';
 import { SmartVisServer } from './lib/server';
-import type { SvStateValue, ioBrokerValue } from './shared/protocol';
+import type { SvEdit, SvModel, SvOverrides, SvStateValue, ioBrokerValue } from './shared/protocol';
+
+/** Datei im ioBroker-Dateispeicher der Instanz (Teil von Backups) */
+const OVERRIDES_FILE = 'overrides.json';
 
 class SmartVis extends utils.Adapter {
     private server?: SmartVisServer;
     private discovery?: DiscoveryResult;
+    /** Erkanntes Model mit angewendeten Nutzer-Anpassungen */
+    private model?: SvModel;
+    private overrides: SvOverrides = emptyOverrides();
+    /** Änderungen nacheinander ausführen */
+    private saveQueue: Promise<void> = Promise.resolve();
     private states: Record<string, SvStateValue | null> = {};
     private subscribed = new Set<string>();
     private rediscoverTimer?: ioBroker.Timeout;
@@ -20,6 +29,7 @@ class SmartVis extends utils.Adapter {
     }
 
     private async onReady(): Promise<void> {
+        await this.loadOverrides();
         await this.runDiscovery();
 
         this.server = new SmartVisServer(
@@ -30,9 +40,10 @@ class SmartVis extends utils.Adapter {
                 version: this.version || '0.0.0',
             },
             {
-                getModel: () => this.discovery!.model,
+                getModel: () => this.model!,
                 getStates: () => this.states,
                 setState: (id, val) => this.writeState(id, val),
+                edit: edit => this.handleEdit(edit),
                 onClientCountChange: count => void this.setState('info.clients', count, true),
                 log: this.log,
             },
@@ -40,7 +51,11 @@ class SmartVis extends utils.Adapter {
 
         try {
             await this.server.start();
-            this.log.info(`SmartVis läuft auf http://${this.config.bind || '0.0.0.0'}:${this.config.port}`);
+            this.log.info(
+                `SmartVis läuft auf http://${this.config.bind || '0.0.0.0'}:${this.config.port}${
+                    this.config.allowEdit === false ? ' (Bearbeiten deaktiviert)' : ''
+                }`,
+            );
         } catch (e) {
             this.log.error(`Webserver konnte nicht gestartet werden: ${(e as Error).message}`);
             this.terminate?.(utils.EXIT_CODES.ADAPTER_REQUESTED_TERMINATION);
@@ -72,7 +87,60 @@ class SmartVis extends utils.Adapter {
             `Erkennung: ${devices.length} Geräte, ${rooms.length} Räume, ${withoutRoom} ohne Raum (${Date.now() - started} ms)`,
         );
         await this.setStateAsync('info.devices', devices.length, true);
-        this.server?.publishModel(this.discovery.model);
+        this.updateModel(true);
+    }
+
+    private updateModel(withStates: boolean): void {
+        if (!this.discovery) {
+            return;
+        }
+        this.model = applyOverrides(this.discovery.model, this.overrides, this.config.allowEdit !== false);
+        this.server?.publishModel(this.model, withStates);
+    }
+
+    private async loadOverrides(): Promise<void> {
+        // Meta-Objekt für den Dateispeicher der Instanz
+        await this.setForeignObjectNotExistsAsync(this.namespace, {
+            type: 'meta',
+            common: { name: 'SmartVis', type: 'meta.user' },
+            native: {},
+        });
+        try {
+            if (await this.fileExistsAsync(this.namespace, OVERRIDES_FILE)) {
+                const { file } = await this.readFileAsync(this.namespace, OVERRIDES_FILE);
+                this.overrides = parseOverrides(file);
+                const n = Object.keys(this.overrides.devices).length + Object.keys(this.overrides.rooms).length;
+                this.log.info(`Anpassungen geladen (${n} Einträge)`);
+            }
+        } catch (e) {
+            this.log.warn(`Anpassungen konnten nicht gelesen werden: ${(e as Error).message}`);
+        }
+    }
+
+    /**
+     * Änderungen strikt nacheinander verarbeiten: jede baut auf dem gespeicherten Stand der vorherigen auf
+     * (sonst gingen schnell aufeinanderfolgende Änderungen verloren).
+     */
+    private handleEdit(edit: SvEdit): Promise<void> {
+        const run = this.saveQueue.then(() => this.applyAndSave(edit));
+        this.saveQueue = run.catch(() => undefined);
+        return run;
+    }
+
+    private async applyAndSave(edit: SvEdit): Promise<void> {
+        if (this.config.allowEdit === false) {
+            throw new Error('Bearbeiten ist in den Adapter-Einstellungen deaktiviert');
+        }
+        const next = applyEdit(this.overrides, edit);
+        try {
+            // Erst speichern, dann übernehmen und verteilen: die App sieht nur, was wirklich gesichert ist
+            await this.writeFileAsync(this.namespace, OVERRIDES_FILE, JSON.stringify(next, null, 2));
+        } catch (e) {
+            this.log.error(`Anpassungen konnten nicht gespeichert werden: ${(e as Error).message}`);
+            throw new Error('Anpassung konnte nicht gespeichert werden');
+        }
+        this.overrides = next;
+        this.updateModel(false);
     }
 
     private async syncSubscriptions(ids: string[]): Promise<void> {

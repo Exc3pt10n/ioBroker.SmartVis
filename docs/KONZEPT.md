@@ -110,7 +110,7 @@ Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → H
 |---|---|
 | **Admin (jsonConfig)** | Port, SSL, Authentifizierung, Sprache, welche Adapter/Bereiche ignoriert werden, Update-Intervall, Zurücksetzen der Erkennung. |
 | **In der App** | Alles Visuelle: Layout, Namen, Icons, Favoriten, Theme. |
-| **Speicherung** | Overrides als JSON im ioBroker-Dateispeicher (`smartvis.0/config.json`) → Teil des Backups. |
+| **Speicherung** | ✅ Overrides als JSON im ioBroker-Dateispeicher (`smartvis.0/overrides.json`) → Teil des Backups. Änderungen werden nacheinander gespeichert und erst nach dem Schreiben an die Apps verteilt. |
 
 ## 6. Sicherheit
 - Optionaler Login mit ioBroker-Benutzern (inkl. Rechteprüfung), Token-basiert für PWA.
@@ -123,7 +123,7 @@ Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → H
 |---|---|
 | **0 – Grundgerüst** ✅ | Adapter-Scaffold, Discovery (Enums + type-detector + Namens-Heuristik), WebSocket-API, PWA-Shell mit Home/Räume/Mehr, Kacheln mit Tap-Aktion, Demo-Server, CI (Lint, Typen, Unit-, Paket- und Integrationstest). |
 | **1 – MVP** | ✅ Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht** (✅ QCells, ✅ Keba inkl. Auto im Energiefluss), Authentifizierung. |
-| **2 – Komfort** | Bearbeiten-Modus + Overrides, Favoriten, Home-Übersicht, Status-Sicht, Farblicht, Szenen. |
+| **2 – Komfort** | ✅ Bearbeiten-Modus + Overrides, ✅ Favoriten, Home-Übersicht, Status-Sicht, Farblicht, Szenen. |
 | **3 – Ausbau** | Verlaufsdiagramme (history/influxdb/sql), Media, Kamera, Schloss, Kiosk-Modus, Benutzerprofile, Push-Benachrichtigungen. |
 
 ## 8. Offene Fragen
