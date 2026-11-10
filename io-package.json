@@ -1,0 +1,128 @@
+{
+    "common": {
+        "name": "smartvis",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "первоначальный выпуск",
+                "pt": "lançamento inicial",
+                "nl": "eerste release",
+                "fr": "version initiale",
+                "it": "rilascio iniziale",
+                "es": "lanzamiento inicial",
+                "pl": "pierwsze wydanie",
+                "uk": "початковий випуск",
+                "zh-cn": "首次发布"
+            }
+        },
+        "titleLang": {
+            "en": "SmartVis",
+            "de": "SmartVis",
+            "ru": "SmartVis",
+            "pt": "SmartVis",
+            "nl": "SmartVis",
+            "fr": "SmartVis",
+            "it": "SmartVis",
+            "es": "SmartVis",
+            "pl": "SmartVis",
+            "uk": "SmartVis",
+            "zh-cn": "SmartVis"
+        },
+        "desc": {
+            "en": "Self-configuring, mobile-first visualization",
+            "de": "Selbstkonfigurierende, mobile-first Visualisierung",
+            "ru": "Самонастраивающаяся визуализация для мобильных устройств",
+            "pt": "Visualização autoconfigurável e mobile-first",
+            "nl": "Zelfconfigurerende, mobile-first visualisatie",
+            "fr": "Visualisation auto-configurante, mobile-first",
+            "it": "Visualizzazione auto-configurante, mobile-first",
+            "es": "Visualización autoconfigurable, mobile-first",
+            "pl": "Samokonfigurująca się wizualizacja mobile-first",
+            "uk": "Самоналаштовувана візуалізація для мобільних пристроїв",
+            "zh-cn": "自动配置、移动优先的可视化"
+        },
+        "authors": ["Exc3pt10n"],
+        "keywords": ["visualization", "vis", "mobile", "pwa", "dashboard"],
+        "licenseInformation": {
+            "type": "free",
+            "license": "MIT"
+        },
+        "platform": "Javascript/Node.js",
+        "icon": "smartvis.svg",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/Exc3pt10n/ioBroker.SmartVis/main/admin/smartvis.svg",
+        "readme": "https://github.com/Exc3pt10n/ioBroker.SmartVis/blob/main/README.md",
+        "loglevel": "info",
+        "tier": 3,
+        "mode": "daemon",
+        "type": "visualization",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "adminUI": {
+            "config": "json"
+        },
+        "localLinks": {
+            "_default": {
+                "link": "http://%ip%:%port%/",
+                "color": "#2563eb"
+            }
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=6.0.11"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=7.0.23"
+            }
+        ]
+    },
+    "native": {
+        "port": 8099,
+        "bind": "0.0.0.0",
+        "language": "de",
+        "ignoreAdapters": "system,admin,discovery,backitup,history,influxdb,sql,web,vis,vis-2,material",
+        "rediscoverDelay": 10
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.devices",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "Erkannte Geräte",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.clients",
+            "type": "state",
+            "common": {
+                "role": "value",
+                "name": "Verbundene Clients",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        }
+    ]
+}

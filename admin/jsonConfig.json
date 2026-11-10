@@ -1,0 +1,68 @@
+{
+    "i18n": true,
+    "type": "panel",
+    "items": {
+        "_server": {
+            "type": "header",
+            "text": "Webserver",
+            "size": 3
+        },
+        "bind": {
+            "type": "ip",
+            "label": "IP-Adresse",
+            "listenOnAllPorts": true,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4
+        },
+        "port": {
+            "type": "port",
+            "label": "Port",
+            "min": 1,
+            "max": 65535,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4
+        },
+        "_discovery": {
+            "type": "header",
+            "text": "Automatische Erkennung",
+            "size": 3,
+            "newLine": true
+        },
+        "language": {
+            "type": "select",
+            "label": "Sprache für Gerätenamen",
+            "options": [
+                { "label": "Deutsch", "value": "de" },
+                { "label": "English", "value": "en" }
+            ],
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4
+        },
+        "rediscoverDelay": {
+            "type": "number",
+            "label": "Neu-Erkennung nach Objektänderung (Sekunden)",
+            "min": 1,
+            "max": 3600,
+            "xs": 12,
+            "sm": 12,
+            "md": 6,
+            "lg": 4
+        },
+        "ignoreAdapters": {
+            "type": "text",
+            "label": "Ignorierte Adapter (kommagetrennt)",
+            "help": "Diese Adapter werden bei der Erkennung nicht berücksichtigt",
+            "newLine": true,
+            "xs": 12,
+            "sm": 12,
+            "md": 12,
+            "lg": 8
+        }
+    }
+}

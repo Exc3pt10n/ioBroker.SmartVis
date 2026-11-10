@@ -1,4 +1,4 @@
-# ioBroker.SmartVis – Konzept (Entwurf v0.1)
+# ioBroker.SmartVis – Konzept (Entwurf v0.2)
 
 > Status: Diskussionsgrundlage. Offene Entscheidungen sind mit **❓** markiert.
 
@@ -39,10 +39,10 @@ Nicht-Ziele (zunächst): freies Pixel-Layout à la VIS, Grafik-Editor für eigen
   - Frontend bekommt nur das Device-Model + die tatsächlich benötigten States.
   - Updates werden gebündelt (z. B. 100 ms Debounce) → weniger Traffic auf dem Handy.
   - Schreibzugriffe werden gegen das Model validiert (nur bekannte, schreibbare States).
-- **❓ Hosting:** eigener Port (einfach, unabhängig) **vs.** Erweiterung des `web`-Adapters (gemeinsamer Port/SSL/Auth). Vorschlag: eigener Server, optional Web-Extension später.
+- **Hosting (entschieden):** eigener HTTP-Server mit eigenem Port (Standard 8099), WebSocket unter `/ws`.
 
 ### Frontend
-- **React + TypeScript + Vite**, PWA (Manifest, Service Worker, „Zum Startbildschirm hinzufügen“).
+- **React + TypeScript + Vite** (entschieden), PWA (Manifest, Service Worker, „Zum Startbildschirm hinzufügen“).
 - UI-Basis: leichtgewichtig (eigene Komponenten + CSS-Variablen) statt schwerem Framework → schnelle Ladezeit auf Mobilgeräten.
 - Hell/Dunkel automatisch (`prefers-color-scheme`), Akzentfarbe wählbar.
 - i18n von Anfang an (de/en).
@@ -65,6 +65,19 @@ Zusätzlich **generierte Sichten**:
 - **Übersicht/Home:** Lichter an (n), offene Fenster, Raumtemperaturen, Anwesenheit, Warnungen.
 - **Status:** leere Batterien, nicht erreichbare Geräte.
 - **Nach Funktion:** alle Lichter, alle Rollläden, … (inkl. „alle aus/zu“).
+
+## 3a. Zielinstallation (erste Erkennungsprofile)
+
+Räume/Funktionen sind kaum in Enums gepflegt → **Namens-Heuristik und Adapter-Profile sind Pflicht, nicht Fallback.**
+
+| System | Adapter | Erkennung | Besonderheiten |
+|---|---|---|---|
+| Homematic | `hm-rpc` (+ `hm-rega`) | type-detector klappt gut (saubere Rollen) | Kanal 0 = Wartung (`UNREACH`, `LOW_BAT`) → wird dem Gerät als Indikator zugeordnet. Kanalnamen „Gerät:1“ → Gerätename. **Tipp:** Sind Räume/Gewerke in der CCU gepflegt, kann `hm-rega` sie als Enums synchronisieren – dann kommen die Räume gratis. |
+| Philips Hue | `hue` | Lichter über `switch.light`/`level.dimmer` | Hue-Räume/Zonen (Gruppen) als Raumquelle nutzen → eigenes Profil. Gruppen selbst als „Alle Lichter im Raum“. |
+| Keba KeContact | `kecontact` | type-detector kennt keine Wallbox | Eigenes Profil „Wallbox“: Status, Ladeleistung, Energie der Sitzung, Freigabe/Ladestrom (schreibbar), PV-Überschussladen. |
+| QCells Q.HOME | ❓ (Modbus / eigener Adapter?) | kein Standardtyp | Eigenes Profil „PV/Speicher“: PV-Leistung, Netzbezug/-einspeisung, Hausverbrauch, Batterie-SoC/-Leistung. |
+
+Daraus folgt eine neue generierte Sicht **„Energie“**: Energiefluss PV → Haus/Batterie/Netz/Auto, Tageswerte, Wallbox-Steuerung. Die Wallbox- und PV-Profile werden als konfigurierbare Zuordnungen umgesetzt (Profil schlägt States vor, Nutzer bestätigt/korrigiert), da sich State-Namen je nach Adapter/Firmware unterscheiden.
 
 ## 4. Bedienkonzept (Mobile First)
 
@@ -98,15 +111,14 @@ Zusätzlich **generierte Sichten**:
 
 | Phase | Inhalt |
 |---|---|
-| **0 – Grundgerüst** | Adapter-Scaffold, Frontend-Build in Adapter-Paket, CI (Lint, Tests), Release-Script. |
-| **1 – MVP** | Discovery (Enums + type-detector), WebSocket-API, Raumansicht, Widgets: Licht/Dimmer, Schalter, Rollladen, Thermostat, Fenster/Tür, Sensorwert. PWA installierbar. |
+| **0 – Grundgerüst** ✅ | Adapter-Scaffold, Discovery (Enums + type-detector + Namens-Heuristik), WebSocket-API, PWA-Shell mit Home/Räume/Mehr, Kacheln mit Tap-Aktion, Demo-Server, CI (Lint, Typen, Unit-, Paket- und Integrationstest). |
+| **1 – MVP** | Detail-Sheet je Typ (Dimmer-Slider, Rollladen auf/ab/Position, Thermostat-Sollwert), Hue-Raumprofil, Homematic-Feinschliff, **Energie-Sicht mit Keba- und QCells-Profil**, Authentifizierung. |
 | **2 – Komfort** | Bearbeiten-Modus + Overrides, Favoriten, Home-Übersicht, Status-Sicht, Farblicht, Szenen. |
 | **3 – Ausbau** | Verlaufsdiagramme (history/influxdb/sql), Media, Kamera, Schloss, Kiosk-Modus, Benutzerprofile, Push-Benachrichtigungen. |
 
 ## 8. Offene Fragen
-1. Eigener Webserver oder `web`-Adapter-Extension?
-2. React als Frontend-Framework ok (passt zum ioBroker-Ökosystem)?
-3. Welche Geräte/Adapter sind bei dir im Einsatz (für die ersten Erkennungsprofile und Tests)?
-4. Sind Räume/Funktionen in deinen Enums gepflegt – oder muss die Erkennung stark ohne Enums auskommen?
-5. Mehrbenutzer/Rechte schon im MVP oder später?
-6. Verlaufsdiagramme bereits im MVP?
+1. Über welchen Adapter ist die QCells-Anlage angebunden (Modbus, eigener Adapter, MQTT …)?
+2. Sind in der CCU Räume gepflegt (dann `hm-rega`-Enum-Sync)? Und in der Hue-App?
+3. Objekt-Export (anonymisiert) je Adapter als Testdaten für die Profile.
+4. Mehrbenutzer/Rechte schon im MVP oder später?
+5. Verlaufsdiagramme bereits im MVP?

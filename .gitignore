@@ -1,0 +1,9 @@
+node_modules/
+build/
+www/
+*.tsbuildinfo
+.DS_Store
+.idea/
+.vscode/
+*.log
+/.dev-server/
