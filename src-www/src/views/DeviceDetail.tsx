@@ -4,7 +4,7 @@ import { Sheet } from '../components/Sheet';
 import { Slider } from '../components/Slider';
 import { Toggle } from '../components/Toggle';
 import { connection, useConnection } from '../connection';
-import { TYPE_LABELS, formatValue, warnings } from '../device';
+import { TYPE_LABELS, formatValue, isPlaying, warnings } from '../device';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 
 type States = Record<string, SvStateValue | null>;
@@ -12,6 +12,26 @@ type States = Record<string, SvStateValue | null>;
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 
 const STATE_LABELS: Record<string, string> = {
+    STATE: 'Status',
+    PLAY: 'Wiedergabe',
+    PAUSE: 'Pause',
+    STOP: 'Stopp',
+    NEXT: 'Weiter',
+    PREV: 'Zurück',
+    SHUFFLE: 'Zufällig',
+    REPEAT: 'Wiederholen',
+    ARTIST: 'Interpret',
+    ALBUM: 'Album',
+    TITLE: 'Titel',
+    COVER: 'Cover',
+    DURATION: 'Dauer',
+    ELAPSED: 'Gespielt',
+    SEEK: 'Position',
+    VOLUME: 'Lautstärke',
+    VOLUME_ACTUAL: 'Lautstärke',
+    MUTE: 'Stumm',
+    CONNECTED: 'Verbunden',
+    PLAYER_NAME: 'Player',
     ACTUAL: 'Istwert',
     SET: 'Sollwert',
     ON: 'Ein/Aus',
@@ -27,9 +47,10 @@ const STATE_LABELS: Record<string, string> = {
     VALVE: 'Ventil',
     WINDOW: 'Fenster',
     BOOST: 'Boost',
+    PARTY: 'Party-Modus',
+    POWER: 'Ein/Aus',
     MODE: 'Modus',
     WORKING: 'In Bewegung',
-    STOP: 'Stopp',
     UNREACH: 'Nicht erreichbar',
     LOWBAT: 'Batterie schwach',
     BATTERY: 'Batterie',
@@ -104,6 +125,205 @@ function lightRefs(device: SvDevice): LightRefs {
     };
 }
 
+interface MediaRefs {
+    state?: SvStateRef;
+    play?: SvStateRef;
+    pause?: SvStateRef;
+    stop?: SvStateRef;
+    next?: SvStateRef;
+    prev?: SvStateRef;
+    shuffle?: SvStateRef;
+    repeat?: SvStateRef;
+    artist?: SvStateRef;
+    album?: SvStateRef;
+    title?: SvStateRef;
+    cover?: SvStateRef;
+    duration?: SvStateRef;
+    elapsed?: SvStateRef;
+    volume?: SvStateRef;
+    volumeActual?: SvStateRef;
+    mute?: SvStateRef;
+    connected?: SvStateRef;
+}
+
+function mediaRefs(device: SvDevice): MediaRefs {
+    return {
+        state: find(device, ['STATE']),
+        play: find(device, ['PLAY'], { write: true }),
+        pause: find(device, ['PAUSE'], { write: true }),
+        stop: find(device, ['STOP'], { write: true }),
+        next: find(device, ['NEXT'], { write: true }),
+        prev: find(device, ['PREV'], { write: true }),
+        shuffle: find(device, ['SHUFFLE'], { write: true }),
+        repeat: find(device, ['REPEAT'], { write: true }),
+        artist: find(device, ['ARTIST']),
+        album: find(device, ['ALBUM']),
+        title: find(device, ['TITLE']),
+        cover: find(device, ['COVER']),
+        duration: find(device, ['DURATION']),
+        elapsed: find(device, ['ELAPSED']),
+        volume: find(device, ['VOLUME'], { write: true }),
+        volumeActual: find(device, ['VOLUME_ACTUAL']),
+        mute: find(device, ['MUTE']),
+        connected: find(device, ['CONNECTED']),
+    };
+}
+
+/** Sekunden als 3:05 bzw. 1:02:05 */
+function clock(sec: number): string {
+    const s = Math.max(0, Math.round(sec));
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const r = String(s % 60).padStart(2, '0');
+    return h ? `${h}:${String(m).padStart(2, '0')}:${r}` : `${m}:${r}`;
+}
+
+function text(states: States, ref: SvStateRef | undefined): string | undefined {
+    const v = ref ? states[ref.id]?.val : undefined;
+    return v === null || v === undefined || v === '' ? undefined : String(v);
+}
+
+function MediaControls({ refs, states }: { refs: MediaRefs; states: States }): React.JSX.Element {
+    const playing = isPlaying(states, refs.state);
+    const title = text(states, refs.title);
+    const sub = [text(states, refs.artist), text(states, refs.album)].filter(Boolean).join(' · ');
+    const cover = text(states, refs.cover);
+    const coverUrl = cover && /^https?:\/\//i.test(cover) ? cover : undefined;
+    const duration = num(states, refs.duration) ?? 0;
+    const elapsed = num(states, refs.elapsed) ?? 0;
+    const connected = refs.connected ? states[refs.connected.id]?.val !== false : true;
+    const muted = refs.mute ? states[refs.mute.id]?.val === true : false;
+    const toggleState = playing ? refs.pause || refs.stop : refs.play;
+    const press = (ref: SvStateRef | undefined): void => {
+        if (ref) {
+            connection.setState(ref.id, true);
+        }
+    };
+    const flags = [
+        { ref: refs.shuffle, label: '🔀 Zufällig' },
+        { ref: refs.repeat, label: '🔁 Wiederholen' },
+    ].filter(f => f.ref && f.ref.type === 'boolean');
+
+    return (
+        <div className="detail__controls media">
+            {!connected && <div className="banner banner--offline">Player nicht verbunden</div>}
+            <div className="media__now">
+                <div className="media__cover">
+                    {coverUrl ? (
+                        <img
+                            src={coverUrl}
+                            alt=""
+                            referrerPolicy="no-referrer"
+                        />
+                    ) : (
+                        <span aria-hidden="true">🎵</span>
+                    )}
+                </div>
+                <div className="media__meta">
+                    <div className="media__title">{title || (playing ? 'Wiedergabe' : 'Nichts aktiv')}</div>
+                    {sub && <div className="media__sub">{sub}</div>}
+                    <div className="media__status">{playing ? '▶ spielt' : '⏸ pausiert'}</div>
+                </div>
+            </div>
+            {duration > 0 ? (
+                <div className="media__progress">
+                    <div
+                        className="progress__track"
+                        role="meter"
+                        aria-label="Fortschritt"
+                        aria-valuemin={0}
+                        aria-valuemax={duration}
+                        aria-valuenow={elapsed}
+                    >
+                        <div
+                            className="progress__bar media__bar"
+                            style={{ width: `${Math.min(100, (elapsed / duration) * 100)}%` }}
+                        />
+                    </div>
+                    <div className="media__times">
+                        <span>{clock(elapsed)}</span>
+                        <span>{clock(duration)}</span>
+                    </div>
+                </div>
+            ) : elapsed > 0 && playing ? (
+                <p className="detail__note">Läuft seit {clock(elapsed)} (Stream)</p>
+            ) : null}
+            <div
+                className="media__buttons"
+                role="group"
+                aria-label="Wiedergabe steuern"
+            >
+                <button
+                    type="button"
+                    className="media__btn"
+                    aria-label="Zurück"
+                    disabled={!refs.prev}
+                    onClick={() => press(refs.prev)}
+                >
+                    ⏮
+                </button>
+                <button
+                    type="button"
+                    className="media__btn media__btn--main"
+                    aria-label={playing ? 'Pause' : 'Abspielen'}
+                    disabled={!toggleState}
+                    onClick={() => press(toggleState)}
+                >
+                    {playing ? '⏸' : '▶'}
+                </button>
+                <button
+                    type="button"
+                    className="media__btn"
+                    aria-label="Weiter"
+                    disabled={!refs.next}
+                    onClick={() => press(refs.next)}
+                >
+                    ⏭
+                </button>
+            </div>
+            {refs.volume && (
+                <div className="media__volume">
+                    {refs.mute?.write && (
+                        <button
+                            type="button"
+                            className="iconbtn"
+                            aria-pressed={muted}
+                            aria-label={muted ? 'Ton an' : 'Stumm'}
+                            onClick={() => connection.setState(refs.mute!.id, !muted)}
+                        >
+                            {muted ? '🔇' : '🔊'}
+                        </button>
+                    )}
+                    <Slider
+                        label={muted ? 'Lautstärke (stumm)' : 'Lautstärke'}
+                        value={num(states, refs.volumeActual) ?? num(states, refs.volume)}
+                        min={refs.volume.min ?? 0}
+                        max={refs.volume.max ?? 100}
+                        pending={pending(states, refs.volume)}
+                        onCommit={v => connection.setState(refs.volume!.id, v)}
+                    />
+                </div>
+            )}
+            {flags.length > 0 && (
+                <div className="chips chips--small">
+                    {flags.map(f => (
+                        <button
+                            key={f.label}
+                            type="button"
+                            role="switch"
+                            aria-checked={states[f.ref!.id]?.val === true}
+                            className={`flag${states[f.ref!.id]?.val === true ? ' flag--on' : ''}`}
+                            onClick={() => connection.setState(f.ref!.id, !(states[f.ref!.id]?.val === true))}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 function blindRefs(device: SvDevice): BlindRefs {
     return {
         set: find(device, ['SET'], { write: true }),
@@ -151,6 +371,15 @@ export function DeviceDetail({
         main = (
             <BlindControls
                 device={device}
+                refs={refs}
+                states={states}
+            />
+        );
+    } else if (device.type === 'media' || device.type === 'mediaPlayer') {
+        const refs = mediaRefs(device);
+        used = Object.values(refs);
+        main = (
+            <MediaControls
                 refs={refs}
                 states={states}
             />
@@ -461,6 +690,21 @@ function ThermostatControls({ refs, states }: { refs: ThermostatRefs; states: St
 function StateRow({ state, states }: { state: SvStateRef; states: States }): React.JSX.Element {
     const label = STATE_LABELS[state.name] || state.name;
     const value = states[state.id];
+    // Taster (role button.*) lösen eine Aktion aus – kein Ein/Aus-Zustand
+    if (state.write && state.type === 'boolean' && /^(button|action)\b/.test(state.role || '')) {
+        return (
+            <div className="facts__row facts__row--control facts__row--action">
+                <span>{label}</span>
+                <button
+                    type="button"
+                    className="action action--small"
+                    onClick={() => connection.setState(state.id, true)}
+                >
+                    Auslösen
+                </button>
+            </div>
+        );
+    }
     if (state.write && state.type === 'boolean') {
         return (
             <div className="facts__row facts__row--control">

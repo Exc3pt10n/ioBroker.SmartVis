@@ -385,5 +385,237 @@
     "native": {
       "udpKey": "Product"
     }
+  },
+  "kecontact.0.automatic.1p3pCharging": {
+    "_id": "kecontact.0.automatic.1p3pCharging",
+    "type": "state",
+    "common": {
+      "name": "define whether to charge with 1p or 3p",
+      "type": "number",
+      "role": "level",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "Set option to charge with 1p or 3p regardless of surplus (0 = automatic by surplus)",
+      "states": {
+        "0": "use 1p or 3p depending of surplus",
+        "1": "charge only with 1p",
+        "3": "charge only with 3p"
+      }
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.batterySoCForCharging": {
+    "_id": "kecontact.0.automatic.batterySoCForCharging",
+    "type": "state",
+    "common": {
+      "name": "SoC of battery storage above which battery power is used for charging",
+      "type": "number",
+      "role": "level",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "With this state you can dynamically set a value of SoC (state of charge) above with battery storage can be used for charging vehicle",
+      "custom": {
+        "iqontrol.0": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "enabled": true,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "roundDigits": 0,
+          "timeFormat": "x",
+          "timeDisplayFormat": "dddd, DD.MM.YYYY HH:mm:ss",
+          "timeDisplayDontShowDistance": false,
+          "targetValueId": "",
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false,
+          "readonly": false,
+          "unit": "%",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "type": "number",
+          "role": "level"
+        }
+      },
+      "unit": "%"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.batteryStorageStrategy": {
+    "_id": "kecontact.0.automatic.batteryStorageStrategy",
+    "type": "state",
+    "common": {
+      "name": "strategy to use for battery storage (1-4)",
+      "type": "number",
+      "role": "level",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "Dynamic value which strategy should be used for battery storage",
+      "states": {
+        "0": "none (use strategy set in adapter settings)",
+        "1": "do not use battery storage (priority on vehicle)",
+        "2": "do not use battery storgae (priority on battery)",
+        "3": "use battery storage for minimal charging of vehicle",
+        "4": "full use of battery for charging vehicle"
+      },
+      "custom": {
+        "iqontrol.0": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "enabled": true,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "roundDigits": 0,
+          "timeFormat": "x",
+          "timeDisplayFormat": "dddd, DD.MM.YYYY HH:mm:ss",
+          "timeDisplayDontShowDistance": false,
+          "targetValueId": "",
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false,
+          "readonly": false,
+          "unit": "",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": 0,
+          "max": 4,
+          "step": 1,
+          "type": "number",
+          "role": "level",
+          "states": {
+            "0": "Benutze Adaptereinstellung",
+            "1": "Speicher nicht entladen (Auto zuerst laden)",
+            "2": "Speicher nicht entladen (Speicher zuerst laden)",
+            "3": "Speicher entladen, um minimalen Ladestrom aufrecht zu erhalten",
+            "4": "Speicher entladen, um Auto zu laden"
+          }
+        }
+      }
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.limitCurrent": {
+    "_id": "kecontact.0.automatic.limitCurrent",
+    "type": "state",
+    "common": {
+      "name": "limit dynamic charging to this value of amperage (0 = no limitation)",
+      "type": "number",
+      "role": "level.current.max",
+      "unit": "mA",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "The amount of dynamic charging current will be limited to this value (0 = no limitation)"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.limitCurrent1p": {
+    "_id": "kecontact.0.automatic.limitCurrent1p",
+    "type": "state",
+    "common": {
+      "name": "limit dynamic charging to this value of amperage in case of using 1p 3p switch ans set to 1 (0 = use limitation from limitCurrent)",
+      "type": "number",
+      "role": "level.current.max",
+      "unit": "mA",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "The amount of dynamic charing current will be limited to this value if 1p 3p switch is set to 1p (0 = use limitation from limitCurrent))"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.maxGridPower": {
+    "_id": "kecontact.0.automatic.maxGridPower",
+    "type": "state",
+    "common": {
+      "name": "limit dynamic charging to this value of grid power (0 = limitation from settings)",
+      "type": "number",
+      "role": "level.max",
+      "unit": "W",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "The power of dynamic charing will be limited, so grid power consumption will not exceed this value (0 = use limitation from settings of adapter)"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.maxSoC": {
+    "_id": "kecontact.0.automatic.maxSoC",
+    "type": "state",
+    "common": {
+      "name": "charging up to SoC of vehicle",
+      "type": "number",
+      "role": "level",
+      "unit": "%",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "charging of vehicle stops when SoC (state of charge) has reached this value"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.stateVehicleSoC": {
+    "_id": "kecontact.0.automatic.stateVehicleSoC",
+    "type": "state",
+    "common": {
+      "name": "name of state holding SoC of vehicle currently to be charged",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": true,
+      "def": "",
+      "desc": "You can specify a state name that holds SoC (state of charge) of a vehicle to be charged. Needed for charging up to a target SoC"
+    },
+    "native": {}
+  },
+  "kecontact.0.currentTimer": {
+    "_id": "kecontact.0.currentTimer",
+    "type": "state",
+    "common": {
+      "name": "Current for Timer",
+      "type": "number",
+      "role": "level",
+      "unit": "mA",
+      "read": true,
+      "write": true,
+      "desc": "Current value in mA that will replace the setting in the “Curr user” field as soon as “Tmo CT” expires."
+    },
+    "native": {
+      "udpKey": "Curr timer"
+    }
+  },
+  "kecontact.0.start": {
+    "_id": "kecontact.0.start",
+    "type": "state",
+    "common": {
+      "name": "authorize wallbox",
+      "type": "string",
+      "role": "text",
+      "read": false,
+      "write": true,
+      "desc": "enter 8 byte hex for RFID tag and 10 byte hex for RFID class to authorize for charging"
+    }
+  },
+  "kecontact.0.unlock": {
+    "_id": "kecontact.0.unlock",
+    "type": "state",
+    "common": {
+      "name": "unlock socket of charging station",
+      "type": "boolean",
+      "role": "switch",
+      "read": true,
+      "write": true,
+      "desc": "The command unlock unlocks the socket of the device. The charging process has to be stopped first (e.g. via currtime 0 1 or ena 0)"
+    }
   }
 }

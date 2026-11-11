@@ -51,6 +51,9 @@ state('hm-rpc.0.MEQ003.1.SET_POINT_TEMPERATURE', 'level.temperature', 'number', 
     max: 30,
 });
 state('hm-rpc.0.MEQ003.1.ACTUAL_TEMPERATURE', 'value.temperature', 'number', false, 19.8, { unit: '°C' });
+state('hm-rpc.0.MEQ003.1.HUMIDITY', 'value.humidity', 'number', false, 54, { unit: '%' });
+state('hm-rpc.0.MEQ003.1.PARTY_MODE', 'switch.mode.party', 'boolean', true, false);
+state('hm-rpc.0.MEQ003.1.POWER', 'switch.power', 'boolean', true, true);
 folder('hm-rpc.0.MEQ004', 'device', 'Rollladen Büro');
 folder('hm-rpc.0.MEQ004.1', 'channel', 'Rollladen Büro:1', 'blind');
 state('hm-rpc.0.MEQ004.1.LEVEL', 'level.blind', 'number', true, 100, { min: 0, max: 100, unit: '%' });
@@ -184,6 +187,12 @@ function simulateShutterControl(id: string, val: SvStateValue['val']): void {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         server.queueState(sid, states[sid]);
     };
+    const player = /^(alexa2\.0\.Echo-Devices\.[^.]+\.Player)\.control(Play|Pause)$/.exec(id);
+    if (player && val === true) {
+        push(`${player[1]}.currentState`, player[2] === 'Play');
+        push(id, false);
+        return;
+    }
     const mirror = /^0_userdata\.0\.Rollladen\.(.+)$/.exec(id);
     if (mirror) {
         push(`shuttercontrol.0.control.${mirror[1]}`, val);
@@ -278,6 +287,18 @@ for (const [key, val] of Object.entries({
     'automatic.calcPhases': 1,
     'statistics.surplus': 0,
     'automatic.photovoltaics': true,
+    // Einstellungen der Ladeautomatik (Werte wie in der echten Anlage)
+    'automatic.1p3pCharging': 0,
+    'automatic.addPower': 1380,
+    'automatic.maxGridPower': 0,
+    'automatic.limitCurrent': 0,
+    'automatic.limitCurrent1p': 0,
+    'automatic.batteryStorageStrategy': 2,
+    'automatic.batterySoCForCharging': 100,
+    'automatic.targetSoC': 0,
+    'automatic.maxSoC': 0,
+    'automatic.resetTargetSoC': true,
+    'automatic.stateVehicleSoC': '',
     'automatic.pauseWallbox': false,
     'info.connection': true,
 })) {
@@ -307,6 +328,33 @@ for (const [key, unit, val] of [
     state(`${Q}.${key}`, key === 'BtSoc' ? 'value.battery' : 'value', 'number', false, val, { unit });
 }
 state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
+
+// Echo-Player (gleiche Rollen wie alexa2), Raum über den Gerätenamen
+{
+    const E = 'alexa2.0.Echo-Devices.DEMO1';
+    folder(E, 'device', 'Echo Arbeitszimmer');
+    folder(`${E}.Player`, 'channel', 'Player');
+    const P = `${E}.Player`;
+    for (const [key, role, type, write, val, extra] of [
+        ['currentState', 'media.state', 'boolean', false, true, {}],
+        ['controlPlay', 'button.play', 'boolean', true, false, {}],
+        ['controlPause', 'button.pause', 'boolean', true, false, {}],
+        ['controlNext', 'button.next', 'boolean', true, false, {}],
+        ['controlPrevious', 'button.prev', 'boolean', true, false, {}],
+        ['controlShuffle', 'media.mode.shuffle', 'boolean', true, false, {}],
+        ['controlRepeat', 'media.mode.repeat', 'boolean', true, false, {}],
+        ['currentTitle', 'media.title', 'string', false, 'WDR 2 Aachen und Region', {}],
+        ['currentArtist', 'media.artist', 'string', false, 'ARD Sounds', {}],
+        ['currentAlbum', 'media.album', 'string', false, '', {}],
+        ['mainArtUrl', 'media.cover', 'string', false, '', {}],
+        ['mediaLength', 'media.duration', 'number', false, 0, {}],
+        ['mediaProgress', 'media.elapsed', 'number', false, 3625, {}],
+        ['volume', 'level.volume', 'number', true, 35, { min: 0, max: 100 }],
+        ['muted', 'media.mute', 'boolean', false, false, {}],
+    ] as const) {
+        state(`${P}.${key}`, role, type, write, val, extra);
+    }
+}
 
 // Verläufe: sql.0-Instanz und Aufzeichnung für ausgewählte Werte (wie im echten System)
 objects['system.adapter.sql.0'] = {

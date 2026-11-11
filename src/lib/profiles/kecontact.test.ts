@@ -39,11 +39,47 @@ describe('profile: kecontact', () => {
         expect(result.stateIds).to.include.members(['kecontact.0.currentUser', 'kecontact.0.statistics.surplus']);
     });
 
-    it('only whitelists the switches the app offers', () => {
-        expect([...result.writableIds].sort()).to.deep.equal([
+    it('offers the settings of the charging automatics (German labels, units)', () => {
+        const keys = (wallbox.settings || []).map(x => x.key);
+        expect(keys).to.deep.equal([
+            'automatic.1p3pCharging',
+            'automatic.addPower',
+            'automatic.maxGridPower',
+            'automatic.limitCurrent',
+            'automatic.limitCurrent1p',
+            'automatic.calcPhases',
+            'automatic.batteryStorageStrategy',
+            'automatic.batterySoCForCharging',
+            'automatic.targetSoC',
+            'automatic.maxSoC',
+            'automatic.resetTargetSoC',
+        ]);
+        const limit = wallbox.settings!.find(x => x.key === 'automatic.limitCurrent')!;
+        expect(limit.unit).to.equal('A');
+        expect(limit.scale).to.equal(0.001);
+        expect(limit.state.unit).to.equal('mA');
+        expect(wallbox.vehicleSoCSource?.id).to.equal('kecontact.0.automatic.stateVehicleSoC');
+    });
+
+    it('whitelists switches and settings, but no raw commands or the regulated current', () => {
+        const writable = [...result.writableIds];
+        expect(writable).to.include.members([
             'kecontact.0.automatic.pauseWallbox',
             'kecontact.0.automatic.photovoltaics',
+            'kecontact.0.automatic.limitCurrent',
+            'kecontact.0.automatic.targetSoC',
         ]);
+        for (const id of [
+            'kecontact.0.currentUser',
+            'kecontact.0.currentTimer',
+            'kecontact.0.unlock',
+            'kecontact.0.start',
+            'kecontact.0.display',
+            'kecontact.0.enableUser',
+            'kecontact.0.automatic.stateVehicleSoC',
+        ]) {
+            expect(writable, id).to.not.include(id);
+        }
     });
 
     it('claims the instance so no random tiles appear', () => {

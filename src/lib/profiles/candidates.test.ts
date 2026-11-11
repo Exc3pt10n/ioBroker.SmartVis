@@ -71,7 +71,18 @@ const hue: [string, Obj][] = [
     st('hue.0.Bewegungsmelder.on', 'switch', 'boolean', true),
 ];
 
-const objects = Object.fromEntries([...blindActor, ...thermostat, ...hue]);
+// Alexa: Gerät mit Echo-Namen, Kanal "Player"
+const alexa: [string, Obj][] = [
+    o('alexa2.0.Echo-Devices.G2A1', 'device', { name: 'Echo Arbeitszimmer' }),
+    o('alexa2.0.Echo-Devices.G2A1.Player', 'channel', { name: 'Player' }),
+    st('alexa2.0.Echo-Devices.G2A1.Player.currentState', 'media.state', 'boolean', false),
+    st('alexa2.0.Echo-Devices.G2A1.Player.controlPlay', 'button.play', 'boolean', true),
+    st('alexa2.0.Echo-Devices.G2A1.Player.controlPause', 'button.pause', 'boolean', true),
+    st('alexa2.0.Echo-Devices.G2A1.Player.currentTitle', 'media.title', 'string', false),
+    st('alexa2.0.Echo-Devices.G2A1.Player.volume', 'level.volume', 'number', true, { min: 0, max: 100 }),
+];
+
+const objects = Object.fromEntries([...blindActor, ...thermostat, ...hue, ...alexa]);
 
 describe('candidate rules', () => {
     const result = discover(objects, { language: 'de', ignoreAdapters: [] });
@@ -93,6 +104,13 @@ describe('candidate rules', () => {
         expect(ids.filter(i => i.startsWith('hm-rpc.0.WTH'))).to.deep.equal(['hm-rpc.0.WTH.1']);
         expect(byId['hm-rpc.0.WTH.1'].type).to.equal('thermostat');
         expect(byId['hm-rpc.0.WTH.1'].name).to.equal('Wandthermostat');
+    });
+
+    it('Alexa: player is named after the Echo and placed in its room', () => {
+        const player = byId['alexa2.0.Echo-Devices.G2A1.Player'];
+        expect(player.type).to.equal('media');
+        expect(player.roomId).to.equal('auto.arbeitszimmer');
+        expect(player.name).to.equal('Echo');
     });
 
     it('Hue: maps "Licht Flur" to room Flur, skips single-light rooms, stale objects and sensors', () => {

@@ -320,6 +320,10 @@ function toDevice(
     // Homematic: Kanalnamen sind oft "Gerät:1" (in der CCU nicht umbenannt) → Gerätenamen verwenden.
     // Hat das Gerät mehrere Ausgänge, wird der Name später durch den Gerätetyp ersetzt.
     let genericName = false;
+    // Alexa: Kanal heißt immer "Player" – der Name des Echos steht am Gerät ("Echo Küche")
+    if (id.startsWith('alexa2.') && /^player$/i.test(name) && parentName) {
+        name = parentName;
+    }
     if (/:\d+$/.test(name) && parentName) {
         name = parentName;
         genericName = true;
