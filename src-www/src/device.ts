@@ -1,4 +1,4 @@
-import type { SvDevice, SvStateRef, SvStateValue } from '../../src/shared/protocol';
+import type { SvDevice, SvRoom, SvStateRef, SvStateValue } from '../../src/shared/protocol';
 
 /** Rollen-Namen der Schalt-States je nach Gerätetyp (type-detector) */
 const SWITCH_NAMES = ['ON', 'SET', 'ON_SET', 'SWITCH', 'STATE'];
@@ -119,6 +119,77 @@ export function warnings(device: SvDevice, states: Record<string, SvStateValue |
         } else if (/ERROR|MAINTAIN/i.test(s.name)) {
             result.push('Störung');
         }
+    }
+    return result;
+}
+
+/** Gerätegruppen für die Raumansicht (Reihenfolge = Anzeige) */
+export const DEVICE_GROUPS: { key: string; label: string; icon: string; types: string[] }[] = [
+    {
+        key: 'light',
+        label: 'Licht',
+        icon: '💡',
+        types: ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'],
+    },
+    { key: 'shading', label: 'Beschattung', icon: '🪟', types: ['blind', 'blindButtons'] },
+    {
+        key: 'climate',
+        label: 'Heizung & Klima',
+        icon: '🌡️',
+        types: ['thermostat', 'airCondition', 'fan', 'airPurifier'],
+    },
+    { key: 'openings', label: 'Fenster & Türen', icon: '🚪', types: ['window', 'windowTilt', 'door', 'lock', 'gate'] },
+    { key: 'power', label: 'Steckdosen & Schalter', icon: '🔌', types: ['socket', 'button', 'electricity'] },
+    { key: 'media', label: 'Medien', icon: '🎵', types: ['media', 'mediaPlayer', 'tv', 'volume', 'volumeGroup'] },
+    {
+        key: 'sensors',
+        label: 'Sensoren',
+        icon: '📟',
+        types: [
+            'temperature',
+            'humidity',
+            'motion',
+            'illuminance',
+            'pressure',
+            'percentage',
+            'slider',
+            'warning',
+            'fireAlarm',
+            'floodAlarm',
+            'coAlarm',
+            'airQuality',
+        ],
+    },
+];
+
+const OTHER_GROUP = { key: 'other', label: 'Sonstiges', icon: '•', types: [] as string[] };
+
+/** Geräte nach Gruppe aufteilen; Reihenfolge innerhalb der Gruppe bleibt erhalten, leere Gruppen entfallen */
+export function groupByType(devices: SvDevice[]): { group: (typeof DEVICE_GROUPS)[number]; devices: SvDevice[] }[] {
+    const groups = [...DEVICE_GROUPS, OTHER_GROUP].map(group => ({ group, devices: [] as SvDevice[] }));
+    for (const d of devices) {
+        const target = groups.find(g => g.group.types.includes(d.type)) || groups[groups.length - 1];
+        target.devices.push(d);
+    }
+    return groups.filter(g => g.devices.length > 0);
+}
+
+export interface RoomGroup {
+    /** null = "Ohne Raum" */
+    roomId: string | null;
+    name: string;
+    devices: SvDevice[];
+}
+
+/** Geräte nach Raum aufteilen (Raumreihenfolge wie in der Raumliste, "Ohne Raum" zuletzt) */
+export function groupByRoom(devices: SvDevice[], rooms: SvRoom[]): RoomGroup[] {
+    const result: RoomGroup[] = rooms
+        .map(r => ({ roomId: r.id, name: r.name, devices: devices.filter(d => d.roomId === r.id) }))
+        .filter(g => g.devices.length > 0);
+    const known = new Set(rooms.map(r => r.id));
+    const without = devices.filter(d => !d.roomId || !known.has(d.roomId));
+    if (without.length) {
+        result.push({ roomId: null, name: 'Ohne Raum', devices: without });
     }
     return result;
 }
