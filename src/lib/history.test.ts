@@ -111,6 +111,8 @@ describe('history', () => {
         expect(o.start).to.equal(now - 24 * 3600_000);
         expect(o.aggregate).to.equal('average');
         expect(o.step).to.equal(15 * 60_000);
+        // keine erfundenen Randpunkte am Beginn des Zeitraums
+        expect(o.removeBorderValues).to.equal(true);
         expect(() => historyOptions('1y' as never)).to.throw();
     });
 
