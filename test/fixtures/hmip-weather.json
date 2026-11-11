@@ -1,0 +1,1170 @@
+{
+  "hm-rega.0.5737": {
+    "_id": "hm-rega.0.5737",
+    "type": "state",
+    "common": {
+      "name": "svHmIPSunshineCounterYesterday_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPSunshineCounterYesterday_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5738": {
+    "_id": "hm-rega.0.5738",
+    "type": "state",
+    "common": {
+      "name": "svHmIPSunshineCounterToday_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPSunshineCounterToday_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5739": {
+    "_id": "hm-rega.0.5739",
+    "type": "state",
+    "common": {
+      "name": "svHmIPSunshineCounterOldVal_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPSunshineCounterOldVal_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5740": {
+    "_id": "hm-rega.0.5740",
+    "type": "state",
+    "common": {
+      "name": "svHmIPSunshineCounter_5714_0000000000WS01:1",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPSunshineCounter_5714_0000000000WS01:1",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5752": {
+    "_id": "hm-rega.0.5752",
+    "type": "state",
+    "common": {
+      "name": "svHmIPRainCounter_5714_0000000000WS01:1",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPRainCounter_5714_0000000000WS01:1",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5753": {
+    "_id": "hm-rega.0.5753",
+    "type": "state",
+    "common": {
+      "name": "svHmIPRainCounterYesterday_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPRainCounterYesterday_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5754": {
+    "_id": "hm-rega.0.5754",
+    "type": "state",
+    "common": {
+      "name": "svHmIPRainCounterOldVal_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308
+    },
+    "native": {
+      "Name": "svHmIPRainCounterOldVal_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rega.0.5755": {
+    "_id": "hm-rega.0.5755",
+    "type": "state",
+    "common": {
+      "name": "svHmIPRainCounterToday_5714",
+      "type": "number",
+      "read": true,
+      "write": true,
+      "role": "state",
+      "min": 0,
+      "max": 1.7e+308,
+      "custom": {
+        "iqontrol.0": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "enabled": true,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "roundDigits": 2,
+          "timeFormat": "x",
+          "timeDisplayFormat": "dddd, DD.MM.YYYY HH:mm:ss",
+          "timeDisplayDontShowDistance": false,
+          "targetValueId": "",
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false,
+          "readonly": false,
+          "unit": "mm",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": 0,
+          "max": 1.7e+308,
+          "step": "",
+          "type": "number",
+          "role": "state"
+        }
+      }
+    },
+    "native": {
+      "Name": "svHmIPRainCounterToday_5714",
+      "TypeName": "VARDP",
+      "DPInfo": "",
+      "ValueMin": 0,
+      "ValueMax": 1.7e+308,
+      "ValueUnit": "",
+      "ValueType": 4,
+      "ValueSubType": 0,
+      "ValueList": ""
+    }
+  },
+  "hm-rpc.0.0000000000WS01": {
+    "_id": "hm-rpc.0.0000000000WS01",
+    "type": "device",
+    "common": {
+      "name": "Wetterstation",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MCA1MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIj48bWFzayBpZD0iaG1pXzE3MF9obWlwX3N3b19wbF90aHVtYiI+PGltYWdlIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgc3R5bGU9IndpZHRoOjUwcHg7aGVpZ2h0OjUwcHgiIGhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBRElBQUFBeUNBQUFBQUE3Vk5kdEFBQURhRWxFUVZSNEFaWEJiVXpVZFFEQThlLy80YmpqNFE0dkNRUTdqSlpKUTFCTDJRaHJabVJvRGR1cVVkWVdpMlZiRDVycndSZHRiZVd5QjlzYTBZdWVOa3V0RlZac3ZaQU43UVhWckJBS3hVZ2hJTDBRQmlkd3gzSFBEOEhCLzgvdkJnZmQ1Nk1nZXVaelQwK1FKY2lJQ3JKUEZMRVVHZEZ3b0hFdFM1RVIvWkw1bTZIU0FOYVN0UXFKS09neWwwK0VpNTV1cmJ6dlg5KzkzdnhiTzBsQVFyUDFXUHZsM25jbStsY09PRXRlcjVOcXZuV3hNQlhON3ZjTzlaeDl2c09WY1Z0OVpEZHFNRWdDS2hyYnh6YXJZMGRCNEFhVDQ3T1d2YUZHTHdsSWFPN1lWL2JFQ2ZNVzR4Kzl4Wlh2UnZsZkhsbkRyR3VyVTBoTVJpZjFNMnNrSXBPWWdpN3J5VURJa3BhZWFiSFZCdHRJVEVMMzhGZTJ2SWdxQjZPK3pxcFRIbUxXM1pTYUdwaTgvQ3NDQ2QyZER4MFlaSnJ5a3VOVHBoaGYzdFhmNW5ZYnJUZHZhbngxQW8yRXJ2cnJuZGtlVnlUTkVqbCsxMGtQclA2ZzZjZ29NVXBOemNFbTV0djRMSkJpQW5aV1NVQjlNWFBNaldoVWRHMWRyNW5hN09Hc1RabWZYR0JLSG9JSkd4cUZPY0h6OWs0bGFyL1NkSWxwb3grcUV3NWlycS82NHBzZm1TVWh1QzczRExCaDlCSXgyNzRmTW5YM3VWTlhGWnFzMjV2UnFBaWlHVVkvYzNxYit0emVWUmJmVHkzV29nNTBDb0tNdXBNdXlQTTZpYkgrM1pGaTg3cTh4c0VmZWk3NjBhZ0lsRU4ySU1vc2orVlVxeUlCNFhDRmpFNUZFSHBoNEJ4enZCbEVJc3lJb3BNUktGK2VSekJwWmlFeWdsRHRCZ1FoTXhwSlFpY2pVSSswSXpLZ2lVYlJ5UWprTTB3SlNTeEtSbkNsL0lFVldlVlZUdWFUMEtrSXd2VXRMMGJZTThhc2REU21NSW5rUDdWbUh6cmJtMm5FN0tsZ2prb2MzOURGU25UMnVvWnVyenZWZkh2dFdSTEt2cCs5Q0l6cm55dmRYNXFKU0daUi9vNnJyYzVPSnlLWnBNa2tUU1pwTWttVFNacE0wbVRpaFFpd0JKazRrWXJ0RDVwWm5Fb2NaZURnNmVxeHJoRUgyUjQzMDBLRWlhY1FKeXVySVdmMTRXWEYyOG9ldjd2SHdUV2J5eDlOMzNJOGlrZ2hUazdleUZIcis5LzkzUHAydy9nYks3ZmFSbXFOYjZWMGhSQ3B4RW54dzdIVHIvait2SEdIM041Y1dGQjZZTVFRTUhnUlNjVFptRHZ3TzVDOVl0MzZ0SC9zZncwTlVqSzJ1ZmtxSXBVNG8vZmMwamNPdzhQbmpqSWppczlBSElVNFl4ZTZ5d29IQXN6SmNTMGZkeUtTbUdmWkx0TkhrOHl3MWVRUG1mZjdFVWtzd1BpWVpYVFlqemszcmIrUmVmNERiL2tpWGdjZjk3c0FBQUFBU1VWT1JLNUNZSUk9Ii8+PC9tYXNrPjxyZWN0IHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgc3R5bGU9IndpZHRoOjUwcHg7aGVpZ2h0OjUwcHgiIGZpbGw9ImN1cnJlbnRDb2xvciIgbWFzaz0idXJsKCNobWlfMTcwX2htaXBfc3dvX3BsX3RodW1iKSIvPjwvc3ZnPgo="
+    },
+    "native": {
+      "TYPE": "HmIP-SWO-PL",
+      "SUBTYPE": "SWO-PL",
+      "ADDRESS": "0000000000WS01",
+      "RF_ADDRESS": 6121051,
+      "CHILDREN": [
+        "0000000000WS01:0",
+        "0000000000WS01:1",
+        "0000000000WS01:2",
+        "0000000000WS01:3",
+        "0000000000WS01:4",
+        "0000000000WS01:5",
+        "0000000000WS01:6",
+        "0000000000WS01:7"
+      ],
+      "PARENT": "",
+      "PARENT_TYPE": "",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "SERVICE"
+      ],
+      "FIRMWARE": "1.2.6",
+      "AVAILABLE_FIRMWARE": "1.2.6",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "UP_TO_DATE",
+      "VERSION": 2,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 4
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0": {
+    "_id": "hm-rpc.0.0000000000WS01.0",
+    "type": "channel",
+    "common": {
+      "name": "Wetterstation:0"
+    },
+    "native": {
+      "TYPE": "MAINTENANCE",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000WS01:0",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000WS01",
+      "PARENT_TYPE": "HmIP-SWO-PL",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 2,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.CONFIG_PENDING": {
+    "_id": "hm-rpc.0.0000000000WS01.0.CONFIG_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.CONFIG_PENDING",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "CONFIG_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.CONFIG_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000WS01.0.CONFIG_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.CONFIG_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SWO-PL 0000000000WS01:0.CONFIG_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5691"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.DUTY_CYCLE": {
+    "_id": "hm-rpc.0.0000000000WS01.0.DUTY_CYCLE",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.DUTY_CYCLE",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "value"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "DUTY_CYCLE",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.ERROR_CODE": {
+    "_id": "hm-rpc.0.0000000000WS01.0.ERROR_CODE",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.ERROR_CODE",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 255,
+      "role": "value"
+    },
+    "native": {
+      "MIN": 0,
+      "OPERATIONS": 5,
+      "MAX": 255,
+      "FLAGS": 9,
+      "ID": "ERROR_CODE",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.ERROR_WIND_COMMUNICATION": {
+    "_id": "hm-rpc.0.0000000000WS01.0.ERROR_WIND_COMMUNICATION",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.ERROR_WIND_COMMUNICATION",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "ERROR_WIND_COMMUNICATION",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.ERROR_WIND_NORTH": {
+    "_id": "hm-rpc.0.0000000000WS01.0.ERROR_WIND_NORTH",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.ERROR_WIND_NORTH",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "ERROR_WIND_NORTH",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.INSTALL_TEST": {
+    "_id": "hm-rpc.0.0000000000WS01.0.INSTALL_TEST",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.INSTALL_TEST",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "role": "indicator"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 3,
+      "MAX": true,
+      "FLAGS": 2,
+      "ID": "INSTALL_TEST",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.LOW_BAT": {
+    "_id": "hm-rpc.0.0000000000WS01.0.LOW_BAT",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.LOW_BAT",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator.lowbat"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "LOW_BAT",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.LOW_BAT_ALARM": {
+    "_id": "hm-rpc.0.0000000000WS01.0.LOW_BAT_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.LOW_BAT_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SWO-PL 0000000000WS01:0.LOW_BAT_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5700"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.RSSI_DEVICE": {
+    "_id": "hm-rpc.0.0000000000WS01.0.RSSI_DEVICE",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.RSSI_DEVICE",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 128,
+      "unit": "dBm",
+      "role": "value.rssi"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 128,
+      "FLAGS": 1,
+      "ID": "RSSI_DEVICE",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.RSSI_PEER": {
+    "_id": "hm-rpc.0.0000000000WS01.0.RSSI_PEER",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.RSSI_PEER",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 127,
+      "unit": "dBm",
+      "role": "value.rssi"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 127,
+      "FLAGS": 1,
+      "ID": "RSSI_PEER",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.TEMPERATURE_OUT_OF_RANGE": {
+    "_id": "hm-rpc.0.0000000000WS01.0.TEMPERATURE_OUT_OF_RANGE",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.TEMPERATURE_OUT_OF_RANGE",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "TEMPERATURE_OUT_OF_RANGE",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.UNREACH": {
+    "_id": "hm-rpc.0.0000000000WS01.0.UNREACH",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.UNREACH",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator.unreach"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 25,
+      "ID": "UNREACH",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.UNREACH_ALARM": {
+    "_id": "hm-rpc.0.0000000000WS01.0.UNREACH_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.UNREACH_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SWO-PL 0000000000WS01:0.UNREACH_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5707"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.UPDATE_PENDING": {
+    "_id": "hm-rpc.0.0000000000WS01.0.UPDATE_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.UPDATE_PENDING",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "UPDATE_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000WS01.0.UPDATE_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000WS01.0.UPDATE_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:0.UPDATE_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SWO-PL 0000000000WS01:0.UPDATE_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5711"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1": {
+    "_id": "hm-rpc.0.0000000000WS01.1",
+    "type": "channel",
+    "common": {
+      "name": "Wetterstation:1"
+    },
+    "native": {
+      "TYPE": "WEATHER_TRANSMIT",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000WS01:1",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000WS01",
+      "PARENT_TYPE": "HmIP-SWO-PL",
+      "INDEX": 1,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 2,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.ACTUAL_TEMPERATURE": {
+    "_id": "hm-rpc.0.0000000000WS01.1.ACTUAL_TEMPERATURE",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.ACTUAL_TEMPERATURE",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -3276.8,
+      "max": 3276.7,
+      "unit": "°C",
+      "role": "value.temperature",
+      "smartName": {
+        "de": "Temperatursensor Garten"
+      },
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "debounceTime": 0,
+          "blockTime": 0,
+          "changesOnly": true,
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "retention": 604800,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false,
+          "debounce": "1000"
+        }
+      }
+    },
+    "native": {
+      "MIN": -3276.8,
+      "UNIT": "�C",
+      "OPERATIONS": 5,
+      "MAX": 3276.7,
+      "FLAGS": 1,
+      "ID": "ACTUAL_TEMPERATURE",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.ACTUAL_TEMPERATURE"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.ACTUAL_TEMPERATURE_STATUS": {
+    "_id": "hm-rpc.0.0000000000WS01.1.ACTUAL_TEMPERATURE_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.ACTUAL_TEMPERATURE_STATUS",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 3,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW",
+        "3": "UNDERFLOW"
+      },
+      "role": "value"
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "UNDERFLOW",
+      "FLAGS": 1,
+      "ID": "ACTUAL_TEMPERATURE_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW",
+        "UNDERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.HUMIDITY": {
+    "_id": "hm-rpc.0.0000000000WS01.1.HUMIDITY",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.HUMIDITY",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 100,
+      "unit": "% rF",
+      "role": "value.humidity"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "% rF",
+      "OPERATIONS": 5,
+      "MAX": 100,
+      "FLAGS": 1,
+      "ID": "HUMIDITY",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.HUMIDITY"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.HUMIDITY_STATUS": {
+    "_id": "hm-rpc.0.0000000000WS01.1.HUMIDITY_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.HUMIDITY_STATUS",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 3,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW",
+        "3": "UNDERFLOW"
+      },
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "UNDERFLOW",
+      "FLAGS": 1,
+      "ID": "HUMIDITY_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW",
+        "UNDERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000WS01.1.ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.ILLUMINATION",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "role": "value.brightness"
+    },
+    "native": {
+      "MIN": 0,
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000WS01.1.ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.ILLUMINATION_STATUS",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.RAINING": {
+    "_id": "hm-rpc.0.0000000000WS01.1.RAINING",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.RAINING",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "RAINING",
+      "TYPE": "BOOL",
+      "DEFAULT": false,
+      "CONTROL": "WEATHER_TRANSMIT.RAINING"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER": {
+    "_id": "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.RAIN_COUNTER",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 1638,
+      "unit": "mm",
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "mm",
+      "OPERATIONS": 5,
+      "MAX": 1638,
+      "FLAGS": 1,
+      "ID": "RAIN_COUNTER",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.RAIN_COUNTER"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER_OVERFLOW": {
+    "_id": "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER_OVERFLOW",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.RAIN_COUNTER_OVERFLOW",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "RAIN_COUNTER_OVERFLOW",
+      "TYPE": "BOOL",
+      "DEFAULT": false,
+      "CONTROL": "WEATHER_TRANSMIT.RAIN_COUNTER_OVERFLOW"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER_STATUS": {
+    "_id": "hm-rpc.0.0000000000WS01.1.RAIN_COUNTER_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.RAIN_COUNTER_STATUS",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 1,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN"
+      },
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "UNKNOWN",
+      "FLAGS": 1,
+      "ID": "RAIN_COUNTER_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.SUNSHINEDURATION": {
+    "_id": "hm-rpc.0.0000000000WS01.1.SUNSHINEDURATION",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.SUNSHINEDURATION",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 16383,
+      "unit": "min",
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "min",
+      "OPERATIONS": 5,
+      "MAX": 16383,
+      "FLAGS": 1,
+      "ID": "SUNSHINEDURATION",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.SUNSHINEDURATION"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.SUNSHINEDURATION_OVERFLOW": {
+    "_id": "hm-rpc.0.0000000000WS01.1.SUNSHINEDURATION_OVERFLOW",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.SUNSHINEDURATION_OVERFLOW",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "SUNSHINEDURATION_OVERFLOW",
+      "TYPE": "BOOL",
+      "DEFAULT": false,
+      "CONTROL": "WEATHER_TRANSMIT.SUNSHINEDURATION_OVERFLOW"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.SUNSHINE_THRESHOLD_OVERRUN": {
+    "_id": "hm-rpc.0.0000000000WS01.1.SUNSHINE_THRESHOLD_OVERRUN",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.SUNSHINE_THRESHOLD_OVERRUN",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "SUNSHINE_THRESHOLD_OVERRUN",
+      "TYPE": "BOOL",
+      "DEFAULT": false,
+      "CONTROL": "WEATHER_TRANSMIT.SUNSHINE_THRESHOLD_OVERRUN"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.WIND_SPEED": {
+    "_id": "hm-rpc.0.0000000000WS01.1.WIND_SPEED",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.WIND_SPEED",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 200,
+      "unit": "km/h",
+      "role": "",
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "debounceTime": 0,
+          "blockTime": 0,
+          "changesOnly": true,
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "retention": 604800,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false,
+          "debounce": "1000"
+        }
+      }
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "km/h",
+      "OPERATIONS": 5,
+      "MAX": 200,
+      "FLAGS": 1,
+      "ID": "WIND_SPEED",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "WEATHER_TRANSMIT.WIND_SPEED"
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.WIND_SPEED_STATUS": {
+    "_id": "hm-rpc.0.0000000000WS01.1.WIND_SPEED_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.WIND_SPEED_STATUS",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "WIND_SPEED_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000WS01.1.WIND_THRESHOLD_OVERRUN": {
+    "_id": "hm-rpc.0.0000000000WS01.1.WIND_THRESHOLD_OVERRUN",
+    "type": "state",
+    "common": {
+      "name": "Wetterstation:1.WIND_THRESHOLD_OVERRUN",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": ""
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "WIND_THRESHOLD_OVERRUN",
+      "TYPE": "BOOL",
+      "DEFAULT": false,
+      "CONTROL": "WEATHER_TRANSMIT.WIND_THRESHOLD_OVERRUN"
+    }
+  }
+}

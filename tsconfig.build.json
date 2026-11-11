@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "types": ["node", "iobroker"]
+    },
+    "exclude": ["src/**/*.test.ts"]
+}

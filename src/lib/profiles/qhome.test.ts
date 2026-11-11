@@ -1,0 +1,62 @@
+import { expect } from 'chai';
+import { discover } from '../discovery';
+
+function st(id: string, unit = '', role = 'value'): [string, ioBroker.Object] {
+    return [
+        id,
+        {
+            _id: id,
+            type: 'state',
+            common: { name: id, type: 'number', role, unit, read: true, write: false },
+            native: {},
+        } as unknown as ioBroker.Object,
+    ];
+}
+
+const I = 'qhome-ess-hyb-g2.0';
+const objects = Object.fromEntries([
+    st(`${I}.PvPw`, 'kW'),
+    st(`${I}.ConsPw`, 'kW'),
+    st(`${I}.GridPwPurchaseWb`, 'W'),
+    st(`${I}.GridPwFeedInWb`, 'W'),
+    st(`${I}.BtPwCharge`, 'W'),
+    st(`${I}.BtPwDisCharge`, 'W'),
+    st(`${I}.BtSoc`, '%', 'value.battery'),
+    st(`${I}.BtLast`, 'Min'),
+    [`${I}.counters.day`, { _id: `${I}.counters.day`, type: 'channel', common: { name: 'Tag' }, native: {} }],
+    st(`${I}.counters.day.PvGen`, 'kWh', 'value.energy'),
+    st(`${I}.counters.day.Autarky`, '%'),
+]) as Record<string, ioBroker.Object>;
+
+describe('profile: qhome-ess-hyb-g2', () => {
+    const result = discover(objects, { language: 'de', ignoreAdapters: [] });
+    const system = result.model.energy[0];
+
+    it('detects the energy system per instance', () => {
+        expect(result.model.energy).to.have.length(1);
+        expect(system.id).to.equal(I);
+    });
+
+    it('maps power flows with units', () => {
+        expect(system.flows.pv?.id).to.equal(`${I}.PvPw`);
+        expect(system.flows.pv?.unit).to.equal('kW');
+        expect(system.flows.gridImport?.id).to.equal(`${I}.GridPwPurchaseWb`);
+        expect(system.flows.batteryDischarge?.id).to.equal(`${I}.BtPwDisCharge`);
+        expect(system.battery?.soc?.id).to.equal(`${I}.BtSoc`);
+    });
+
+    it('maps daily counters and skips missing ones', () => {
+        expect(system.today?.pv?.id).to.equal(`${I}.counters.day.PvGen`);
+        expect(system.today?.gridImport).to.equal(undefined);
+    });
+
+    it('subscribes the states but does not create generic tiles for them', () => {
+        expect(result.stateIds).to.include(`${I}.PvPw`);
+        expect(result.model.devices.filter(d => d.adapter === 'qhome-ess-hyb-g2')).to.have.length(0);
+    });
+
+    it('can be disabled via ignored adapters', () => {
+        const ignored = discover(objects, { language: 'de', ignoreAdapters: ['qhome-ess-hyb-g2'] });
+        expect(ignored.model.energy).to.have.length(0);
+    });
+});

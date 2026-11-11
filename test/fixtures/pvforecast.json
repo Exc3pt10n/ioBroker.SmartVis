@@ -1,0 +1,1334 @@
+{
+  "pvforecast.0.plants": {
+    "_id": "pvforecast.0.plants",
+    "type": "folder",
+    "common": {
+      "name": {
+        "en": "PV-Plants",
+        "de": "PV-Anlagen",
+        "ru": "PV-установки",
+        "pt": "Usinas fotovoltaicas",
+        "nl": "PV-installaties",
+        "fr": "Installations PV",
+        "it": "Impianti fotovoltaici",
+        "es": "Plantas fotovoltaicas",
+        "pl": "Fotowoltaika",
+        "uk": "ПВ-Планти",
+        "zh-cn": "光伏电站"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten": {
+    "_id": "pvforecast.0.plants.osten",
+    "type": "device",
+    "common": {
+      "name": "Osten"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.JSONData": {
+    "_id": "pvforecast.0.plants.osten.JSONData",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "JSON Data",
+        "de": "JSON Daten",
+        "ru": "ДЖСОН Данные",
+        "pt": "J. Dados",
+        "nl": "JSON Data",
+        "fr": "JSON Données",
+        "it": "JSON Dati",
+        "es": "JSON Datos",
+        "pl": "JSON Data",
+        "uk": "Сонце Дані",
+        "zh-cn": "附 件 数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.JSONGraph": {
+    "_id": "pvforecast.0.plants.osten.JSONGraph",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Graph data in JSON format",
+        "de": "Diagrammdaten im JSON-Format",
+        "ru": "Графические данные в формате JSON",
+        "pt": "Dados do gráfico no formato JSON",
+        "nl": "Grafiekgegevens in JSON-indeling",
+        "fr": "Données de graphique au format JSON",
+        "it": "Dati grafici in formato JSON",
+        "es": "Graficar datos en formato JSON",
+        "pl": "Dane wykresu w formacie JSON",
+        "uk": "Графічні дані в форматі JSON",
+        "zh-cn": "JSON格式的图形数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.JSONTable": {
+    "_id": "pvforecast.0.plants.osten.JSONTable",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Table data in JSON format",
+        "de": "Tabellendaten im JSON-Format",
+        "ru": "Табличные данные в формате JSON",
+        "pt": "Dados da tabela no formato JSON",
+        "nl": "Tabelgegevens in JSON-indeling",
+        "fr": "Données de table au format JSON",
+        "it": "Dati della tabella in formato JSON",
+        "es": "Tabla de datos en formato JSON",
+        "pl": "Dane tabeli w formacie JSON",
+        "uk": "Дані таблиці в форматі JSON",
+        "zh-cn": "JSON格式的表格数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.energy": {
+    "_id": "pvforecast.0.plants.osten.energy",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated energy",
+        "de": "Geschätzte Energie",
+        "ru": "Расчетная энергия",
+        "pt": "Energia estimada",
+        "nl": "geschatte energie",
+        "fr": "Énergie estimée",
+        "it": "Energia stimata",
+        "es": "Energía estimada",
+        "pl": "Szacowana energia",
+        "uk": "Оцінена енергія",
+        "zh-cn": "估计能量"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.energy.now": {
+    "_id": "pvforecast.0.plants.osten.energy.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today until now)",
+        "de": "Geschätzte Energie (heute bis jetzt)",
+        "ru": "Расчетная энергия (сегодня по настоящее время)",
+        "pt": "Energia estimada (hoje até agora)",
+        "nl": "Geschatte energie (vandaag tot nu)",
+        "fr": "Énergie estimée (aujourd'hui jusqu'à maintenant)",
+        "it": "Energia stimata (da oggi ad oggi)",
+        "es": "Energía estimada (hoy hasta ahora)",
+        "pl": "Szacowana energia (dzisiaj do teraz)",
+        "uk": "Оцінена енергія (до сьогодні)",
+        "zh-cn": "估计能量（今天到现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.energy.nowUntilEndOfDay": {
+    "_id": "pvforecast.0.plants.osten.energy.nowUntilEndOfDay",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (until end of day)",
+        "de": "Geschätzte Energie (bis Ende des Tages)",
+        "ru": "Оценка энергии (до конца дня)",
+        "pt": "Energia estimada (até final do dia)",
+        "nl": "Geschatte energie (tot eind van de dag)",
+        "fr": "Estimation de l'énergie (jusqu'à fin de journée)",
+        "it": "Energia stimata (fino alla fine del giorno)",
+        "es": "Energía estimada (hasta el final del día)",
+        "pl": "Szacowana energia (do końca dnia)",
+        "uk": "Оцінена енергія (до кінця дня)",
+        "zh-cn": "估计能源(至日结束)"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.energy.today": {
+    "_id": "pvforecast.0.plants.osten.energy.today",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today)",
+        "de": "Geschätzte Energie (heute)",
+        "ru": "Расчетная энергия (сегодня)",
+        "pt": "Energia estimada (hoje)",
+        "nl": "Geschatte energie (vandaag)",
+        "fr": "Énergie estimée (aujourd'hui)",
+        "it": "Energia stimata (oggi)",
+        "es": "Energía estimada (hoy)",
+        "pl": "Szacowana energia (dzisiaj)",
+        "uk": "Оцінена енергія (субота)",
+        "zh-cn": "估计能量（今天）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.energy.tomorrow": {
+    "_id": "pvforecast.0.plants.osten.energy.tomorrow",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (tomorrow)",
+        "de": "Geschätzte Energie (morgen)",
+        "ru": "Расчетная энергия (завтра)",
+        "pt": "Energia estimada (amanhã)",
+        "nl": "Geschatte energie (morgen)",
+        "fr": "Énergie estimée (demain)",
+        "it": "Energia stimata (domani)",
+        "es": "Energía estimada (mañana)",
+        "pl": "Szacowana energia (jutro)",
+        "uk": "Орієнтовна енергія (домогосподарка)",
+        "zh-cn": "估计能量（明天）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.lastUpdated": {
+    "_id": "pvforecast.0.plants.osten.lastUpdated",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update (data)",
+        "de": "Letztes Update (Daten)",
+        "ru": "Последнее обновление (данные)",
+        "pt": "Última atualização (dados)",
+        "nl": "Laatste update (gegevens)",
+        "fr": "Dernière mise à jour (données)",
+        "it": "Ultimo aggiornamento (dati)",
+        "es": "Última actualización (datos)",
+        "pl": "Ostatnia aktualizacja (dane)",
+        "uk": "Останнє оновлення (data)",
+        "zh-cn": "上次更新（数据）"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.name": {
+    "_id": "pvforecast.0.plants.osten.name",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Solar plant name",
+        "de": "Name der Solaranlage",
+        "ru": "Название солнечной электростанции",
+        "pt": "Nome da planta solar",
+        "nl": "naam zonne-installatie:",
+        "fr": "Nom de la centrale solaire",
+        "it": "Nome dell'impianto solare",
+        "es": "nombre de la planta solar",
+        "pl": "Nazwa elektrowni słonecznej",
+        "uk": "Назва сонячного заводу",
+        "zh-cn": "太阳能电站名称"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.place": {
+    "_id": "pvforecast.0.plants.osten.place",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Location information",
+        "de": "Standortinformationen",
+        "ru": "Информация о местонахождении",
+        "pt": "Informações de localização",
+        "nl": "Locatie informatie",
+        "fr": "Information de Lieu",
+        "it": "Informazioni sulla posizione",
+        "es": "Información sobre la ubicación",
+        "pl": "Informacje lokalne",
+        "uk": "Інформація про місцезнаходження",
+        "zh-cn": "地点信息"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.power": {
+    "_id": "pvforecast.0.plants.osten.power",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated power",
+        "de": "Geschätzte Leistung",
+        "ru": "Расчетная мощность",
+        "pt": "Potência estimada",
+        "nl": "Geschat vermogen",
+        "fr": "Puissance estimée",
+        "it": "Potenza stimata",
+        "es": "Potencia estimada",
+        "pl": "Szacowana moc",
+        "uk": "Орієнтовна потужність",
+        "zh-cn": "估计功率"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.power.installed": {
+    "_id": "pvforecast.0.plants.osten.power.installed",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Total power installed",
+        "de": "Gesamtleistung installiert",
+        "ru": "Общая установленная мощность",
+        "pt": "Potência total instalada",
+        "nl": "Totaal geïnstalleerd vermogen",
+        "fr": "Puissance totale installée",
+        "it": "Potenza totale installata",
+        "es": "Potencia total instalada",
+        "pl": "Całkowita moc zainstalowana",
+        "uk": "Загальна потужність встановлена",
+        "zh-cn": "总装机功率"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWp",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.power.now": {
+    "_id": "pvforecast.0.plants.osten.power.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated power (now)",
+        "de": "Geschätzte Leistung (jetzt)",
+        "ru": "Расчетная мощность (сейчас)",
+        "pt": "Potência estimada (agora)",
+        "nl": "Geschat vermogen (nu)",
+        "fr": "Puissance estimée (maintenant)",
+        "it": "Potenza stimata (ora)",
+        "es": "Potencia estimada (ahora)",
+        "pl": "Szacowana moc (teraz)",
+        "uk": "Орієнтовна потужність (нині)",
+        "zh-cn": "估计功率（现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kW",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service": {
+    "_id": "pvforecast.0.plants.osten.service",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "API",
+        "de": "API",
+        "ru": "API",
+        "pt": "API",
+        "nl": "API",
+        "fr": "API",
+        "it": "API",
+        "es": "API",
+        "pl": "API",
+        "uk": "КОНТАКТИ",
+        "zh-cn": "导 言"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service.data": {
+    "_id": "pvforecast.0.plants.osten.service.data",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Forecast data from service",
+        "de": "Prognosedaten aus dem Dienst",
+        "ru": "Прогноз данных из сервиса",
+        "pt": "Dados de previsão do serviço",
+        "nl": "Verboden gegevens van dienst",
+        "fr": "Données prévisionnelles du service",
+        "it": "Previsione dei dati dal servizio",
+        "es": "Datos de pronóstico del servicio",
+        "pl": "Dane z serwisu",
+        "uk": "Прогнозні дані з сервісу",
+        "zh-cn": "来自服务中的预测数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service.lastUpdated": {
+    "_id": "pvforecast.0.plants.osten.service.lastUpdated",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update (service)",
+        "de": "Letztes Update (Service)",
+        "ru": "Последнее обновление (сервис)",
+        "pt": "Última atualização (serviço)",
+        "nl": "Laatste update (service)",
+        "fr": "Dernière mise à jour (service)",
+        "it": "Ultimo aggiornamento (servizio)",
+        "es": "Última actualización (servicio)",
+        "pl": "Ostatnia aktualizacja (usługa)",
+        "uk": "Останнє оновлення (service)",
+        "zh-cn": "最后更新（服务）"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service.message": {
+    "_id": "pvforecast.0.plants.osten.service.message",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Transferred message",
+        "de": "Übertragene Nachricht",
+        "ru": "Передано сообщение",
+        "pt": "Mensagem transferida",
+        "nl": "Overgedragen bericht",
+        "fr": "Message transféré",
+        "it": "Messaggio trasferito",
+        "es": "mensaje transferido",
+        "pl": "Przeniesiona wiadomość",
+        "uk": "Передача повідомлення",
+        "zh-cn": "转移的消息"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service.refresh": {
+    "_id": "pvforecast.0.plants.osten.service.refresh",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Force refresh",
+        "de": "Aktualisieren erzwingen",
+        "ru": "Принудительное обновление",
+        "pt": "Forçar atualização",
+        "nl": "Vernieuwen forceren",
+        "fr": "Forcer l'actualisation",
+        "it": "Forza l'aggiornamento",
+        "es": "Forzar actualización",
+        "pl": "Wymuś odświeżenie",
+        "uk": "Приниження",
+        "zh-cn": "强制刷新"
+      },
+      "type": "boolean",
+      "role": "button",
+      "read": false,
+      "write": true
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.osten.service.url": {
+    "_id": "pvforecast.0.plants.osten.service.url",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Service url",
+        "de": "Service-URL",
+        "ru": "URL службы",
+        "pt": "URL de serviço",
+        "nl": "Service-URL",
+        "fr": "URL du service",
+        "it": "URL di servizio",
+        "es": "URL del servicio",
+        "pl": "URL usługi",
+        "uk": "Сервіс url",
+        "zh-cn": "服务网址"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen": {
+    "_id": "pvforecast.0.plants.westen",
+    "type": "device",
+    "common": {
+      "name": "Westen"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.JSONData": {
+    "_id": "pvforecast.0.plants.westen.JSONData",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "JSON Data",
+        "de": "JSON Daten",
+        "ru": "ДЖСОН Данные",
+        "pt": "J. Dados",
+        "nl": "JSON Data",
+        "fr": "JSON Données",
+        "it": "JSON Dati",
+        "es": "JSON Datos",
+        "pl": "JSON Data",
+        "uk": "Сонце Дані",
+        "zh-cn": "附 件 数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.JSONGraph": {
+    "_id": "pvforecast.0.plants.westen.JSONGraph",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Graph data in JSON format",
+        "de": "Diagrammdaten im JSON-Format",
+        "ru": "Графические данные в формате JSON",
+        "pt": "Dados do gráfico no formato JSON",
+        "nl": "Grafiekgegevens in JSON-indeling",
+        "fr": "Données de graphique au format JSON",
+        "it": "Dati grafici in formato JSON",
+        "es": "Graficar datos en formato JSON",
+        "pl": "Dane wykresu w formacie JSON",
+        "uk": "Графічні дані в форматі JSON",
+        "zh-cn": "JSON格式的图形数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.JSONTable": {
+    "_id": "pvforecast.0.plants.westen.JSONTable",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Table data in JSON format",
+        "de": "Tabellendaten im JSON-Format",
+        "ru": "Табличные данные в формате JSON",
+        "pt": "Dados da tabela no formato JSON",
+        "nl": "Tabelgegevens in JSON-indeling",
+        "fr": "Données de table au format JSON",
+        "it": "Dati della tabella in formato JSON",
+        "es": "Tabla de datos en formato JSON",
+        "pl": "Dane tabeli w formacie JSON",
+        "uk": "Дані таблиці в форматі JSON",
+        "zh-cn": "JSON格式的表格数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.energy": {
+    "_id": "pvforecast.0.plants.westen.energy",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated energy",
+        "de": "Geschätzte Energie",
+        "ru": "Расчетная энергия",
+        "pt": "Energia estimada",
+        "nl": "geschatte energie",
+        "fr": "Énergie estimée",
+        "it": "Energia stimata",
+        "es": "Energía estimada",
+        "pl": "Szacowana energia",
+        "uk": "Оцінена енергія",
+        "zh-cn": "估计能量"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.energy.now": {
+    "_id": "pvforecast.0.plants.westen.energy.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today until now)",
+        "de": "Geschätzte Energie (heute bis jetzt)",
+        "ru": "Расчетная энергия (сегодня по настоящее время)",
+        "pt": "Energia estimada (hoje até agora)",
+        "nl": "Geschatte energie (vandaag tot nu)",
+        "fr": "Énergie estimée (aujourd'hui jusqu'à maintenant)",
+        "it": "Energia stimata (da oggi ad oggi)",
+        "es": "Energía estimada (hoy hasta ahora)",
+        "pl": "Szacowana energia (dzisiaj do teraz)",
+        "uk": "Оцінена енергія (до сьогодні)",
+        "zh-cn": "估计能量（今天到现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.energy.nowUntilEndOfDay": {
+    "_id": "pvforecast.0.plants.westen.energy.nowUntilEndOfDay",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (until end of day)",
+        "de": "Geschätzte Energie (bis Ende des Tages)",
+        "ru": "Оценка энергии (до конца дня)",
+        "pt": "Energia estimada (até final do dia)",
+        "nl": "Geschatte energie (tot eind van de dag)",
+        "fr": "Estimation de l'énergie (jusqu'à fin de journée)",
+        "it": "Energia stimata (fino alla fine del giorno)",
+        "es": "Energía estimada (hasta el final del día)",
+        "pl": "Szacowana energia (do końca dnia)",
+        "uk": "Оцінена енергія (до кінця дня)",
+        "zh-cn": "估计能源(至日结束)"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.energy.today": {
+    "_id": "pvforecast.0.plants.westen.energy.today",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today)",
+        "de": "Geschätzte Energie (heute)",
+        "ru": "Расчетная энергия (сегодня)",
+        "pt": "Energia estimada (hoje)",
+        "nl": "Geschatte energie (vandaag)",
+        "fr": "Énergie estimée (aujourd'hui)",
+        "it": "Energia stimata (oggi)",
+        "es": "Energía estimada (hoy)",
+        "pl": "Szacowana energia (dzisiaj)",
+        "uk": "Оцінена енергія (субота)",
+        "zh-cn": "估计能量（今天）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.energy.tomorrow": {
+    "_id": "pvforecast.0.plants.westen.energy.tomorrow",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (tomorrow)",
+        "de": "Geschätzte Energie (morgen)",
+        "ru": "Расчетная энергия (завтра)",
+        "pt": "Energia estimada (amanhã)",
+        "nl": "Geschatte energie (morgen)",
+        "fr": "Énergie estimée (demain)",
+        "it": "Energia stimata (domani)",
+        "es": "Energía estimada (mañana)",
+        "pl": "Szacowana energia (jutro)",
+        "uk": "Орієнтовна енергія (домогосподарка)",
+        "zh-cn": "估计能量（明天）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWh",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.lastUpdated": {
+    "_id": "pvforecast.0.plants.westen.lastUpdated",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update (data)",
+        "de": "Letztes Update (Daten)",
+        "ru": "Последнее обновление (данные)",
+        "pt": "Última atualização (dados)",
+        "nl": "Laatste update (gegevens)",
+        "fr": "Dernière mise à jour (données)",
+        "it": "Ultimo aggiornamento (dati)",
+        "es": "Última actualización (datos)",
+        "pl": "Ostatnia aktualizacja (dane)",
+        "uk": "Останнє оновлення (data)",
+        "zh-cn": "上次更新（数据）"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.name": {
+    "_id": "pvforecast.0.plants.westen.name",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Solar plant name",
+        "de": "Name der Solaranlage",
+        "ru": "Название солнечной электростанции",
+        "pt": "Nome da planta solar",
+        "nl": "naam zonne-installatie:",
+        "fr": "Nom de la centrale solaire",
+        "it": "Nome dell'impianto solare",
+        "es": "nombre de la planta solar",
+        "pl": "Nazwa elektrowni słonecznej",
+        "uk": "Назва сонячного заводу",
+        "zh-cn": "太阳能电站名称"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.place": {
+    "_id": "pvforecast.0.plants.westen.place",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Location information",
+        "de": "Standortinformationen",
+        "ru": "Информация о местонахождении",
+        "pt": "Informações de localização",
+        "nl": "Locatie informatie",
+        "fr": "Information de Lieu",
+        "it": "Informazioni sulla posizione",
+        "es": "Información sobre la ubicación",
+        "pl": "Informacje lokalne",
+        "uk": "Інформація про місцезнаходження",
+        "zh-cn": "地点信息"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.power": {
+    "_id": "pvforecast.0.plants.westen.power",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated power",
+        "de": "Geschätzte Leistung",
+        "ru": "Расчетная мощность",
+        "pt": "Potência estimada",
+        "nl": "Geschat vermogen",
+        "fr": "Puissance estimée",
+        "it": "Potenza stimata",
+        "es": "Potencia estimada",
+        "pl": "Szacowana moc",
+        "uk": "Орієнтовна потужність",
+        "zh-cn": "估计功率"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.power.installed": {
+    "_id": "pvforecast.0.plants.westen.power.installed",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Total power installed",
+        "de": "Gesamtleistung installiert",
+        "ru": "Общая установленная мощность",
+        "pt": "Potência total instalada",
+        "nl": "Totaal geïnstalleerd vermogen",
+        "fr": "Puissance totale installée",
+        "it": "Potenza totale installata",
+        "es": "Potencia total instalada",
+        "pl": "Całkowita moc zainstalowana",
+        "uk": "Загальна потужність встановлена",
+        "zh-cn": "总装机功率"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kWp",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.power.now": {
+    "_id": "pvforecast.0.plants.westen.power.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated power (now)",
+        "de": "Geschätzte Leistung (jetzt)",
+        "ru": "Расчетная мощность (сейчас)",
+        "pt": "Potência estimada (agora)",
+        "nl": "Geschat vermogen (nu)",
+        "fr": "Puissance estimée (maintenant)",
+        "it": "Potenza stimata (ora)",
+        "es": "Potencia estimada (ahora)",
+        "pl": "Szacowana moc (teraz)",
+        "uk": "Орієнтовна потужність (нині)",
+        "zh-cn": "估计功率（现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "unit": "kW",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service": {
+    "_id": "pvforecast.0.plants.westen.service",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "API",
+        "de": "API",
+        "ru": "API",
+        "pt": "API",
+        "nl": "API",
+        "fr": "API",
+        "it": "API",
+        "es": "API",
+        "pl": "API",
+        "uk": "КОНТАКТИ",
+        "zh-cn": "导 言"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service.data": {
+    "_id": "pvforecast.0.plants.westen.service.data",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Forecast data from service",
+        "de": "Prognosedaten aus dem Dienst",
+        "ru": "Прогноз данных из сервиса",
+        "pt": "Dados de previsão do serviço",
+        "nl": "Verboden gegevens van dienst",
+        "fr": "Données prévisionnelles du service",
+        "it": "Previsione dei dati dal servizio",
+        "es": "Datos de pronóstico del servicio",
+        "pl": "Dane z serwisu",
+        "uk": "Прогнозні дані з сервісу",
+        "zh-cn": "来自服务中的预测数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service.lastUpdated": {
+    "_id": "pvforecast.0.plants.westen.service.lastUpdated",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update (service)",
+        "de": "Letztes Update (Service)",
+        "ru": "Последнее обновление (сервис)",
+        "pt": "Última atualização (serviço)",
+        "nl": "Laatste update (service)",
+        "fr": "Dernière mise à jour (service)",
+        "it": "Ultimo aggiornamento (servizio)",
+        "es": "Última actualización (servicio)",
+        "pl": "Ostatnia aktualizacja (usługa)",
+        "uk": "Останнє оновлення (service)",
+        "zh-cn": "最后更新（服务）"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service.message": {
+    "_id": "pvforecast.0.plants.westen.service.message",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Transferred message",
+        "de": "Übertragene Nachricht",
+        "ru": "Передано сообщение",
+        "pt": "Mensagem transferida",
+        "nl": "Overgedragen bericht",
+        "fr": "Message transféré",
+        "it": "Messaggio trasferito",
+        "es": "mensaje transferido",
+        "pl": "Przeniesiona wiadomość",
+        "uk": "Передача повідомлення",
+        "zh-cn": "转移的消息"
+      },
+      "type": "string",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service.refresh": {
+    "_id": "pvforecast.0.plants.westen.service.refresh",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Force refresh",
+        "de": "Aktualisieren erzwingen",
+        "ru": "Принудительное обновление",
+        "pt": "Forçar atualização",
+        "nl": "Vernieuwen forceren",
+        "fr": "Forcer l'actualisation",
+        "it": "Forza l'aggiornamento",
+        "es": "Forzar actualización",
+        "pl": "Wymuś odświeżenie",
+        "uk": "Приниження",
+        "zh-cn": "强制刷新"
+      },
+      "type": "boolean",
+      "role": "button",
+      "read": false,
+      "write": true
+    },
+    "native": {}
+  },
+  "pvforecast.0.plants.westen.service.url": {
+    "_id": "pvforecast.0.plants.westen.service.url",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Service url",
+        "de": "Service-URL",
+        "ru": "URL службы",
+        "pt": "URL de serviço",
+        "nl": "Service-URL",
+        "fr": "URL du service",
+        "it": "URL di servizio",
+        "es": "URL del servicio",
+        "pl": "URL usługi",
+        "uk": "Сервіс url",
+        "zh-cn": "服务网址"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary": {
+    "_id": "pvforecast.0.summary",
+    "type": "device",
+    "common": {
+      "name": {
+        "en": "Summary",
+        "de": "Zusammenfassung",
+        "ru": "Резюме",
+        "pt": "Resumo",
+        "nl": "Samenvatting",
+        "fr": "Résumé",
+        "it": "Sommario",
+        "es": "Resumen",
+        "pl": "Streszczenie",
+        "uk": "Редакція",
+        "zh-cn": "概括"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.JSONData": {
+    "_id": "pvforecast.0.summary.JSONData",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "JSON Data",
+        "de": "JSON Daten",
+        "ru": "ДЖСОН Данные",
+        "pt": "J. Dados",
+        "nl": "JSON Data",
+        "fr": "JSON Données",
+        "it": "JSON Dati",
+        "es": "JSON Datos",
+        "pl": "JSON Data",
+        "uk": "Сонце Дані",
+        "zh-cn": "附 件 数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.JSONGraph": {
+    "_id": "pvforecast.0.summary.JSONGraph",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Graph data in JSON format",
+        "de": "Diagrammdaten im JSON-Format",
+        "ru": "Графические данные в формате JSON",
+        "pt": "Dados do gráfico no formato JSON",
+        "nl": "Grafiekgegevens in JSON-indeling",
+        "fr": "Données de graphique au format JSON",
+        "it": "Dati grafici in formato JSON",
+        "es": "Graficar datos en formato JSON",
+        "pl": "Dane wykresu w formacie JSON",
+        "uk": "Графічні дані в форматі JSON",
+        "zh-cn": "JSON格式的图形数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.JSONTable": {
+    "_id": "pvforecast.0.summary.JSONTable",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Table data in JSON format",
+        "de": "Tabellendaten im JSON-Format",
+        "ru": "Табличные данные в формате JSON",
+        "pt": "Dados da tabela no formato JSON",
+        "nl": "Tabelgegevens in JSON-indeling",
+        "fr": "Données de table au format JSON",
+        "it": "Dati della tabella in formato JSON",
+        "es": "Tabla de datos en formato JSON",
+        "pl": "Dane tabeli w formacie JSON",
+        "uk": "Дані таблиці в форматі JSON",
+        "zh-cn": "JSON格式的表格数据"
+      },
+      "type": "string",
+      "role": "json",
+      "read": true,
+      "write": false,
+      "def": "{}"
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.energy": {
+    "_id": "pvforecast.0.summary.energy",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated energy",
+        "de": "Geschätzte Energie",
+        "ru": "Расчетная энергия",
+        "pt": "Energia estimada",
+        "nl": "geschatte energie",
+        "fr": "Énergie estimée",
+        "it": "Energia stimata",
+        "es": "Energía estimada",
+        "pl": "Szacowana energia",
+        "uk": "Оцінена енергія",
+        "zh-cn": "估计能量"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.energy.now": {
+    "_id": "pvforecast.0.summary.energy.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today until now)",
+        "de": "Geschätzte Energie (heute bis jetzt)",
+        "ru": "Расчетная энергия (сегодня по настоящее время)",
+        "pt": "Energia estimada (hoje até agora)",
+        "nl": "Geschatte energie (vandaag tot nu)",
+        "fr": "Énergie estimée (aujourd'hui jusqu'à maintenant)",
+        "it": "Energia stimata (da oggi ad oggi)",
+        "es": "Energía estimada (hoy hasta ahora)",
+        "pl": "Szacowana energia (dzisiaj do teraz)",
+        "uk": "Оцінена енергія (до сьогодні)",
+        "zh-cn": "估计能量（今天到现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kWh",
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.energy.nowUntilEndOfDay": {
+    "_id": "pvforecast.0.summary.energy.nowUntilEndOfDay",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (until end of day)",
+        "de": "Geschätzte Energie (bis Ende des Tages)",
+        "ru": "Оценка энергии (до конца дня)",
+        "pt": "Energia estimada (até final do dia)",
+        "nl": "Geschatte energie (tot eind van de dag)",
+        "fr": "Estimation de l'énergie (jusqu'à fin de journée)",
+        "it": "Energia stimata (fino alla fine del giorno)",
+        "es": "Energía estimada (hasta el final del día)",
+        "pl": "Szacowana energia (do końca dnia)",
+        "uk": "Оцінена енергія (до кінця дня)",
+        "zh-cn": "估计能源(至日结束)"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kWh",
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.energy.today": {
+    "_id": "pvforecast.0.summary.energy.today",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (today)",
+        "de": "Geschätzte Energie (heute)",
+        "ru": "Расчетная энергия (сегодня)",
+        "pt": "Energia estimada (hoje)",
+        "nl": "Geschatte energie (vandaag)",
+        "fr": "Énergie estimée (aujourd'hui)",
+        "it": "Energia stimata (oggi)",
+        "es": "Energía estimada (hoy)",
+        "pl": "Szacowana energia (dzisiaj)",
+        "uk": "Оцінена енергія (субота)",
+        "zh-cn": "估计能量（今天）"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kWh",
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.energy.tomorrow": {
+    "_id": "pvforecast.0.summary.energy.tomorrow",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated energy (tomorrow)",
+        "de": "Geschätzte Energie (morgen)",
+        "ru": "Расчетная энергия (завтра)",
+        "pt": "Energia estimada (amanhã)",
+        "nl": "Geschatte energie (morgen)",
+        "fr": "Énergie estimée (demain)",
+        "it": "Energia stimata (domani)",
+        "es": "Energía estimada (mañana)",
+        "pl": "Szacowana energia (jutro)",
+        "uk": "Орієнтовна енергія (домогосподарка)",
+        "zh-cn": "估计能量（明天）"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kWh",
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.lastUpdated": {
+    "_id": "pvforecast.0.summary.lastUpdated",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update (data)",
+        "de": "Letztes Update (Daten)",
+        "ru": "Последнее обновление (данные)",
+        "pt": "Última atualização (dados)",
+        "nl": "Laatste update (gegevens)",
+        "fr": "Dernière mise à jour (données)",
+        "it": "Ultimo aggiornamento (dati)",
+        "es": "Última actualización (datos)",
+        "pl": "Ostatnia aktualizacja (dane)",
+        "uk": "Останнє оновлення (data)",
+        "zh-cn": "上次更新（数据）"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.power": {
+    "_id": "pvforecast.0.summary.power",
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Estimated power",
+        "de": "Geschätzte Leistung",
+        "ru": "Расчетная мощность",
+        "pt": "Potência estimada",
+        "nl": "Geschat vermogen",
+        "fr": "Puissance estimée",
+        "it": "Potenza stimata",
+        "es": "Potencia estimada",
+        "pl": "Szacowana moc",
+        "uk": "Орієнтовна потужність",
+        "zh-cn": "估计功率"
+      }
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.power.installed": {
+    "_id": "pvforecast.0.summary.power.installed",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Total power installed",
+        "de": "Gesamtleistung installiert",
+        "ru": "Общая установленная мощность",
+        "pt": "Potência total instalada",
+        "nl": "Totaal geïnstalleerd vermogen",
+        "fr": "Puissance totale installée",
+        "it": "Potenza totale installata",
+        "es": "Potencia total instalada",
+        "pl": "Całkowita moc zainstalowana",
+        "uk": "Загальна потужність встановлена",
+        "zh-cn": "总装机功率"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kWp",
+      "def": 0
+    },
+    "native": {}
+  },
+  "pvforecast.0.summary.power.now": {
+    "_id": "pvforecast.0.summary.power.now",
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Estimated power (now)",
+        "de": "Geschätzte Leistung (jetzt)",
+        "ru": "Расчетная мощность (сейчас)",
+        "pt": "Potência estimada (agora)",
+        "nl": "Geschat vermogen (nu)",
+        "fr": "Puissance estimée (maintenant)",
+        "it": "Potenza stimata (ora)",
+        "es": "Potencia estimada (ahora)",
+        "pl": "Szacowana moc (teraz)",
+        "uk": "Орієнтовна потужність (нині)",
+        "zh-cn": "估计功率（现在）"
+      },
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "unit": "kW",
+      "def": 0
+    },
+    "native": {}
+  }
+}

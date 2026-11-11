@@ -1,0 +1,1740 @@
+{
+  "shuttercontrol.0.control": {
+    "_id": "shuttercontrol.0.control",
+    "type": "channel",
+    "common": {
+      "name": "Control Buttons"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.Holiday": {
+    "_id": "shuttercontrol.0.control.Holiday",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Holiday",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": false
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.autoAll": {
+    "_id": "shuttercontrol.0.control.autoAll",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "set all Shutter to Auto Mode",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.autoChildren": {
+    "_id": "shuttercontrol.0.control.autoChildren",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Auto / Manu Children Area",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": false
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.autoLiving": {
+    "_id": "shuttercontrol.0.control.autoLiving",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Auto / Manu Living Area",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": false
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.autoSleep": {
+    "_id": "shuttercontrol.0.control.autoSleep",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Auto / Manu Sleep Area",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": false
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.closeAll": {
+    "_id": "shuttercontrol.0.control.closeAll",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close all Shutter",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.closeChildren": {
+    "_id": "shuttercontrol.0.control.closeChildren",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Shutter from Children area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.closeLiving": {
+    "_id": "shuttercontrol.0.control.closeLiving",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Shutter from Living area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.closeSleep": {
+    "_id": "shuttercontrol.0.control.closeSleep",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Shutter from Sleep area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.openAll": {
+    "_id": "shuttercontrol.0.control.openAll",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "open all Shutter",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.openChildren": {
+    "_id": "shuttercontrol.0.control.openChildren",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "open Shutter from Children area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.openLiving": {
+    "_id": "shuttercontrol.0.control.openLiving",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "open Shutter from Living area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.openSleep": {
+    "_id": "shuttercontrol.0.control.openSleep",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "open Shutter from Sleep area",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.schoolfree": {
+    "_id": "shuttercontrol.0.control.schoolfree",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schoolfree",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": false
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.control.sunProtect": {
+    "_id": "shuttercontrol.0.control.sunProtect",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Shutter for sun protect",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.sunProtectChildren": {
+    "_id": "shuttercontrol.0.control.sunProtectChildren",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Children Shutter for sun protect",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.sunProtectLiving": {
+    "_id": "shuttercontrol.0.control.sunProtectLiving",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Living Shutter for sun protect",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.control.sunProtectSleep": {
+    "_id": "shuttercontrol.0.control.sunProtectSleep",
+    "type": "state",
+    "common": {
+      "role": "button",
+      "name": "close Sleep Shutter for sun protect",
+      "type": "boolean",
+      "read": false,
+      "write": true,
+      "def": false
+    },
+    "native": {
+      "UNIT": "",
+      "TAB_ORDER": 0,
+      "OPERATIONS": 6,
+      "FLAGS": 1,
+      "TYPE": "ACTION",
+      "MIN": false,
+      "MAX": true,
+      "DEFAULT": false
+    }
+  },
+  "shuttercontrol.0.info": {
+    "_id": "shuttercontrol.0.info",
+    "type": "channel",
+    "common": {
+      "name": "Info Logs"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.Azimut": {
+    "_id": "shuttercontrol.0.info.Azimut",
+    "type": "state",
+    "common": {
+      "role": "value.sun.azimuth",
+      "name": "current Azimut",
+      "type": "number",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.Elevation": {
+    "_id": "shuttercontrol.0.info.Elevation",
+    "type": "state",
+    "common": {
+      "role": "value.sun.elevation",
+      "name": "current Elevation",
+      "type": "number",
+      "read": true,
+      "write": false,
+      "def": 0
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.GoldenHour": {
+    "_id": "shuttercontrol.0.info.GoldenHour",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Goldenhour Time",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.GoldenHourEnd": {
+    "_id": "shuttercontrol.0.info.GoldenHourEnd",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Goldenhour end Time",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.Sunrise": {
+    "_id": "shuttercontrol.0.info.Sunrise",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Sunrise Time",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.Sunset": {
+    "_id": "shuttercontrol.0.info.Sunset",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Sunset Time",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.downTimeChildren": {
+    "_id": "shuttercontrol.0.info.downTimeChildren",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "down Time Children Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.downTimeLiving": {
+    "_id": "shuttercontrol.0.info.downTimeLiving",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "down Time Living Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.downTimeSleep": {
+    "_id": "shuttercontrol.0.info.downTimeSleep",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "down Time Sleep Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.upTimeChildren": {
+    "_id": "shuttercontrol.0.info.upTimeChildren",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Up Time Children Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.upTimeLiving": {
+    "_id": "shuttercontrol.0.info.upTimeLiving",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Up Time Living Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.info.upTimeSleep": {
+    "_id": "shuttercontrol.0.info.upTimeSleep",
+    "type": "state",
+    "common": {
+      "role": "state",
+      "name": "Up Time Sleep Area",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters": {
+    "_id": "shuttercontrol.0.shutters",
+    "type": "channel",
+    "common": {
+      "name": "Control shutters"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown": {
+    "_id": "shuttercontrol.0.shutters.autoDown",
+    "type": "channel",
+    "common": {
+      "name": "Control shutter automatic down"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Ankleidezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Ankleidezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Ankleidezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Arbeitszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Arbeitszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Arbeitszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Badezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Badezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Badezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Esszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Esszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Esszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Gäste_WC": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Gäste_WC",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Gäste WC",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Kinderzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Kinderzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Kinderzimmer_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Kinderzimmer_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Küche_Eckfenster_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Küche_Eckfenster_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Küche_Eckfenster_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Küche_Eckfenster_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Küche_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Küche_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Schlafzimmer_Hinten": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Schlafzimmer_Hinten",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Hinten",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Schlafzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Schlafzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoDown.Wohnzimmer": {
+    "_id": "shuttercontrol.0.shutters.autoDown.Wohnzimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Wohnzimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Ankleidezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Ankleidezimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Ankleidezimmer",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Arbeitszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Arbeitszimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Arbeitszimmer",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Badezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Badezimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Badezimmer",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Esszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Esszimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Esszimmer",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Gäste_WC": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Gäste_WC",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Gäste WC",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Kinderzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Kinderzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Kinderzimmer Seite",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Kinderzimmer_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Kinderzimmer_Vorne",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Kinderzimmer Vorne",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Küche_Eckfenster_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Küche_Eckfenster_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Eckfenster Seite",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Küche_Eckfenster_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Küche_Eckfenster_Vorne",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Eckfenster Vorne",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Küche_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Küche_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Seite",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Schlafzimmer_Hinten": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Schlafzimmer_Hinten",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Schlafzimmer Hinten",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Schlafzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Schlafzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Schlafzimmer Seite",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoLevel.Wohnzimmer": {
+    "_id": "shuttercontrol.0.shutters.autoLevel.Wohnzimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Wohnzimmer",
+      "type": "number",
+      "unit": "%",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Ankleidezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoState.Ankleidezimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Ankleidezimmer",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Arbeitszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoState.Arbeitszimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Arbeitszimmer",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Badezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoState.Badezimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Badezimmer",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Esszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoState.Esszimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Esszimmer",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Gäste_WC": {
+    "_id": "shuttercontrol.0.shutters.autoState.Gäste_WC",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Gäste WC",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Kinderzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoState.Kinderzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Kinderzimmer Seite",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Kinderzimmer_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoState.Kinderzimmer_Vorne",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Kinderzimmer Vorne",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Küche_Eckfenster_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoState.Küche_Eckfenster_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Eckfenster Seite",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Küche_Eckfenster_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoState.Küche_Eckfenster_Vorne",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Eckfenster Vorne",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Küche_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoState.Küche_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Küche Seite",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Schlafzimmer_Hinten": {
+    "_id": "shuttercontrol.0.shutters.autoState.Schlafzimmer_Hinten",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Schlafzimmer Hinten",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Schlafzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoState.Schlafzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Schlafzimmer Seite",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoState.Wohnzimmer": {
+    "_id": "shuttercontrol.0.shutters.autoState.Wohnzimmer",
+    "type": "state",
+    "common": {
+      "role": "indicator",
+      "name": "Wohnzimmer",
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun": {
+    "_id": "shuttercontrol.0.shutters.autoSun",
+    "type": "channel",
+    "common": {
+      "name": "Control shutter automatic sunprotect"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Ankleidezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Ankleidezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Ankleidezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Arbeitszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Arbeitszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Arbeitszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Badezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Badezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Badezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Esszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Esszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Esszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Gäste_WC": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Gäste_WC",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Gäste WC",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Kinderzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Kinderzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Kinderzimmer_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Kinderzimmer_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Küche_Eckfenster_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Küche_Eckfenster_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Küche_Eckfenster_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Küche_Eckfenster_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Küche_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Küche_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Schlafzimmer_Hinten": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Schlafzimmer_Hinten",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Hinten",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Schlafzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Schlafzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoSun.Wohnzimmer": {
+    "_id": "shuttercontrol.0.shutters.autoSun.Wohnzimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Wohnzimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp": {
+    "_id": "shuttercontrol.0.shutters.autoUp",
+    "type": "channel",
+    "common": {
+      "name": "Control shutter automatic up"
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Ankleidezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Ankleidezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Ankleidezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Arbeitszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Arbeitszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Arbeitszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Badezimmer": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Badezimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Badezimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Esszimmer": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Esszimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Esszimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Gäste_WC": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Gäste_WC",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Gäste WC",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Kinderzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Kinderzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Kinderzimmer_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Kinderzimmer_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Kinderzimmer Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Küche_Eckfenster_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Küche_Eckfenster_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Küche_Eckfenster_Vorne": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Küche_Eckfenster_Vorne",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Eckfenster Vorne",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Küche_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Küche_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Küche Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Schlafzimmer_Hinten": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Schlafzimmer_Hinten",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Hinten",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Schlafzimmer_Seite": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Schlafzimmer_Seite",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Schlafzimmer Seite",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.autoUp.Wohnzimmer": {
+    "_id": "shuttercontrol.0.shutters.autoUp.Wohnzimmer",
+    "type": "state",
+    "common": {
+      "role": "switch",
+      "name": "Wohnzimmer",
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "def": true
+    },
+    "native": {}
+  },
+  "shuttercontrol.0.shutters.currentStates": {
+    "_id": "shuttercontrol.0.shutters.currentStates",
+    "type": "state",
+    "common": {
+      "role": "json",
+      "name": "current shutter states",
+      "type": "string",
+      "read": true,
+      "write": true,
+      "expert": true
+    },
+    "native": {}
+  },
+  "system.adapter.shuttercontrol.0": {
+    "_id": "system.adapter.shuttercontrol.0",
+    "type": "instance",
+    "common": {
+      "name": "shuttercontrol",
+      "version": "2.1.2"
+    },
+    "native": {
+      "events": [
+        {
+          "enabled": true,
+          "shutterName": "Wohnzimmer",
+          "name": "hm-rpc.0.001658A98F6092.2.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Esszimmer",
+          "name": "hm-rpc.0.001658A98F6092.6.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "off",
+          "heightUp": "100",
+          "heightDown": "30",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Arbeitszimmer",
+          "name": "hm-rpc.0.001658A98F60D0.2.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "10",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Ankleidezimmer",
+          "name": "hm-rpc.0.001658A98F60D0.6.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "40",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Badezimmer",
+          "name": "hm-rpc.0.001658A98F60D0.10.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Gäste WC",
+          "name": "hm-rpc.0.001658A98F60D0.14.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Küche Seite",
+          "name": "hm-rpc.0.001658A98F61AD.2.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Küche Eckfenster Seite",
+          "name": "hm-rpc.0.001658A98F61AD.6.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Küche Eckfenster Vorne",
+          "name": "hm-rpc.0.001658A98F61AD.10.LEVEL",
+          "typeUp": "living-auto",
+          "typeDown": "living-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Schlafzimmer Hinten",
+          "name": "hm-rpc.0.001658A98F61B2.2.LEVEL",
+          "typeUp": "sleep-auto",
+          "typeDown": "sleep-auto",
+          "heightUp": "100",
+          "heightDown": "10",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Schlafzimmer Seite",
+          "name": "hm-rpc.0.001658A98F61B2.6.LEVEL",
+          "typeUp": "sleep-auto",
+          "typeDown": "sleep-auto",
+          "heightUp": "100",
+          "heightDown": "10",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Kinderzimmer Seite",
+          "name": "hm-rpc.0.001658A98F61B2.10.LEVEL",
+          "typeUp": "children-auto",
+          "typeDown": "children-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        },
+        {
+          "enabled": true,
+          "shutterName": "Kinderzimmer Vorne",
+          "name": "hm-rpc.0.001658A98F61B2.14.LEVEL",
+          "typeUp": "children-auto",
+          "typeDown": "children-auto",
+          "heightUp": "100",
+          "heightDown": "0",
+          "heightDownSun": "50"
+        }
+      ],
+      "typeUp": "sleep-auto",
+      "typeDown": "sleep-auto",
+      "triggerAutoLiving": "0_userdata.0.Rollladen.autoLiving",
+      "triggerAutoSleep": "0_userdata.0.Rollladen.autoSleep",
+      "triggerAutoChildren": "0_userdata.0.Rollladen.autoChildren",
+      "HolidayDP": "0_userdata.0.Rollladen.Holiday",
+      "schoolfreeDP": "",
+      "livingAutomatic": "livingSunriseSunset",
+      "sleepAutomatic": "sleepSunriseSunset",
+      "childrenAutomatic": "childrenSunriseSunset"
+    }
+  },
+  "0_userdata.0.Rollladen.autoLiving": {
+    "_id": "0_userdata.0.Rollladen.autoLiving",
+    "type": "state",
+    "common": {
+      "name": "autoLiving",
+      "role": "switch",
+      "type": "boolean",
+      "desc": "Manuell erzeugt",
+      "read": true,
+      "write": true,
+      "def": false,
+      "custom": {
+        "iqontrol.0": {
+          "enabled": true,
+          "readonly": false,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "unit": "",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": "",
+          "max": "",
+          "step": "",
+          "type": "boolean",
+          "role": "switch",
+          "targetValueId": "",
+          "states": {
+            "false": "Aus",
+            "true": "Ein"
+          },
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false
+        }
+      }
+    },
+    "native": {}
+  },
+  "0_userdata.0.Rollladen.autoSleep": {
+    "_id": "0_userdata.0.Rollladen.autoSleep",
+    "type": "state",
+    "common": {
+      "name": "autoSleep",
+      "role": "switch",
+      "type": "boolean",
+      "desc": "Manuell erzeugt",
+      "read": true,
+      "write": true,
+      "def": false,
+      "custom": {
+        "iqontrol.0": {
+          "enabled": true,
+          "readonly": false,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "unit": "",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": "",
+          "max": "",
+          "step": "",
+          "type": "boolean",
+          "role": "switch",
+          "targetValueId": "",
+          "states": {
+            "true": "Ein",
+            "false": "Aus"
+          },
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false
+        }
+      }
+    },
+    "native": {}
+  },
+  "0_userdata.0.Rollladen.autoChildren": {
+    "_id": "0_userdata.0.Rollladen.autoChildren",
+    "type": "state",
+    "common": {
+      "name": "autoChildren",
+      "role": "switch",
+      "type": "boolean",
+      "desc": "Manuell erzeugt",
+      "read": true,
+      "write": true,
+      "def": false,
+      "custom": {
+        "iqontrol.0": {
+          "enabled": true,
+          "readonly": false,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "unit": "",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": "",
+          "max": "",
+          "step": "",
+          "type": "boolean",
+          "role": "switch",
+          "targetValueId": "",
+          "states": {
+            "true": "Ein",
+            "false": "Aus"
+          },
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false
+        }
+      }
+    },
+    "native": {}
+  },
+  "0_userdata.0.Rollladen.Holiday": {
+    "_id": "0_userdata.0.Rollladen.Holiday",
+    "type": "state",
+    "common": {
+      "name": "Holiday",
+      "role": "switch",
+      "type": "boolean",
+      "desc": "Manually created",
+      "states": "false:no;true:yes",
+      "read": true,
+      "write": true,
+      "def": false,
+      "custom": {
+        "iqontrol.0": {
+          "enabled": true,
+          "readonly": false,
+          "invert": false,
+          "confirm": false,
+          "pincode": "",
+          "unit": "",
+          "unit_zero": "",
+          "unit_one": "",
+          "min": "",
+          "max": "",
+          "step": "",
+          "type": "boolean",
+          "role": "switch",
+          "targetValueId": "",
+          "states": {
+            "false": "Aus",
+            "true": "Ein"
+          },
+          "statesAddInput": false,
+          "statesAddInputCaption": "Enter other value...",
+          "showOnlyTargetValues": false
+        }
+      },
+      "smartName": {
+        "de": "Urlaubsmodus"
+      }
+    },
+    "native": {}
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "name": "iobroker.smartvis",
+  "version": "0.0.1",
+  "description": "Selbstkonfigurierende, mobile-first Visualisierung für ioBroker",
+  "author": {
+    "name": "Exc3pt10n"
+  },
+  "homepage": "https://github.com/Exc3pt10n/ioBroker.SmartVis",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "visualization",
+    "vis",
+    "mobile",
+    "pwa",
+    "smart home"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Exc3pt10n/ioBroker.SmartVis.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "build/main.js",
+  "files": [
+    "admin/",
+    "build/",
+    "www/",
+    "io-package.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:backend && npm run build:www",
+    "prepare": "npm run build",
+    "build:backend": "tsc -p tsconfig.build.json",
+    "build:www": "vite build",
+    "dev:www": "vite",
+    "demo": "tsx scripts/demo.ts",
+    "watch:backend": "tsc -p tsconfig.build.json --watch",
+    "check": "tsc -p tsconfig.json --noEmit && tsc -p src-www/tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test:unit": "mocha \"src/**/*.test.ts\"",
+    "test:package": "mocha test/package.js --exit",
+    "test:integration": "mocha test/integration.js --exit",
+    "test": "npm run test:unit && npm run test:package"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.2.3",
+    "@iobroker/type-detector": "^6.2.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@iobroker/eslint-config": "^2.0.2",
+    "@iobroker/testing": "^5.0.4",
+    "@types/chai": "^5.2.2",
+    "@types/iobroker": "npm:@iobroker/types@^7.0.7",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.4.1",
+    "chai": "^5.2.0",
+    "mocha": "^11.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsx": "^4.19.3",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.0"
+  }
+}
