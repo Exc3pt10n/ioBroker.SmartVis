@@ -137,6 +137,7 @@ export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): 
                   ...Object.values(item.flows),
                   ...Object.values(item.battery || {}),
                   ...Object.values(item.today || {}),
+                  ...(item.periods || []).flatMap(p => [p.periodKey, ...Object.values(p.totals)]),
                   item.connected,
               ]
             : [...Object.values(item), ...nested];

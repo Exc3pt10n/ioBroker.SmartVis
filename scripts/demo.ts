@@ -365,6 +365,37 @@ for (const [key, unit, val] of [
     state(`${Q}.${key}`, key === 'BtSoc' ? 'value.battery' : 'value', 'number', false, val, { unit });
 }
 state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
+// Weitere Zählerzeiträume: Faktor gegenüber dem Tag, Kennung des Zeitraums
+for (const [period, factor, key] of [
+    ['day.previous', 0.8, undefined],
+    ['month', 9, '2026-11'],
+    ['month.previous', 22, undefined],
+    ['quarter', 31, '2026-Q4'],
+    ['quarter.previous', 95, undefined],
+    ['halfyear', 125, '2026-H2'],
+    ['halfyear.previous', 210, undefined],
+    ['year', 335, '2026'],
+    ['year.previous', 360, undefined],
+    ['total', 1180, undefined],
+] as const) {
+    for (const [name, unit, val] of [
+        ['PvGen', 'kWh', 12.4],
+        ['Cons', 'kWh', 7.9],
+        ['GridPurchase', 'kWh', 1.2],
+        ['GridFeedIn', 'kWh', 4.6],
+        ['BtCharged', 'kWh', 3.1],
+        ['BtDischarged', 'kWh', 1.4],
+        ['Autarky', '%', 85],
+        ['SelfConsRate', '%', 63],
+    ] as const) {
+        const v = unit === '%' ? val - (factor > 100 ? 12 : 4) : Math.round(val * factor * 10) / 10;
+        state(`${Q}.counters.${period}.${name}`, 'value', 'number', false, v, { unit });
+    }
+    if (key) {
+        state(`${Q}.counters.${period}.periodKey`, 'text', 'string', false, key);
+    }
+}
+state(`${Q}.counters.day.periodKey`, 'text', 'string', false, new Date().toISOString().slice(0, 10));
 
 // Echo-Player (gleiche Rollen wie alexa2), Raum über den Gerätenamen
 {

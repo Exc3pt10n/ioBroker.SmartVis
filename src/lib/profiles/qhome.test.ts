@@ -26,6 +26,19 @@ const objects = Object.fromEntries([
     [`${I}.counters.day`, { _id: `${I}.counters.day`, type: 'channel', common: { name: 'Tag' }, native: {} }],
     st(`${I}.counters.day.PvGen`, 'kWh', 'value.energy'),
     st(`${I}.counters.day.Autarky`, '%'),
+    st(`${I}.counters.day.previous.PvGen`, 'kWh', 'value.energy'),
+    st(`${I}.counters.month.PvGen`, 'kWh', 'value.energy'),
+    st(`${I}.counters.month.SelfSupply`, 'kWh', 'value.energy'),
+    st(`${I}.counters.total.PvGen`, 'kWh', 'value.energy'),
+    [
+        `${I}.counters.month.periodKey`,
+        {
+            _id: `${I}.counters.month.periodKey`,
+            type: 'state',
+            common: { name: 'Zeitraum', type: 'string', role: 'text', read: true, write: false },
+            native: {},
+        },
+    ],
 ]) as Record<string, ioBroker.Object>;
 
 describe('profile: qhome-ess-hyb-g2', () => {
@@ -58,5 +71,19 @@ describe('profile: qhome-ess-hyb-g2', () => {
     it('can be disabled via ignored adapters', () => {
         const ignored = discover(objects, { language: 'de', ignoreAdapters: ['qhome-ess-hyb-g2'] });
         expect(ignored.model.energy).to.have.length(0);
+    });
+
+    it('liest alle Zählerzeiträume inkl. Vorperiode', () => {
+        expect(system.periods?.map(p => `${p.group}:${p.label}`)).to.deep.equal([
+            'day:Heute',
+            'day:Gestern',
+            'month:Dieser Monat',
+            'total:Gesamt',
+        ]);
+        const month = system.periods?.find(p => p.key === 'month');
+        expect(month?.totals.selfSupply?.id).to.equal(`${I}.counters.month.SelfSupply`);
+        expect(month?.periodKey?.id).to.equal(`${I}.counters.month.periodKey`);
+        expect(system.today?.pv?.id).to.equal(`${I}.counters.day.PvGen`);
+        expect(result.stateIds).to.include(`${I}.counters.total.PvGen`);
     });
 });

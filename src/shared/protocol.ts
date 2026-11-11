@@ -88,6 +88,21 @@ export interface SvEnergyTotals {
     batteryDischarge?: SvStateRef;
     autarky?: SvStateRef;
     selfConsumption?: SvStateRef;
+    /** Eigenversorgung (Verbrauch ohne Netzbezug) */
+    selfSupply?: SvStateRef;
+}
+
+/** Energiezähler eines Zeitraums (Heute, Gestern, Monat, Vormonat … Gesamt) */
+export interface SvEnergyPeriod {
+    /** z. B. "day", "day.previous", "total" */
+    key: string;
+    /** Zeitraumart für die Auswahl: day | month | quarter | halfyear | year | total */
+    group: string;
+    /** Anzeige, z. B. "Heute", "Vormonat" */
+    label: string;
+    /** Zeitraum-Kennung des Adapters (z. B. "2026-11"), falls vorhanden */
+    periodKey?: SvStateRef;
+    totals: SvEnergyTotals;
 }
 
 /** PV-Prognose einer Anlage bzw. der Summe (Adapter pvforecast) */
@@ -127,6 +142,8 @@ export interface SvEnergySystem {
         remaining?: SvStateRef;
     };
     today?: SvEnergyTotals;
+    /** Alle Zählerzeiträume (Heute zuerst) */
+    periods?: SvEnergyPeriod[];
     /** Verbindung zum Gerät (true = verbunden) */
     connected?: SvStateRef;
 }
@@ -314,10 +331,17 @@ export interface SvRoomOverride {
     custom?: boolean;
 }
 
+/** Anzeige-Einstellungen der App (gelten für alle Geräte/Browser) */
+export interface SvUiSettings {
+    /** Hinweis "Geräte ohne Raum" auf der Startseite ausblenden */
+    hideNoRoomHint?: boolean;
+}
+
 export interface SvOverrides {
     version: 1;
     devices: Record<string, SvDeviceOverride>;
     rooms: Record<string, SvRoomOverride>;
+    ui?: SvUiSettings;
 }
 
 /**
@@ -332,7 +356,8 @@ export type SvEdit =
     | { kind: 'roomOrder'; ids: string[] }
     | { kind: 'createRoom'; name: string; /** Gerät gleich in den neuen Raum verschieben */ deviceId?: string }
     | { kind: 'deleteRoom'; id: string }
-    | { kind: 'resetDevice'; id: string };
+    | { kind: 'resetDevice'; id: string }
+    | { kind: 'ui'; patch: { [K in keyof SvUiSettings]?: SvUiSettings[K] | null } };
 
 /** Szene einer Hue-Gruppe (Knopf-State, wird mit true ausgelöst) */
 export interface SvScene {
@@ -367,6 +392,8 @@ export interface SvModel {
     generatedAt: number;
     /** Darf die App Anpassungen speichern? */
     editable: boolean;
+    /** Anzeige-Einstellungen aus den Anpassungen */
+    ui?: SvUiSettings;
 }
 
 export interface SvStateValue {

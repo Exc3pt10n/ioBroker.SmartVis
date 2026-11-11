@@ -42,7 +42,12 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
     -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
 }
@@ -1049,11 +1054,7 @@ button.chip {
 }
 
 .slider input[type='range'] {
-    --track: linear-gradient(
-        to right,
-        var(--accent) 0 var(--percent),
-        var(--surface-2) var(--percent) 100%
-    );
+    --track: linear-gradient(to right, var(--accent) 0 var(--percent), var(--surface-2) var(--percent) 100%);
     appearance: none;
     width: 100%;
     height: 44px;
@@ -1950,4 +1951,52 @@ section + .chips {
 
 .sheet .scenes .subtitle {
     margin-top: 16px;
+}
+
+/* ===== Ausblendbarer Hinweis ===== */
+.hint-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.hint-row .hint {
+    flex: 1;
+    margin-top: 0;
+}
+
+.hint-row__close {
+    flex: none;
+    align-self: center;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.linkbtn {
+    display: block;
+    margin-top: 12px;
+    padding: 8px 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* ===== Energiezähler ===== */
+.totals__period {
+    font-weight: 400;
+}
+
+.totals .segmented {
+    display: flex;
+    margin: 10px 0 12px;
+}
+
+.totals .segmented button {
+    flex: 1;
+    min-width: 0;
 }
