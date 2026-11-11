@@ -17,6 +17,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - **Bearbeiten-Modus** (✎ in Startseite, Raumliste und Räumen):
   - Geräte umbenennen, in einen anderen oder neuen Raum verschieben, ausblenden, als Favorit markieren; alles einzeln zurücksetzbar
   - Kacheln (Favoriten, Geräte im Raum) und Räume per Ziehen am Griff ⠿ anordnen – mit Maus und Finger; alternativ mit ← →
+  - Alle Ansichten anpassbar: Bereiche bzw. Karten auf Startseite, Energie, Beschattung, Raumansicht (gilt für alle Räume) und „Mehr“ per Ziehen oder ↑ ↓ anordnen und aus-/einblenden; je Ansicht zurücksetzbar
   - Räume umbenennen, ausblenden, sortieren, selbst anlegen und wieder löschen
   - Favoriten oben auf der Startseite (auch per ☆ in der Detailansicht)
   - Gespeichert im ioBroker-Dateispeicher (`smartvis.0/overrides.json`, Teil von Backups); Anpassungen hängen an stabilen Objekt-IDs und überleben Neu-Erkennungen

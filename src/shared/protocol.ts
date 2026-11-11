@@ -337,6 +337,14 @@ export interface SvRoomOverride {
 export interface SvUiSettings {
     /** Hinweis "Geräte ohne Raum" auf der Startseite ausblenden */
     hideNoRoomHint?: boolean;
+    /** Anordnung der Bereiche je Ansicht (z. B. "energy", "home.main") */
+    views?: Record<string, SvViewLayout>;
+}
+
+/** Reihenfolge und ausgeblendete Bereiche einer Ansicht (Schlüssel der Bereiche) */
+export interface SvViewLayout {
+    order?: string[];
+    hidden?: string[];
 }
 
 export interface SvOverrides {
@@ -359,7 +367,9 @@ export type SvEdit =
     | { kind: 'createRoom'; name: string; /** Gerät gleich in den neuen Raum verschieben */ deviceId?: string }
     | { kind: 'deleteRoom'; id: string }
     | { kind: 'resetDevice'; id: string }
-    | { kind: 'ui'; patch: { [K in keyof SvUiSettings]?: SvUiSettings[K] | null } };
+    | { kind: 'ui'; patch: { hideNoRoomHint?: boolean | null } }
+    /** Bereiche einer Ansicht anordnen/ausblenden; null setzt zurück */
+    | { kind: 'view'; view: string; order?: string[] | null; hidden?: string[] | null };
 
 /** Szene einer Hue-Gruppe (Knopf-State, wird mit true ausgelöst) */
 export interface SvScene {

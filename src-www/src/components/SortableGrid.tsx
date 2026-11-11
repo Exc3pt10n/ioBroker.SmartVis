@@ -39,13 +39,17 @@ export function SortableGrid<T>({
     items,
     getId,
     kind,
+    onReorder,
     className = 'grid',
     render,
     after,
 }: {
     items: T[];
     getId: (item: T) => string;
-    kind: OrderKind;
+    /** Gespeichert als Anpassung dieser Art … */
+    kind?: OrderKind;
+    /** … oder über einen eigenen Handler (z. B. Bereiche einer Ansicht) */
+    onReorder?: (ids: string[]) => void;
     className?: string;
     render: (item: T, ids: string[]) => React.ReactNode;
     /** Weitere, nicht sortierbare Elemente am Ende (z. B. "Raum anlegen") */
@@ -66,10 +70,22 @@ export function SortableGrid<T>({
         setDrag({ id, order });
         // Fenster-Listener statt Pointer-Capture: das Element wandert während des Ziehens im DOM
         const move = (e: PointerEvent): void => {
-            const el = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[data-sort-id]');
-            const target = el?.getAttribute('data-sort-id');
-            // Nur innerhalb dieses Rasters (z. B. nicht in eine andere Gerätegruppe)
-            if (target && target !== id && el && container.current?.contains(el)) {
+            // Element dieses Rasters unter dem Zeiger suchen; Raster können verschachtelt sein
+            // (Kacheln innerhalb eines Bereichs) – Elemente anderer Raster werden übersprungen
+            let el: Element | null | undefined = document.elementFromPoint(e.clientX, e.clientY);
+            let target: string | undefined;
+            while (el) {
+                const item: HTMLElement | null = el.closest<HTMLElement>('[data-sort-id]');
+                if (!item) {
+                    break;
+                }
+                if (item.parentElement?.closest('[data-sort-root]') === container.current) {
+                    target = item.getAttribute('data-sort-id') || undefined;
+                    break;
+                }
+                el = item.parentElement;
+            }
+            if (target && target !== id && order.includes(target)) {
                 const next = reordered(order, id, target);
                 if (next !== order) {
                     order = next;
@@ -81,7 +97,11 @@ export function SortableGrid<T>({
             cleanup.current?.();
             setDrag(undefined);
             if (order.some((x, i) => x !== ids[i])) {
-                connection.edit({ kind, ids: order });
+                if (onReorder) {
+                    onReorder(order);
+                } else if (kind) {
+                    connection.edit({ kind, ids: order });
+                }
             }
         };
         const escape = (e: KeyboardEvent): void => {
@@ -110,6 +130,7 @@ export function SortableGrid<T>({
             <div
                 ref={container}
                 className={`${className}${drag ? ' is-sorting' : ''}`}
+                data-sort-root=""
             >
                 {order.map(id => {
                     const item = byId.get(id);

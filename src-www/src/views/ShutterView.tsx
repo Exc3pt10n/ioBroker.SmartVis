@@ -1,5 +1,7 @@
 import type { SvAutoShutter, SvShutterControl } from '../../../src/shared/protocol';
 import { ActionButton, Toggle } from '../components/Toggle';
+import { CustomSections, type SectionDef } from '../components/CustomSections';
+import { EditBanner, EditButton } from '../components/EditButton';
 import { connection, useConnection } from '../connection';
 import { autoStateInfo, text, timeText } from '../shutters';
 
@@ -18,151 +20,177 @@ export function ShutterView(): React.JSX.Element {
     }
     return (
         <>
-            <h1 className="title">Beschattung</h1>
-            {model.shutterControl.map(sc => (
-                <ShutterControlPanel
-                    key={sc.id}
-                    sc={sc}
-                />
-            ))}
+            <div className="titlebar titlebar--split">
+                <h1 className="title">Beschattung</h1>
+                <EditButton />
+            </div>
+            <EditBanner text="Bereiche am Griff ⠿ ziehen oder mit ↑ ↓ sortieren und aus- oder einblenden" />
+            <CustomSections
+                view="shutters"
+                className="csecs csecs--cols"
+                sections={model.shutterControl.flatMap(sc => shutterSections(sc, model.shutterControl.length > 1))}
+            />
         </>
     );
 }
 
-function ShutterControlPanel({ sc }: { sc: SvShutterControl }): React.JSX.Element {
+/** Bereiche einer Rollladen-Automatik: Steuerung, Sonne, je Bereich eine Karte, weitere Rollläden */
+function shutterSections(sc: SvShutterControl, multi: boolean): SectionDef[] {
+    const p = multi ? `${sc.id}:` : '';
+    const sections: SectionDef[] = [
+        { key: `${p}controls`, label: 'Alle Rollläden', node: <ControlsCard sc={sc} /> },
+        { key: `${p}sun`, label: 'Sonne', node: <SunCard sc={sc} /> },
+        ...sc.areas.map(area => ({
+            key: `${p}area-${area.key}`,
+            label: area.label,
+            node: (
+                <AreaCard
+                    sc={sc}
+                    area={area}
+                />
+            ),
+        })),
+    ];
+    if (sc.shutters.some(s => !s.area)) {
+        sections.push({ key: `${p}other`, label: 'Weitere', node: <OtherCard sc={sc} /> });
+    }
+    return sections;
+}
+
+function ControlsCard({ sc }: { sc: SvShutterControl }): React.JSX.Element {
+    return (
+        <section className="card">
+            <div className="actions">
+                <ActionButton
+                    state={sc.openAll}
+                    label="Alle öffnen"
+                    icon="⬆️"
+                />
+                <ActionButton
+                    state={sc.closeAll}
+                    label="Alle schließen"
+                    icon="⬇️"
+                />
+                <ActionButton
+                    state={sc.sunProtectAll}
+                    label="Sonnenschutz"
+                    icon="🕶️"
+                />
+                <ActionButton
+                    state={sc.autoAll}
+                    label="Alle auf Automatik"
+                    icon="🤖"
+                    variant="primary"
+                />
+            </div>
+            {sc.holiday && (
+                <Toggle
+                    state={sc.holiday}
+                    label="Urlaub / Wochenendzeiten"
+                    hint="Fährt zu den Wochenend-Zeiten"
+                />
+            )}
+            {sc.schoolfree && (
+                <Toggle
+                    state={sc.schoolfree}
+                    label="Schulfrei"
+                    hint="Kinderbereich öffnet zu den Wochenend-Zeiten"
+                />
+            )}
+        </section>
+    );
+}
+
+function SunCard({ sc }: { sc: SvShutterControl }): React.JSX.Element {
     const { states } = useConnection();
     const elevation = Number(text(states, sc.sun.elevation?.id));
     const azimuth = Number(text(states, sc.sun.azimuth?.id));
-
     return (
-        <div className="shutters">
-            <section className="card">
-                <div className="actions">
-                    <ActionButton
-                        state={sc.openAll}
-                        label="Alle öffnen"
-                        icon="⬆️"
-                    />
-                    <ActionButton
-                        state={sc.closeAll}
-                        label="Alle schließen"
-                        icon="⬇️"
-                    />
-                    <ActionButton
-                        state={sc.sunProtectAll}
-                        label="Sonnenschutz"
-                        icon="🕶️"
-                    />
-                    <ActionButton
-                        state={sc.autoAll}
-                        label="Alle auf Automatik"
-                        icon="🤖"
-                        variant="primary"
-                    />
+        <section className="card">
+            <h2 className="subtitle">Sonne</h2>
+            <dl className="sun">
+                <div>
+                    <dt>Aufgang</dt>
+                    <dd>{timeText(states, sc.sun.sunrise?.id) ?? '–'}</dd>
                 </div>
-                {sc.holiday && (
-                    <Toggle
-                        state={sc.holiday}
-                        label="Urlaub / Wochenendzeiten"
-                        hint="Fährt zu den Wochenend-Zeiten"
-                    />
-                )}
-                {sc.schoolfree && (
-                    <Toggle
-                        state={sc.schoolfree}
-                        label="Schulfrei"
-                        hint="Kinderbereich öffnet zu den Wochenend-Zeiten"
-                    />
-                )}
-            </section>
+                <div>
+                    <dt>Untergang</dt>
+                    <dd>{timeText(states, sc.sun.sunset?.id) ?? '–'}</dd>
+                </div>
+                <div>
+                    <dt>Höhe</dt>
+                    <dd>{Number.isFinite(elevation) ? `${Math.round(elevation)}°` : '–'}</dd>
+                </div>
+                <div>
+                    <dt>Richtung</dt>
+                    <dd>{Number.isFinite(azimuth) ? `${Math.round(azimuth)}°` : '–'}</dd>
+                </div>
+            </dl>
+        </section>
+    );
+}
 
-            <section className="card">
-                <h2 className="subtitle">Sonne</h2>
-                <dl className="sun">
-                    <div>
-                        <dt>Aufgang</dt>
-                        <dd>{timeText(states, sc.sun.sunrise?.id) ?? '–'}</dd>
-                    </div>
-                    <div>
-                        <dt>Untergang</dt>
-                        <dd>{timeText(states, sc.sun.sunset?.id) ?? '–'}</dd>
-                    </div>
-                    <div>
-                        <dt>Höhe</dt>
-                        <dd>{Number.isFinite(elevation) ? `${Math.round(elevation)}°` : '–'}</dd>
-                    </div>
-                    <div>
-                        <dt>Richtung</dt>
-                        <dd>{Number.isFinite(azimuth) ? `${Math.round(azimuth)}°` : '–'}</dd>
-                    </div>
-                </dl>
-            </section>
-
-            {sc.areas.map(area => {
-                const shutters = sc.shutters.filter(s => s.area === area.key);
-                return (
-                    <section
-                        key={area.key}
-                        className="card"
-                    >
-                        <div className="area__head">
-                            <h2 className="subtitle">{area.label}</h2>
-                            <span className="area__times">
-                                ⬆️ {timeText(states, area.upTime?.id) ?? '–'} · ⬇️{' '}
-                                {timeText(states, area.downTime?.id) ?? '–'}
-                            </span>
-                        </div>
-                        {area.auto && (
-                            <Toggle
-                                state={area.auto}
-                                label="Automatik"
-                            />
-                        )}
-                        <div className="actions actions--small">
-                            <ActionButton
-                                state={area.open}
-                                label="Öffnen"
-                                icon="⬆️"
-                            />
-                            <ActionButton
-                                state={area.close}
-                                label="Schließen"
-                                icon="⬇️"
-                            />
-                            <ActionButton
-                                state={area.sunProtect}
-                                label="Sonnenschutz"
-                                icon="🕶️"
-                            />
-                        </div>
-                        <ul className="shutter-list">
-                            {shutters.map(s => (
-                                <ShutterRow
-                                    key={s.name}
-                                    shutter={s}
-                                />
-                            ))}
-                        </ul>
-                    </section>
-                );
-            })}
-
-            {sc.shutters.some(s => !s.area) && (
-                <section className="card">
-                    <h2 className="subtitle">Weitere</h2>
-                    <ul className="shutter-list">
-                        {sc.shutters
-                            .filter(s => !s.area)
-                            .map(s => (
-                                <ShutterRow
-                                    key={s.name}
-                                    shutter={s}
-                                />
-                            ))}
-                    </ul>
-                </section>
+function AreaCard({ sc, area }: { sc: SvShutterControl; area: SvShutterControl['areas'][number] }): React.JSX.Element {
+    const { states } = useConnection();
+    const shutters = sc.shutters.filter(s => s.area === area.key);
+    return (
+        <section className="card">
+            <div className="area__head">
+                <h2 className="subtitle">{area.label}</h2>
+                <span className="area__times">
+                    ⬆️ {timeText(states, area.upTime?.id) ?? '–'} · ⬇️ {timeText(states, area.downTime?.id) ?? '–'}
+                </span>
+            </div>
+            {area.auto && (
+                <Toggle
+                    state={area.auto}
+                    label="Automatik"
+                />
             )}
-        </div>
+            <div className="actions actions--small">
+                <ActionButton
+                    state={area.open}
+                    label="Öffnen"
+                    icon="⬆️"
+                />
+                <ActionButton
+                    state={area.close}
+                    label="Schließen"
+                    icon="⬇️"
+                />
+                <ActionButton
+                    state={area.sunProtect}
+                    label="Sonnenschutz"
+                    icon="🕶️"
+                />
+            </div>
+            <ul className="shutter-list">
+                {shutters.map(s => (
+                    <ShutterRow
+                        key={s.name}
+                        shutter={s}
+                    />
+                ))}
+            </ul>
+        </section>
+    );
+}
+
+function OtherCard({ sc }: { sc: SvShutterControl }): React.JSX.Element {
+    return (
+        <section className="card">
+            <h2 className="subtitle">Weitere</h2>
+            <ul className="shutter-list">
+                {sc.shutters
+                    .filter(s => !s.area)
+                    .map(s => (
+                        <ShutterRow
+                            key={s.name}
+                            shutter={s}
+                        />
+                    ))}
+            </ul>
+        </section>
     );
 }
 
