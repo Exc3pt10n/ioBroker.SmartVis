@@ -40,6 +40,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
 - **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz, Auto) und Tageswerten über Adapter-Profile:
   - [ioBroker.qhome-ess-hyb-g2](https://github.com/Exc3pt10n/ioBroker.qhome-ess-hyb-g2) (QCells Q.HOME+ ESS HYB-G2) – inkl. aller Energiezähler (Tag, Monat, Quartal, Halbjahr, Jahr jeweils mit Vorperiode, Gesamt)
+  - `toshiba-ac` (Toshiba-Klimageräte): je Gerät eine Kachel „Klimaanlage“ im passenden Raum; Detailansicht mit Ein/Aus, Betriebsart, Solltemperatur (in ganzen Grad), Lüfterstufe und Lamellen, weitere Einstellungen (Sonderfunktion, Kaminmodus, Leistungsbegrenzung) als Auswahlfelder
   - `kecontact` (KEBA KeContact P20/P30): Status, Ladeleistung, PV-Überschuss, aktuelles Ladelimit (A und ≈ kW), PV-Überschussladen und Pause schaltbar, dazu die Einstellungen der Ladeautomatik (Phasen 1/3, zusätzlicher/maximaler Netzbezug, Ladestrom-Begrenzung, Batteriespeicher-Strategie und -Schwelle, Ziel-Ladung). Bei der Deutschland-Edition (ohne Energiezähler) wird die Ladeleistung wie im kecontact-Adapter aus Ladestrom × 230 V × Phasen geschätzt (Anzeige mit „≈“)
   - Ist eine Wallbox vorhanden, wird ihre Leistung aus dem Hausverbrauch des Speichers herausgerechnet (der Speicher misst am Netzanschluss)
 - Neu-Erkennung bei Objektänderungen
@@ -127,16 +128,20 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.1.0 (2026-11-11)
 
-- (Exc3pt10n) Grundgerüst: Erkennung, Webserver, PWA-Oberfläche
-- (Exc3pt10n) Energie-Sicht mit Profil für QCells Q.HOME+ ESS HYB-G2
-- (Exc3pt10n) KEBA-Wallbox-Profil, Hue-Räume als Raumquelle, Zusammenführen gleichnamiger Räume
-- (Exc3pt10n) Bearbeiten-Modus: umbenennen, verschieben, ausblenden, Favoriten, Reihenfolge, eigene Räume
-- (Exc3pt10n) Detailansicht mit Slidern für Licht, Rollladen und Thermostat
-- (Exc3pt10n) PV-Prognose aus pvforecast in der Energie-Sicht
-- (Exc3pt10n) Beschattung mit shuttercontrol: Steuerung, Automatik je Bereich und Rollladen, Status an den Rollladen-Kacheln
-- (Exc3pt10n) Wetter auf der Startseite (Homematic-Wetterstation + CCU-Tageswerte); Erkennung gegen einen echten Objektbaum mit ~8.800 Objekten abgestimmt (727 → 146 Kacheln)
+- (Exc3pt10n) Erkennung: type-detector mit adapterspezifischen Regeln (Homematic, Hue, Alexa), Räume aus Enums, Hue und Gerätenamen; gegen einen echten Objektbaum abgestimmt (727 → 146 Kacheln)
+- (Exc3pt10n) Eigener Webserver mit PWA (mobile first, Desktop mit Seitenleiste und Spalten), Live-Werte per WebSocket
+- (Exc3pt10n) Detailansichten: Licht, Rollladen, Thermostat, Klima, Medien-Player; Wertelisten als Auswahlfelder
+- (Exc3pt10n) Profile: QCells Q.HOME (inkl. aller Energiezähler), KEBA KeContact (inkl. Ladeautomatik), pvforecast, shuttercontrol, Homematic-Wetterstation und Lichtsensoren, Hue-Szenen, Toshiba-Klimageräte (toshiba-ac)
+- (Exc3pt10n) Verläufe aus sql, history und influxdb
+- (Exc3pt10n) Startseite als Dashboard mit Kennzahlen, Wetter, Favoriten, laufenden Medien und Statuslisten (eingeschaltete Lichter und Klimageräte, offene Fenster, Störungen)
+- (Exc3pt10n) Bearbeiten-Modus: Geräte und Räume umbenennen, verschieben, ausblenden, Favoriten; Kacheln, Räume und alle Bereiche per Ziehen anordnen
+- (Exc3pt10n) „Mehr“: Zustand von ioBroker (Host-Auslastung, Instanzen)
+
+### 0.0.1
+
+- (Exc3pt10n) Erstveröffentlichung
 
 ## License
 

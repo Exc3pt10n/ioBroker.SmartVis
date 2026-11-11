@@ -1,0 +1,1396 @@
+{
+  "toshiba-ac.0.Arbeitszimmer": {
+    "type": "device",
+    "common": {
+      "name": "Arbeitszimmer",
+      "statusStates": {
+        "onlineId": "toshiba-ac.0.info.connection"
+      }
+    },
+    "native": {
+      "acId": "00000000-0000-4000-8000-000000000001",
+      "uniqueId": "00000000-0000-4000-8000-000000000002"
+    },
+    "_id": "toshiba-ac.0.Arbeitszimmer"
+  },
+  "toshiba-ac.0.Arbeitszimmer.fanMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fan speed",
+        "de": "Lüfterstufe"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "AUTO": "Auto",
+        "QUIET": "Quiet",
+        "LOW": "Low (1)",
+        "MEDIUM_LOW": "Medium low (2)",
+        "MEDIUM": "Medium (3)",
+        "MEDIUM_HIGH": "Medium high (4)",
+        "HIGH": "High (5)"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.fanMode",
+    "val": "AUTO",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.indoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor temperature",
+        "de": "Raumtemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.indoorTemperature",
+    "val": 24,
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info": {
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Device information",
+        "de": "Geräteinformationen"
+      }
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info"
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.acId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "AC id",
+        "de": "AC-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.acId",
+    "val": "00000000-0000-4000-8000-000000000001",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.firmware": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Firmware version",
+        "de": "Firmware-Version"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.firmware",
+    "val": "5.0.00",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.group": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Group in app",
+        "de": "Gruppe in der App"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.group",
+    "val": "All",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.indoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor unit model",
+        "de": "Modell Innengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.indoorUnitModel"
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.lastUpdate": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update",
+        "de": "Letzte Aktualisierung"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.lastUpdate",
+    "val": 1794406549606,
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.meritFeature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Feature flags",
+        "de": "Funktions-Flags"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.meritFeature",
+    "val": "2c00",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.modelId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Model id",
+        "de": "Modell-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.modelId",
+    "val": "2",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.name": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Name",
+        "de": "Name"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.name",
+    "val": "Arbeitszimmer",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.outdoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor unit model",
+        "de": "Modell Außengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.outdoorUnitModel"
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.rawState": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Raw state (hex)",
+        "de": "Rohzustand (hex)"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.rawState",
+    "val": "31421641316400101807ffffffff10ffffffff",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.info.uniqueId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Unique device id",
+        "de": "Eindeutige Geräte-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.info.uniqueId",
+    "val": "00000000-0000-4000-8000-000000000002",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.meritA": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Special mode (Eco, Hi-Power, 8 °C, ...)",
+        "de": "Sonderfunktion (Eco, Hi-Power, 8 °C, ...)"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SLEEP_CARE": "Sleep care",
+        "COMFORT": "Comfort",
+        "HIGH_POWER": "Hi-Power",
+        "ECO": "Eco",
+        "CDU_SILENT_1": "Outdoor unit silent 1",
+        "CDU_SILENT_2": "Outdoor unit silent 2",
+        "HEATING_8C": "8 °C frost protection"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.meritA",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.meritB": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fireplace mode",
+        "de": "Kaminmodus"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "FIREPLACE_1": "Fireplace 1",
+        "FIREPLACE_2": "Fireplace 2"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.meritB",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.mode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Operating mode",
+        "de": "Betriebsart"
+      },
+      "type": "string",
+      "role": "level.mode.thermostat",
+      "states": {
+        "AUTO": "Auto",
+        "COOL": "Cool",
+        "HEAT": "Heat",
+        "DRY": "Dry",
+        "FAN": "Fan only"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.mode",
+    "val": "COOL",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.outdoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor temperature",
+        "de": "Außentemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.outdoorTemperature",
+    "val": 7,
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.power": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power",
+        "de": "Ein/Aus"
+      },
+      "type": "boolean",
+      "role": "switch.power",
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.power",
+    "val": false,
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.powerSelection": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power limit",
+        "de": "Leistungsbegrenzung"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "POWER_50": "50 %",
+        "POWER_75": "75 %",
+        "POWER_100": "100 %"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.powerSelection",
+    "val": "POWER_100",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.selfCleaning": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Self cleaning active",
+        "de": "Selbstreinigung aktiv"
+      },
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.selfCleaning",
+    "val": false,
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.swingMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Louver / swing",
+        "de": "Lamellen / Swing"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SWING_VERTICAL": "Swing vertical"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.swingMode",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Arbeitszimmer.targetTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Target temperature",
+        "de": "Solltemperatur"
+      },
+      "type": "number",
+      "role": "level.temperature",
+      "unit": "°C",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Arbeitszimmer.targetTemperature",
+    "val": 22,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer": {
+    "type": "device",
+    "common": {
+      "name": "Schlafzimmer",
+      "statusStates": {
+        "onlineId": "toshiba-ac.0.info.connection"
+      }
+    },
+    "native": {
+      "acId": "00000000-0000-4000-8000-000000000003",
+      "uniqueId": "00000000-0000-4000-8000-000000000004"
+    },
+    "_id": "toshiba-ac.0.Schlafzimmer"
+  },
+  "toshiba-ac.0.Schlafzimmer.fanMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fan speed",
+        "de": "Lüfterstufe"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "AUTO": "Auto",
+        "QUIET": "Quiet",
+        "LOW": "Low (1)",
+        "MEDIUM_LOW": "Medium low (2)",
+        "MEDIUM": "Medium (3)",
+        "MEDIUM_HIGH": "Medium high (4)",
+        "HIGH": "High (5)"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.fanMode",
+    "val": "AUTO",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.indoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor temperature",
+        "de": "Raumtemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.indoorTemperature",
+    "val": 21,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info": {
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Device information",
+        "de": "Geräteinformationen"
+      }
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info"
+  },
+  "toshiba-ac.0.Schlafzimmer.info.acId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "AC id",
+        "de": "AC-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.acId",
+    "val": "00000000-0000-4000-8000-000000000003",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.firmware": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Firmware version",
+        "de": "Firmware-Version"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.firmware",
+    "val": "5.0.00",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.group": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Group in app",
+        "de": "Gruppe in der App"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.group",
+    "val": "All",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.indoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor unit model",
+        "de": "Modell Innengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.indoorUnitModel"
+  },
+  "toshiba-ac.0.Schlafzimmer.info.lastUpdate": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update",
+        "de": "Letzte Aktualisierung"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.lastUpdate",
+    "val": 1794406549685,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.meritFeature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Feature flags",
+        "de": "Funktions-Flags"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.meritFeature",
+    "val": "2c00",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.modelId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Model id",
+        "de": "Modell-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.modelId",
+    "val": "2",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.name": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Name",
+        "de": "Name"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.name",
+    "val": "Schlafzimmer",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.outdoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor unit model",
+        "de": "Modell Außengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.outdoorUnitModel"
+  },
+  "toshiba-ac.0.Schlafzimmer.info.rawState": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Raw state (hex)",
+        "de": "Rohzustand (hex)"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.rawState",
+    "val": "31421641316400101507ffffffff10ffffffff",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.info.uniqueId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Unique device id",
+        "de": "Eindeutige Geräte-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.info.uniqueId",
+    "val": "00000000-0000-4000-8000-000000000004",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.meritA": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Special mode (Eco, Hi-Power, 8 °C, ...)",
+        "de": "Sonderfunktion (Eco, Hi-Power, 8 °C, ...)"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SLEEP_CARE": "Sleep care",
+        "COMFORT": "Comfort",
+        "HIGH_POWER": "Hi-Power",
+        "ECO": "Eco",
+        "CDU_SILENT_1": "Outdoor unit silent 1",
+        "CDU_SILENT_2": "Outdoor unit silent 2",
+        "HEATING_8C": "8 °C frost protection"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.meritA",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.meritB": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fireplace mode",
+        "de": "Kaminmodus"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "FIREPLACE_1": "Fireplace 1",
+        "FIREPLACE_2": "Fireplace 2"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.meritB",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.mode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Operating mode",
+        "de": "Betriebsart"
+      },
+      "type": "string",
+      "role": "level.mode.thermostat",
+      "states": {
+        "AUTO": "Auto",
+        "COOL": "Cool",
+        "HEAT": "Heat",
+        "DRY": "Dry",
+        "FAN": "Fan only"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.mode",
+    "val": "COOL",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.outdoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor temperature",
+        "de": "Außentemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.outdoorTemperature",
+    "val": 7,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.power": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power",
+        "de": "Ein/Aus"
+      },
+      "type": "boolean",
+      "role": "switch.power",
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.power",
+    "val": false,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.powerSelection": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power limit",
+        "de": "Leistungsbegrenzung"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "POWER_50": "50 %",
+        "POWER_75": "75 %",
+        "POWER_100": "100 %"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.powerSelection",
+    "val": "POWER_100",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.selfCleaning": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Self cleaning active",
+        "de": "Selbstreinigung aktiv"
+      },
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.selfCleaning",
+    "val": false,
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.swingMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Louver / swing",
+        "de": "Lamellen / Swing"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SWING_VERTICAL": "Swing vertical"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.swingMode",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Schlafzimmer.targetTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Target temperature",
+        "de": "Solltemperatur"
+      },
+      "type": "number",
+      "role": "level.temperature",
+      "unit": "°C",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Schlafzimmer.targetTemperature",
+    "val": 22,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer": {
+    "type": "device",
+    "common": {
+      "name": "Wohnzimmer",
+      "statusStates": {
+        "onlineId": "toshiba-ac.0.info.connection"
+      }
+    },
+    "native": {
+      "acId": "00000000-0000-4000-8000-000000000005",
+      "uniqueId": "00000000-0000-4000-8000-000000000006"
+    },
+    "_id": "toshiba-ac.0.Wohnzimmer"
+  },
+  "toshiba-ac.0.Wohnzimmer.energyConsumptionYear": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Energy consumption (current year)",
+        "de": "Energieverbrauch (aktuelles Jahr)"
+      },
+      "type": "number",
+      "role": "value.energy.consumed",
+      "unit": "Wh",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.energyConsumptionYear"
+  },
+  "toshiba-ac.0.Wohnzimmer.fanMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fan speed",
+        "de": "Lüfterstufe"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "AUTO": "Auto",
+        "QUIET": "Quiet",
+        "LOW": "Low (1)",
+        "MEDIUM_LOW": "Medium low (2)",
+        "MEDIUM": "Medium (3)",
+        "MEDIUM_HIGH": "Medium high (4)",
+        "HIGH": "High (5)"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.fanMode",
+    "val": "AUTO",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.indoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor temperature",
+        "de": "Raumtemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.indoorTemperature",
+    "val": 21,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info": {
+    "type": "channel",
+    "common": {
+      "name": {
+        "en": "Device information",
+        "de": "Geräteinformationen"
+      }
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info"
+  },
+  "toshiba-ac.0.Wohnzimmer.info.acId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "AC id",
+        "de": "AC-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.acId",
+    "val": "00000000-0000-4000-8000-000000000005",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.firmware": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Firmware version",
+        "de": "Firmware-Version"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.firmware",
+    "val": "5.0.00",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.group": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Group in app",
+        "de": "Gruppe in der App"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.group",
+    "val": "All",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.indoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Indoor unit model",
+        "de": "Modell Innengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.indoorUnitModel",
+    "val": "RAS-B16G3KVSG-E",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.lastUpdate": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Last update",
+        "de": "Letzte Aktualisierung"
+      },
+      "type": "number",
+      "role": "value.time",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.lastUpdate",
+    "val": 1794406549522,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.meritFeature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Feature flags",
+        "de": "Funktions-Flags"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.meritFeature",
+    "val": "6c03",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.modelId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Model id",
+        "de": "Modell-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.modelId",
+    "val": "3",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.name": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Name",
+        "de": "Name"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.name",
+    "val": "Wohnzimmer",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.outdoorUnitModel": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor unit model",
+        "de": "Modell Außengerät"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.outdoorUnitModel",
+    "val": "NULL",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.rawState": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Raw state (hex)",
+        "de": "Rohzustand (hex)"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.rawState",
+    "val": "30431641506400101507ffffffff10ffffffff",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.info.uniqueId": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Unique device id",
+        "de": "Eindeutige Geräte-ID"
+      },
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.info.uniqueId",
+    "val": "00000000-0000-4000-8000-000000000006",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.meritA": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Special mode (Eco, Hi-Power, 8 °C, ...)",
+        "de": "Sonderfunktion (Eco, Hi-Power, 8 °C, ...)"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SLEEP_CARE": "Sleep care",
+        "COMFORT": "Comfort",
+        "HIGH_POWER": "Hi-Power",
+        "ECO": "Eco",
+        "CDU_SILENT_1": "Outdoor unit silent 1",
+        "CDU_SILENT_2": "Outdoor unit silent 2",
+        "HEATING_8C": "8 °C frost protection"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.meritA",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.meritB": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Fireplace mode",
+        "de": "Kaminmodus"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "FIREPLACE_1": "Fireplace 1",
+        "FIREPLACE_2": "Fireplace 2"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.meritB",
+    "val": "OFF",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.mode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Operating mode",
+        "de": "Betriebsart"
+      },
+      "type": "string",
+      "role": "level.mode.thermostat",
+      "states": {
+        "AUTO": "Auto",
+        "COOL": "Cool",
+        "HEAT": "Heat",
+        "DRY": "Dry",
+        "FAN": "Fan only"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.mode",
+    "val": "HEAT",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.outdoorTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Outdoor temperature",
+        "de": "Außentemperatur"
+      },
+      "type": "number",
+      "role": "value.temperature",
+      "unit": "°C",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.outdoorTemperature",
+    "val": 7,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.power": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power",
+        "de": "Ein/Aus"
+      },
+      "type": "boolean",
+      "role": "switch.power",
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.power",
+    "val": true,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.powerSelection": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Power limit",
+        "de": "Leistungsbegrenzung"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "POWER_50": "50 %",
+        "POWER_75": "75 %",
+        "POWER_100": "100 %"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.powerSelection",
+    "val": "POWER_100",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.selfCleaning": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Self cleaning active",
+        "de": "Selbstreinigung aktiv"
+      },
+      "type": "boolean",
+      "role": "indicator",
+      "read": true,
+      "write": false
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.selfCleaning",
+    "val": false,
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.swingMode": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Louver / swing",
+        "de": "Lamellen / Swing"
+      },
+      "type": "string",
+      "role": "text",
+      "states": {
+        "OFF": "Off",
+        "SWING_VERTICAL": "Swing vertical",
+        "SWING_HORIZONTAL": "Swing horizontal",
+        "SWING_VERTICAL_AND_HORIZONTAL": "Swing vertical + horizontal",
+        "FIXED_1": "Fixed position 1",
+        "FIXED_2": "Fixed position 2",
+        "FIXED_3": "Fixed position 3",
+        "FIXED_4": "Fixed position 4",
+        "FIXED_5": "Fixed position 5"
+      },
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.swingMode",
+    "val": "FIXED_1",
+    "ack": true
+  },
+  "toshiba-ac.0.Wohnzimmer.targetTemperature": {
+    "type": "state",
+    "common": {
+      "name": {
+        "en": "Target temperature",
+        "de": "Solltemperatur"
+      },
+      "type": "number",
+      "role": "level.temperature",
+      "unit": "°C",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "read": true,
+      "write": true
+    },
+    "native": {},
+    "_id": "toshiba-ac.0.Wohnzimmer.targetTemperature",
+    "val": 22,
+    "ack": true
+  },
+  "toshiba-ac.0.info": {
+    "_id": "toshiba-ac.0.info",
+    "type": "channel",
+    "common": {
+      "name": "Information"
+    },
+    "native": {}
+  },
+  "toshiba-ac.0.info.clientId": {
+    "_id": "toshiba-ac.0.info.clientId",
+    "type": "state",
+    "common": {
+      "role": "text",
+      "name": {
+        "en": "Client id used to register at the Toshiba cloud",
+        "de": "Client-ID für die Registrierung an der Toshiba Cloud"
+      },
+      "type": "string",
+      "read": true,
+      "write": false,
+      "def": ""
+    },
+    "native": {},
+    "val": "0000000000000000",
+    "ack": true
+  },
+  "toshiba-ac.0.info.connection": {
+    "_id": "toshiba-ac.0.info.connection",
+    "type": "state",
+    "common": {
+      "role": "indicator.connected",
+      "name": {
+        "en": "Connected to Toshiba cloud",
+        "de": "Mit Toshiba Cloud verbunden"
+      },
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "def": false
+    },
+    "native": {},
+    "val": true,
+    "ack": true
+  }
+}

@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.0.1",
+        "version": "0.1.0",
         "news": {
+            "0.1.0": {
+                "en": "Auto-discovered, mobile-first visualization: rooms, lights incl. Hue scenes, blinds, climate incl. Toshiba AC (active units on the home screen), media, energy (Q.HOME, KEBA, pvforecast), weather, shuttercontrol, history charts, edit mode with customizable views, ioBroker status",
+                "de": "Selbst erkennende, mobile Visualisierung: Räume, Licht inkl. Hue-Szenen, Rollläden, Klima inkl. Toshiba (aktive Geräte auf der Startseite), Medien, Energie (Q.HOME, KEBA, pvforecast), Wetter, shuttercontrol, Verläufe, Bearbeiten-Modus mit anpassbaren Ansichten, ioBroker-Status",
+                "ru": "Автоматически обнаруживаемая мобильная визуализация: комнаты, свет со сценами Hue, жалюзи, климат включая Toshiba, медиа, энергия (Q.HOME, KEBA, pvforecast), погода, shuttercontrol, графики истории, режим редактирования с настраиваемыми видами, статус ioBroker",
+                "pt": "Visualização móvel com deteção automática: divisões, luzes com cenas Hue, estores, climatização incl. Toshiba, multimédia, energia (Q.HOME, KEBA, pvforecast), meteorologia, shuttercontrol, históricos, modo de edição com vistas personalizáveis, estado do ioBroker",
+                "nl": "Automatisch herkennende, mobiele visualisatie: kamers, verlichting incl. Hue-scènes, rolluiken, klimaat incl. Toshiba, media, energie (Q.HOME, KEBA, pvforecast), weer, shuttercontrol, historie, bewerkmodus met aanpasbare weergaven, ioBroker-status",
+                "fr": "Visualisation mobile à détection automatique : pièces, éclairage avec scènes Hue, volets, climatisation dont Toshiba, médias, énergie (Q.HOME, KEBA, pvforecast), météo, shuttercontrol, historiques, mode édition avec vues personnalisables, état d'ioBroker",
+                "it": "Visualizzazione mobile con rilevamento automatico: stanze, luci con scene Hue, tapparelle, clima incl. Toshiba, media, energia (Q.HOME, KEBA, pvforecast), meteo, shuttercontrol, storico, modalità modifica con viste personalizzabili, stato di ioBroker",
+                "es": "Visualización móvil con detección automática: habitaciones, luces con escenas Hue, persianas, climatización incl. Toshiba, multimedia, energía (Q.HOME, KEBA, pvforecast), tiempo, shuttercontrol, históricos, modo de edición con vistas personalizables, estado de ioBroker",
+                "pl": "Automatycznie wykrywająca, mobilna wizualizacja: pokoje, oświetlenie ze scenami Hue, rolety, klimatyzacja w tym Toshiba, media, energia (Q.HOME, KEBA, pvforecast), pogoda, shuttercontrol, historia, tryb edycji z konfigurowalnymi widokami, stan ioBroker",
+                "uk": "Мобільна візуалізація з автовиявленням: кімнати, світло зі сценами Hue, жалюзі, клімат включно з Toshiba, медіа, енергія (Q.HOME, KEBA, pvforecast), погода, shuttercontrol, історія, режим редагування з налаштовуваними видами, стан ioBroker",
+                "zh-cn": "自动识别、移动优先的可视化：房间、灯光（含 Hue 场景）、百叶窗、空调（含东芝）、媒体、能源（Q.HOME、KEBA、pvforecast）、天气、shuttercontrol、历史曲线、可自定义视图的编辑模式、ioBroker 状态"
+            },
             "0.0.1": {
                 "en": "initial release",
                 "de": "Erstveröffentlichung",

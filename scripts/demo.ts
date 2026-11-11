@@ -306,6 +306,22 @@ Object.assign(
 // Farbtemperatur für die Stehlampe (Hue: Mired 153–500)
 state('hue.0.Stehlampe.ct', 'level.color.temperature', 'number', true, 370, { min: 153, max: 500 });
 
+// Toshiba-Klimageräte (Adapter toshiba-ac, anonymisierter echter Objektbaum inkl. Werte)
+{
+    const ac = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'toshiba-ac.json'), 'utf8')) as Record<
+        string,
+        Obj & { val?: SvStateValue['val'] }
+    >;
+    for (const [id, obj] of Object.entries(ac)) {
+        const { val, ...rest } = obj;
+        objects[id] = rest;
+        if (val !== undefined) {
+            states[id] = { val, ack: true, ts: Date.now() };
+        }
+    }
+    states['toshiba-ac.0.Wohnzimmer.energyConsumptionYear'] = { val: 412_300, ack: true, ts: Date.now() };
+}
+
 // KEBA KeContact (reduzierter echter Objektbaum)
 const keba = JSON.parse(readFileSync(join(__dirname, '..', 'test', 'fixtures', 'kecontact.json'), 'utf8')) as Record<
     string,

@@ -40,6 +40,10 @@ export interface SvStateRef {
     unit?: string;
     min?: number;
     max?: number;
+    /** Schrittweite (common.step), z. B. 1 bei Klimageräten */
+    step?: number;
+    /** Werteliste: Wert → Beschriftung (z. B. Betriebsart) */
+    states?: Record<string, string>;
     write: boolean;
     /** Nur Anzeige-Indikator (Batterie, Erreichbarkeit …) */
     indicator?: boolean;
