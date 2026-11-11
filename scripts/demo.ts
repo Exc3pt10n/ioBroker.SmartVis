@@ -433,7 +433,6 @@ objects['system.adapter.sql.0'] = {
     common: { name: 'sql' },
     native: {},
 } as unknown as Obj;
-state(`${Q}.PvPwTotal`, 'value', 'number', false, 4.2, { unit: 'kW' });
 for (const id of [
     'hm-rpc.0.MEQ003.1.ACTUAL_TEMPERATURE',
     'hm-rpc.0.MEQ003.1.HUMIDITY',
@@ -444,7 +443,7 @@ for (const id of [
     'hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION',
     'hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION',
     'hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION',
-    `${Q}.PvPwTotal`,
+    `${Q}.PvPw`,
     `${Q}.BtSoc`,
     `${Q}.ConsPw`,
     'kecontact.0.statistics.surplus',
@@ -480,7 +479,7 @@ function demoHistory(id: string, range: string): [number, number][] {
             v = Math.max(0, 12 + noise() * 16);
         } else if (/ILLUMINATION/.test(id)) {
             v = day * (id.includes('SLO2') ? 45000 : 22000) * (0.7 + noise() * 0.4);
-        } else if (/PvPwTotal/.test(id)) {
+        } else if (/PvPw$/.test(id)) {
             v = day * 6.5 * (0.85 + noise() * 0.3);
         } else if (/ConsPw/.test(id)) {
             v = 0.5 + Math.abs(noise()) * 1.2 + (hour > 17 && hour < 21 ? 0.8 : 0);

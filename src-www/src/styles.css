@@ -65,8 +65,7 @@ button {
 .main {
     padding: 16px 16px calc(var(--nav-h) + 24px + env(safe-area-inset-bottom));
     padding-top: calc(16px + env(safe-area-inset-top));
-    max-width: 1200px;
-    margin: 0 auto;
+    min-width: 0;
 }
 
 .nav {
@@ -1549,7 +1548,7 @@ button.chip {
 }
 
 .room-wrap.is-editing .room {
-    padding-right: 100px;
+    padding-right: 144px;
 }
 
 .room-wrap .movebtns {
@@ -1991,12 +1990,72 @@ section + .chips {
     font-weight: 400;
 }
 
+.totals__groups {
+    margin-bottom: 12px;
+}
+
 .totals .segmented {
     display: flex;
-    margin: 10px 0 12px;
+    margin: 0 0 12px;
 }
 
 .totals .segmented button {
     flex: 1;
     min-width: 0;
+}
+
+/* ===== Desktop: gesamte Breite nutzen ===== */
+@media (min-width: 900px) {
+    .main {
+        padding: 24px 32px 32px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    }
+}
+
+/* ===== Sortieren per Ziehen ===== */
+.draghandle {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.room-wrap .draghandle {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    left: auto;
+    right: 96px;
+}
+
+.is-sorting,
+.is-sorting * {
+    cursor: grabbing !important;
+    user-select: none;
+}
+
+.is-dragging .tile,
+.is-dragging .room {
+    opacity: 0.55;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.is-dragging .draghandle {
+    background: var(--accent);
+    color: #fff;
 }

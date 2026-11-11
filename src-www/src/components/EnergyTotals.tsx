@@ -80,7 +80,12 @@ function periodText(raw: unknown): string | undefined {
     if (m) {
         return `${m[2]}. Halbjahr ${m[1]}`;
     }
-    return raw;
+    m = /^(\d{4})$/.exec(raw);
+    if (m) {
+        return m[1];
+    }
+    // Unbekannte Kennungen (z. B. "total") nicht anzeigen
+    return undefined;
 }
 
 /** Energiezähler mit Auswahl des Zeitraums (Tag, Monat … Gesamt, jeweils mit Vorperiode) */
@@ -129,7 +134,7 @@ export function EnergyTotals({
             </h2>
             {groups.length > 1 && (
                 <div
-                    className="chips chips--small"
+                    className="chips chips--small totals__groups"
                     role="tablist"
                     aria-label="Zeitraum"
                 >

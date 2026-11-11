@@ -1,4 +1,5 @@
 import { DeviceTile } from '../components/DeviceTile';
+import { SortableGrid } from '../components/SortableGrid';
 import { ScenePanel } from '../components/ScenePanel';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { Icon } from '../components/Icon';
@@ -41,13 +42,12 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
                 <span className="titlebar__spacer" />
                 <EditButton />
             </div>
-            <EditBanner text="Kachel antippen zum Umbenennen, Verschieben oder Ausblenden · ← → sortiert innerhalb der Gruppe" />
+            <EditBanner text="Kachel antippen zum Umbenennen, Verschieben oder Ausblenden · am Griff ⠿ ziehen oder mit ← → sortieren (innerhalb der Gruppe)" />
             {devices.length === 0 ? (
                 <p className="empty">Keine Geräte in diesem Raum.</p>
             ) : (
                 groups.map(({ group, devices: list }) => {
                     // Sortieren innerhalb der Gruppe (die Reihenfolge der Gruppen ist fest)
-                    const ids = list.map(d => d.id);
                     return (
                         <section
                             key={group.key}
@@ -61,15 +61,18 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
                                 <span aria-hidden="true">{group.icon}</span> {group.label}
                                 <span className="group__count">{list.length}</span>
                             </h2>
-                            <div className="grid">
-                                {list.map(d => (
+                            <SortableGrid
+                                items={list}
+                                getId={d => d.id}
+                                kind="deviceOrder"
+                                render={(d, order) => (
                                     <DeviceTile
                                         key={d.id}
                                         device={d}
-                                        reorder={{ ids, kind: 'deviceOrder' }}
+                                        reorder={{ ids: order, kind: 'deviceOrder' }}
                                     />
-                                ))}
-                            </div>
+                                )}
+                            />
                             {group.key === 'light' && sceneGroups.length > 0 && <ScenePanel groups={sceneGroups} />}
                         </section>
                     );
