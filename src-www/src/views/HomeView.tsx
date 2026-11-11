@@ -41,6 +41,19 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const lightsOn = devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
     // Eingeschaltete Klimageräte (Ein/Aus = POWER)
     const climateOn = devices.filter(d => d.type === 'airCondition' && isActive(d, states));
+    // Symbol nach Betriebsart: alle heizen 🔥, alle kühlen ❄️, sonst neutral 🌡️
+    const climateModes = new Set(
+        climateOn.map(d => {
+            const mode = d.states.find(st => st.name === 'MODE');
+            return mode ? String(states[mode.id]?.val ?? '') : '';
+        }),
+    );
+    const climateIcon =
+        climateModes.size === 1 && climateModes.has('HEAT')
+            ? '🔥'
+            : climateModes.size === 1 && climateModes.has('COOL')
+              ? '❄️'
+              : '🌡️';
     const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
     const problems = devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = devices.filter(d => !d.roomId).length;
@@ -115,7 +128,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
         },
         climateOn.length > 0 && {
             key: 'climate',
-            icon: '❄️',
+            icon: climateIcon,
             value: String(climateOn.length),
             label: 'Klima an',
         },
@@ -358,7 +371,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 label: 'Klima aktiv',
                                 node: climateOn.length ? (
                                     <Section
-                                        title="❄️ Klima aktiv"
+                                        title={`${climateIcon} Klima aktiv`}
                                         devices={climateOn}
                                         roomName={roomName}
                                     />
