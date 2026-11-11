@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "news": {
+            "0.1.1": {
+                "en": "New setting \"Animations\" (More → Display): animations such as the energy flow can now run even if the operating system requests reduced motion",
+                "de": "Neue Einstellung „Animationen“ (Mehr → Darstellung): Animationen wie der Energiefluss laufen auf Wunsch auch, wenn das Betriebssystem reduzierte Bewegung wünscht",
+                "ru": "Новая настройка «Анимации» (Ещё → Отображение): анимации, например поток энергии, могут работать, даже если система запрашивает уменьшение движения",
+                "pt": "Nova definição \"Animações\" (Mais → Apresentação): animações como o fluxo de energia podem funcionar mesmo quando o sistema pede movimento reduzido",
+                "nl": "Nieuwe instelling \"Animaties\" (Meer → Weergave): animaties zoals de energiestroom kunnen ook draaien als het besturingssysteem minder beweging vraagt",
+                "fr": "Nouveau réglage « Animations » (Plus → Affichage) : les animations comme le flux d'énergie peuvent fonctionner même si le système demande de réduire les mouvements",
+                "it": "Nuova impostazione \"Animazioni\" (Altro → Visualizzazione): animazioni come il flusso di energia possono funzionare anche se il sistema richiede movimento ridotto",
+                "es": "Nuevo ajuste \"Animaciones\" (Más → Visualización): las animaciones como el flujo de energía pueden funcionar aunque el sistema solicite movimiento reducido",
+                "pl": "Nowe ustawienie „Animacje” (Więcej → Wyświetlanie): animacje, np. przepływ energii, mogą działać, nawet gdy system prosi o ograniczenie ruchu",
+                "uk": "Нове налаштування «Анімації» (Ще → Відображення): анімації, як-от потік енергії, можуть працювати, навіть якщо система просить зменшити рух",
+                "zh-cn": "新增“动画”设置（更多 → 显示）：即使操作系统要求减少动态效果，能量流等动画也可继续运行"
+            },
             "0.1.0": {
                 "en": "Auto-discovered, mobile-first visualization: rooms, lights incl. Hue scenes, blinds, climate incl. Toshiba AC (active units on the home screen), media, energy (Q.HOME, KEBA, pvforecast), weather, shuttercontrol, history charts, edit mode with customizable views, ioBroker status",
                 "de": "Selbst erkennende, mobile Visualisierung: Räume, Licht inkl. Hue-Szenen, Rollläden, Klima inkl. Toshiba (aktive Geräte auf der Startseite), Medien, Energie (Q.HOME, KEBA, pvforecast), Wetter, shuttercontrol, Verläufe, Bearbeiten-Modus mit anpassbaren Ansichten, ioBroker-Status",

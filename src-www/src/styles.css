@@ -488,10 +488,15 @@ button.chip {
     }
 }
 
+/* Bewegung reduzieren: wie im System, außer "Immer an" (data-motion="on") in SmartVis */
 @media (prefers-reduced-motion: reduce) {
-    .flow__line--active {
+    :root:not([data-motion='on']) .flow__line--active {
         animation: none;
     }
+}
+
+:root[data-motion='off'] .flow__line--active {
+    animation: none;
 }
 
 .stats {
@@ -981,10 +986,15 @@ button.chip {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .sheet,
-    .sheet__panel {
+    :root:not([data-motion='on']) .sheet,
+    :root:not([data-motion='on']) .sheet__panel {
         animation: none;
     }
+}
+
+:root[data-motion='off'] .sheet,
+:root[data-motion='off'] .sheet__panel {
+    animation: none;
 }
 
 .detail__controls {
@@ -2749,4 +2759,8 @@ button.kpi:hover {
 
 .setting--select .field__input {
     width: 100%;
+}
+
+.setting--first {
+    border-top: 0;
 }
