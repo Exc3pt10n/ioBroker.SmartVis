@@ -1,7 +1,26 @@
 import { useEffect, useState } from 'react';
 import type { SvWeather } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
+import { HistoryPanel, type HistorySeries } from './HistoryPanel';
+import { Sheet } from './Sheet';
 import { compass, condition, fmt, formatLux, formatMinutes, weatherSnapshot, windLabel } from '../weather';
+
+/** Aufgezeichnete Wetterwerte (Station, Lichtsensoren, weitere Außensensoren) */
+function weatherHistorySeries(weather: SvWeather, extra: SvWeather[] = []): HistorySeries[] {
+    const candidates: (HistorySeries | undefined)[] = [
+        weather.temperature && { key: 't', label: 'Temperatur', ref: weather.temperature },
+        weather.humidity && { key: 'h', label: 'Luftfeuchte', ref: weather.humidity, zeroBased: true },
+        weather.windSpeed && { key: 'w', label: 'Wind', ref: weather.windSpeed, zeroBased: true },
+        weather.rainToday && { key: 'r', label: 'Regen heute', ref: weather.rainToday, zeroBased: true },
+        ...(weather.lightSensors || []).map(l =>
+            l.current
+                ? { key: `l-${l.name}`, label: `Helligkeit ${l.name}`, ref: l.current, zeroBased: true }
+                : undefined,
+        ),
+        ...extra.map(x => (x.temperature ? { key: `x-${x.id}`, label: x.name, ref: x.temperature } : undefined)),
+    ];
+    return candidates.filter((c): c is HistorySeries => !!c && !!c.ref.history);
+}
 
 export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: SvWeather[] }): React.JSX.Element {
     const { states } = useConnection();
@@ -11,7 +30,9 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
         const timer = setInterval(() => setNow(Date.now()), 60_000);
         return () => clearInterval(timer);
     }, []);
+    const [showHistory, setShowHistory] = useState(false);
     const s = weatherSnapshot(weather, states);
+    const historySeries = weatherHistorySeries(weather, extra);
     const c = condition(s);
     const updated = s.updated ? new Date(s.updated) : undefined;
     const stale = updated ? now - updated.getTime() > 60 * 60 * 1000 : false;
@@ -96,6 +117,27 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
                     </p>
                 );
             })}
+            {historySeries.length > 0 && (
+                <button
+                    type="button"
+                    className="weather__history"
+                    onClick={() => setShowHistory(true)}
+                >
+                    📈 Verlauf ›
+                </button>
+            )}
+            {showHistory && (
+                <Sheet
+                    title="Wetter-Verlauf"
+                    subtitle={weather.name}
+                    onClose={() => setShowHistory(false)}
+                >
+                    <HistoryPanel
+                        series={historySeries}
+                        title="Verlauf"
+                    />
+                </Sheet>
+            )}
             {(!s.online || stale) && (
                 <p className="weather__warn">
                     {!s.online

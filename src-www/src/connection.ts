@@ -3,6 +3,7 @@ import type {
     ClientMessage,
     ServerMessage,
     SvEdit,
+    SvHistoryRange,
     SvModel,
     SvStateValue,
     ioBrokerValue,
@@ -27,6 +28,11 @@ class Connection {
     private listeners = new Set<() => void>();
     private retry = 0;
     private snapshot: Snapshot = { status: 'connecting', states: {} };
+    private nextReqId = 1;
+    private pendingHistory = new Map<
+        number,
+        { resolve: (p: [number, number][]) => void; reject: (e: Error) => void; timer: number }
+    >();
 
     constructor() {
         this.connect();
@@ -49,6 +55,22 @@ class Connection {
         // Optimistisch anzeigen, Bestätigung (ack) kommt per Update
         this.update({ states: { ...this.snapshot.states, [id]: { val, ack: false, ts: Date.now() } } });
         this.send({ t: 'set', id, val });
+    }
+
+    /** Verlauf eines aufgezeichneten States anfragen (Punkte [ts, wert]) */
+    history(id: string, range: SvHistoryRange): Promise<[number, number][]> {
+        if (this.ws?.readyState !== WebSocket.OPEN) {
+            return Promise.reject(new Error('Keine Verbindung'));
+        }
+        const reqId = this.nextReqId++;
+        return new Promise((resolve, reject) => {
+            const timer = window.setTimeout(() => {
+                this.pendingHistory.delete(reqId);
+                reject(new Error('Zeitüberschreitung beim Laden des Verlaufs'));
+            }, 25_000);
+            this.pendingHistory.set(reqId, { resolve, reject, timer });
+            this.send({ t: 'history', reqId, id, range });
+        });
     }
 
     /** Anpassung aus dem Bearbeiten-Modus senden; der Server antwortet mit neuem Model */
@@ -99,6 +121,19 @@ class Connection {
             case 'error':
                 this.update({ lastError: msg.message });
                 break;
+            case 'history': {
+                const pending = this.pendingHistory.get(msg.reqId);
+                if (pending) {
+                    window.clearTimeout(pending.timer);
+                    this.pendingHistory.delete(msg.reqId);
+                    if (msg.error) {
+                        pending.reject(new Error(msg.error));
+                    } else {
+                        pending.resolve(msg.points);
+                    }
+                }
+                break;
+            }
         }
     }
 

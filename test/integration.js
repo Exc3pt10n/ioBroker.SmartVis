@@ -99,6 +99,20 @@ tests.integration(path.join(__dirname, '..'), {
 
                 await harness.startAdapterAndWait();
                 const { ws, model } = await connect(port);
+
+                // Verlauf nur für aufgezeichnete States – sonst Fehler statt Datenbankabfrage
+                const answer = new Promise(resolve => {
+                    ws.on('message', raw => {
+                        const msg = JSON.parse(raw.toString());
+                        if (msg.t === 'history' && msg.reqId === 7) {
+                            resolve(msg);
+                        }
+                    });
+                });
+                ws.send(JSON.stringify({ t: 'history', reqId: 7, id: 'hm-rpc.0.DIM1.4.LEVEL', range: '24h' }));
+                const history = await answer;
+                expect(history.points).to.deep.equal([]);
+                expect(history.error).to.match(/Kein Verlauf/);
                 ws.close();
 
                 const dimmer = model.devices.find(d => d.id === 'hm-rpc.0.DIM1.4');

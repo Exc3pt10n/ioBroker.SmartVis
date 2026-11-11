@@ -1631,3 +1631,71 @@ section + .chips {
     margin-left: 6px;
     color: var(--text-muted);
 }
+
+/* ===== Verläufe ===== */
+:root {
+    /* Diagrammfarbe für allgemeine Verläufe: geprüft (Helligkeitsband, Kontrast ≥ 3:1) für hell und dunkel */
+    --chart-series: #2563eb;
+}
+
+.history {
+    margin-top: 16px;
+}
+
+.history .segmented {
+    margin-top: 8px;
+}
+
+.history__series {
+    margin-bottom: 4px;
+}
+
+.history__stats {
+    margin: 4px 0 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.history__loading {
+    height: 170px;
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface-2) 50%, transparent);
+}
+
+.history__error {
+    color: var(--warn);
+    font-size: 14px;
+}
+
+.hchart__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.hchart__area {
+    opacity: 0.1;
+}
+
+.hchart__dot {
+    stroke: var(--surface);
+    stroke-width: 2;
+}
+
+.weather__history {
+    margin-top: 12px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 32px;
+}
