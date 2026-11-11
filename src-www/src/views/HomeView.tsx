@@ -93,14 +93,14 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             key: 'forecast',
             icon: '🔮',
             value: fmtKwh(forecastToday),
-            label: 'Prognose heute',
+            label: 'PV heute',
             onClick: toEnergy,
         },
         forecastTomorrow !== undefined && {
             key: 'forecast2',
             icon: '🔮',
             value: fmtKwh(forecastTomorrow),
-            label: 'Prognose morgen',
+            label: 'PV morgen',
             onClick: toEnergy,
         },
         {
@@ -115,7 +115,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             key: 'sun',
             icon: '🕶️',
             value: String(sunProtected),
-            label: 'im Sonnenschutz',
+            label: 'Sonnenschutz',
             onClick: toShutters,
         },
         !!shutterAlarm && {
