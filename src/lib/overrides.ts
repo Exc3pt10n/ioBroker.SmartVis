@@ -1,4 +1,4 @@
-import type { SvDevice, SvEdit, SvModel, SvOverrides, SvRoom, SvUiSettings } from '../shared/protocol';
+import type { SvDevice, SvEdit, SvModel, SvOverrides, SvRoom, SvUiSettings, SvViewLayout } from '../shared/protocol';
 import { slug } from './rooms';
 
 export function emptyOverrides(): SvOverrides {
@@ -27,6 +27,38 @@ export function parseOverrides(raw: string | Buffer | undefined | null): SvOverr
     }
 }
 
+const VIEW_KEY = /^[a-z][a-z0-9.-]{0,39}$/i;
+const MAX_KEYS = 200;
+
+/** Liste von Bereichs-Schlüsseln bereinigen (Strings, ohne Duplikate, begrenzt) */
+function keyList(raw: unknown): string[] | undefined {
+    if (!Array.isArray(raw)) {
+        return undefined;
+    }
+    const list = [
+        ...new Set(raw.filter((k): k is string => typeof k === 'string' && k.length > 0 && k.length <= 200)),
+    ].slice(0, MAX_KEYS);
+    return list.length ? list : undefined;
+}
+
+function parseViews(raw: unknown): Record<string, SvViewLayout> | undefined {
+    if (!raw || typeof raw !== 'object') {
+        return undefined;
+    }
+    const views: Record<string, SvViewLayout> = {};
+    for (const [view, layout] of Object.entries(raw as Record<string, unknown>).slice(0, 100)) {
+        if (!VIEW_KEY.test(view) || !layout || typeof layout !== 'object') {
+            continue;
+        }
+        const order = keyList((layout as SvViewLayout).order);
+        const hidden = keyList((layout as SvViewLayout).hidden);
+        if (order || hidden) {
+            views[view] = { ...(order && { order }), ...(hidden && { hidden }) };
+        }
+    }
+    return Object.keys(views).length ? views : undefined;
+}
+
 /** Nur bekannte Einstellungen übernehmen */
 function parseUi(raw: unknown): SvUiSettings | undefined {
     if (!raw || typeof raw !== 'object') {
@@ -35,6 +67,10 @@ function parseUi(raw: unknown): SvUiSettings | undefined {
     const ui: SvUiSettings = {};
     if ((raw as SvUiSettings).hideNoRoomHint === true) {
         ui.hideNoRoomHint = true;
+    }
+    const views = parseViews((raw as SvUiSettings).views);
+    if (views) {
+        ui.views = views;
     }
     return Object.keys(ui).length ? ui : undefined;
 }
@@ -169,6 +205,22 @@ export function applyEdit(current: SvOverrides, edit: SvEdit): SvOverrides {
                 ui.hideNoRoomHint = edit.patch.hideNoRoomHint ? true : undefined;
             }
             o.ui = ui;
+            break;
+        }
+        case 'view': {
+            if (typeof edit.view !== 'string' || !VIEW_KEY.test(edit.view)) {
+                throw new Error('Unbekannte Ansicht');
+            }
+            const views = { ...o.ui?.views };
+            const layout: SvViewLayout = { ...views[edit.view] };
+            if ('order' in edit) {
+                layout.order = edit.order === null ? undefined : keyList(edit.order);
+            }
+            if ('hidden' in edit) {
+                layout.hidden = edit.hidden === null ? undefined : keyList(edit.hidden);
+            }
+            views[edit.view] = layout;
+            o.ui = { ...o.ui, views };
             break;
         }
         default:

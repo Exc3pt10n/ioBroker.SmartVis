@@ -120,6 +120,22 @@ describe('overrides', () => {
         expect(applyOverrides(model, o, true).ui).to.deep.equal({});
     });
 
+    it('stores the layout of views (order, hidden) and resets it', () => {
+        let o = applyEdit(emptyOverrides(), { kind: 'view', view: 'energy', order: ['history', 'flow', 'flow'] });
+        o = applyEdit(o, { kind: 'view', view: 'energy', hidden: ['forecast'] });
+        expect(applyOverrides(model, o, true).ui?.views).to.deep.equal({
+            energy: { order: ['history', 'flow'], hidden: ['forecast'] },
+        });
+        expect(parseOverrides(JSON.stringify(o)).ui?.views?.energy?.hidden).to.deep.equal(['forecast']);
+        o = applyEdit(o, { kind: 'view', view: 'energy', order: null, hidden: null });
+        expect(o.ui).to.equal(undefined);
+        expect(() => applyEdit(o, { kind: 'view', view: '../x', order: [] })).to.throw();
+        // Fremde Inhalte in der Datei werden verworfen
+        expect(
+            parseOverrides(JSON.stringify({ ui: { views: { energy: { order: [1, 'a'], x: 1 }, 'bad key!': {} } } })).ui,
+        ).to.deep.equal({ views: { energy: { order: ['a'] } } });
+    });
+
     it('parses broken files as empty', () => {
         expect(parseOverrides('{kaputt')).to.deep.equal(emptyOverrides());
         expect(parseOverrides(undefined)).to.deep.equal(emptyOverrides());

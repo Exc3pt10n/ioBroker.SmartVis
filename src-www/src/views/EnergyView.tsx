@@ -4,6 +4,8 @@ import { EnergyTotals } from '../components/EnergyTotals';
 import { ForecastCard } from '../components/ForecastCard';
 import { HistoryPanel, type HistorySeries } from '../components/HistoryPanel';
 import { WallboxCard } from '../components/WallboxCard';
+import { CustomSections, type SectionDef } from '../components/CustomSections';
+import { EditBanner, EditButton } from '../components/EditButton';
 import { useConnection } from '../connection';
 import { kwh, num, snapshot } from '../energy';
 
@@ -49,75 +51,97 @@ export function EnergyView(): React.JSX.Element {
         ] as (HistorySeries | undefined | false)[]
     ).filter((x): x is HistorySeries => !!x && !!x.ref.history);
 
+    const multi = model.energy.length > 1;
+    const sections: SectionDef[] = [
+        ...model.energy.flatMap((system): SectionDef[] => {
+            // Wallboxen fließen in das erste Energiesystem ein
+            const flow = snapshot(system, states, system === model.energy[0] ? model.wallboxes : []);
+            const value = (ref: SvStateRef | undefined): number | undefined => num(ref, states);
+            const remaining = value(system.battery?.remaining);
+            const offline = system.connected && states[system.connected.id]?.val === false;
+            const suffix = multi ? ` (${system.name})` : '';
+            return [
+                {
+                    key: `flow-${system.id}`,
+                    label: `Energiefluss${suffix}`,
+                    node: (
+                        <section className="card energy__flow">
+                            {multi && <h2 className="subtitle">{system.name}</h2>}
+                            {offline && (
+                                <div className="banner banner--offline">{system.name}: keine Verbindung zum Gerät</div>
+                            )}
+                            <EnergyFlow flow={flow} />
+                            {remaining ? (
+                                <p className="energy__note">
+                                    Batterie{' '}
+                                    {(flow.batteryCharge ?? 0) > (flow.batteryDischarge ?? 0) ? 'voll' : 'leer'} in ca.{' '}
+                                    {remaining >= 60
+                                        ? `${Math.floor(remaining / 60)} h ${remaining % 60} min`
+                                        : `${remaining} min`}
+                                </p>
+                            ) : null}
+                        </section>
+                    ),
+                },
+                {
+                    key: `totals-${system.id}`,
+                    label: `Energiezähler${suffix}`,
+                    node: (
+                        <EnergyTotals
+                            system={system}
+                            states={states}
+                        />
+                    ),
+                },
+            ];
+        }),
+        ...model.wallboxes.map(wb => ({
+            key: `wallbox-${wb.id}`,
+            label: model.wallboxes.length > 1 ? `Wallbox ${wb.name}` : 'Wallbox',
+            node: <WallboxCard wallbox={wb} />,
+        })),
+        {
+            key: 'history',
+            label: 'Verlauf',
+            node: energyHistory.length > 0 ? <HistoryPanel series={energyHistory} /> : null,
+        },
+        ...model.pvForecast.map(pv => ({
+            key: `forecast-${pv.id}`,
+            label: 'PV-Prognose',
+            node: (
+                <ForecastCard
+                    pv={pv}
+                    actualPvW={main ? snapshot(main, states).pv : undefined}
+                    producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
+                />
+            ),
+        })),
+    ];
+    // Standard: Fluss, Wallbox, Zähler, Verlauf, Prognose
+    const rank = (k: string): number =>
+        k.startsWith('flow-')
+            ? 0
+            : k.startsWith('wallbox-')
+              ? 1
+              : k.startsWith('totals-')
+                ? 2
+                : k === 'history'
+                  ? 3
+                  : 4;
+    sections.sort((a, b) => rank(a.key) - rank(b.key));
+
     return (
         <>
-            <h1 className="title">Energie</h1>
-            {model.energy.map(system => {
-                // Wallboxen fließen in das erste Energiesystem ein
-                const flow = snapshot(system, states, system === model.energy[0] ? model.wallboxes : []);
-                const value = (ref: SvStateRef | undefined): number | undefined => num(ref, states);
-                const remaining = value(system.battery?.remaining);
-                const offline = system.connected && states[system.connected.id]?.val === false;
-
-                return (
-                    <section
-                        key={system.id}
-                        className="energy"
-                    >
-                        {model.energy.length > 1 && <h2 className="subtitle">{system.name}</h2>}
-                        {offline && (
-                            <div className="banner banner--offline">{system.name}: keine Verbindung zum Gerät</div>
-                        )}
-                        <div className="energy__layout">
-                            <div className="card energy__flow">
-                                <EnergyFlow flow={flow} />
-                                {remaining ? (
-                                    <p className="energy__note">
-                                        Batterie{' '}
-                                        {(flow.batteryCharge ?? 0) > (flow.batteryDischarge ?? 0) ? 'voll' : 'leer'} in
-                                        ca.{' '}
-                                        {remaining >= 60
-                                            ? `${Math.floor(remaining / 60)} h ${remaining % 60} min`
-                                            : `${remaining} min`}
-                                    </p>
-                                ) : null}
-                            </div>
-                            <div className="energy__side">
-                                {system === model.energy[0] &&
-                                    model.wallboxes.map(wb => (
-                                        <WallboxCard
-                                            key={wb.id}
-                                            wallbox={wb}
-                                        />
-                                    ))}
-                                <EnergyTotals
-                                    system={system}
-                                    states={states}
-                                />
-                            </div>
-                        </div>
-                    </section>
-                );
-            })}
-            {!model.energy.length &&
-                model.wallboxes.map(wb => (
-                    <WallboxCard
-                        key={wb.id}
-                        wallbox={wb}
-                    />
-                ))}
-            {energyHistory.length > 0 && <HistoryPanel series={energyHistory} />}
-            {model.pvForecast.map(pv => {
-                const main = model.energy[0];
-                return (
-                    <ForecastCard
-                        key={pv.id}
-                        pv={pv}
-                        actualPvW={main ? snapshot(main, states).pv : undefined}
-                        producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
-                    />
-                );
-            })}
+            <div className="titlebar titlebar--split">
+                <h1 className="title">Energie</h1>
+                <EditButton />
+            </div>
+            <EditBanner text="Bereiche am Griff ⠿ ziehen oder mit ↑ ↓ sortieren und aus- oder einblenden" />
+            <CustomSections
+                view="energy"
+                sections={sections}
+                className="csecs csecs--cols"
+            />
         </>
     );
 }
