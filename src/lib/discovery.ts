@@ -6,6 +6,7 @@ import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } fro
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { hueSceneGroups } from './profiles/hueScenes';
+import { DEVICE_PROFILES, type DeviceControl } from './profiles/toshibaAc';
 import { systemStatus, systemStateIds } from './system';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
 
@@ -183,9 +184,31 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         if (isClaimed(id)) {
             return false;
         }
+        if (DEVICE_PROFILES[id.split('.')[0]]) {
+            return false;
+        }
         const structural = obj.type === 'channel' || (obj.type === 'device' && !hasChannels.has(id));
         return structural && isCandidate(id, obj, filtered, hue.stale);
     });
+
+    // Adapter mit eigener Geräte-Erkennung (z. B. toshiba-ac): Geräte direkt aus dem Profil
+    for (const id of keys) {
+        const profile = DEVICE_PROFILES[id.split('.')[0]];
+        const control = profile && !isClaimed(id) ? profile(id, filtered[id], filtered) : null;
+        if (!control) {
+            continue;
+        }
+        const device = toDevice(id, id, control, filtered, lang, memberToRoom, hue, rooms);
+        if (device) {
+            devices.push(device);
+            for (const s of device.states) {
+                stateIds.add(s.id);
+                if (s.write) {
+                    writableIds.add(s.id);
+                }
+            }
+        }
+    }
 
     const detector = new ChannelDetector();
     for (const id of candidates) {
@@ -299,10 +322,13 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     return { model, stateIds: [...stateIds], writableIds, historyIds };
 }
 
+/** Name für Geräte, die genauso heißen wie ihr Raum (z. B. Klimaanlage "Arbeitszimmer") */
+const ROOM_NAMED_TYPES: Record<string, string> = { airCondition: 'Klimaanlage' };
+
 function toDevice(
     id: string,
     deviceId: string,
-    control: PatternControl,
+    control: PatternControl | DeviceControl,
     objects: ObjectMap,
     lang: string,
     memberToRoom: Map<string, string>,
@@ -315,6 +341,12 @@ function toDevice(
             continue;
         }
         const common = (objects[s.id]?.common || {}) as ioBroker.StateCommon;
+        // Werteliste: vom Profil beschriftet oder aus common.states (nur Objekt-Form)
+        const own =
+            common.states && typeof common.states === 'object' && !Array.isArray(common.states)
+                ? common.states
+                : undefined;
+        const labels = ('labels' in s && s.labels) || own;
         states.push({
             name: s.name,
             id: s.id,
@@ -323,6 +355,8 @@ function toDevice(
             unit: common.unit,
             min: common.min,
             max: common.max,
+            ...(typeof common.step === 'number' && common.step > 0 && { step: common.step }),
+            ...(labels && { states: labels }),
             write: common.write === true,
             indicator: s.indicator || undefined,
         });
@@ -384,6 +418,9 @@ function toDevice(
         } else if (LIGHT_TYPES.has(control.type)) {
             // Raumgruppe (z. B. Hue-Raum "Küche") → "Alle Lichter"
             name = 'Alle Lichter';
+        } else if (ROOM_NAMED_TYPES[control.type]) {
+            // Gerät heißt wie der Raum → Gerätetyp als Name
+            name = ROOM_NAMED_TYPES[control.type];
         }
     }
 

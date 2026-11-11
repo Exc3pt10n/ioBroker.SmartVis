@@ -45,6 +45,14 @@ const STATE_LABELS: Record<string, string> = {
     HUE: 'Farbe',
     SATURATION: 'Sättigung',
     HUMIDITY: 'Luftfeuchte',
+    SPEED: 'Lüfterstufe',
+    SWING: 'Lamellen',
+    SPECIAL: 'Sonderfunktion',
+    FIREPLACE: 'Kaminmodus',
+    POWER_LIMIT: 'Leistungsbegrenzung',
+    OUTDOOR: 'Außentemperatur',
+    ENERGY_YEAR: 'Verbrauch (Jahr)',
+    CLEANING: 'Selbstreinigung',
     SECOND: 'Zweiter Wert',
     VALVE: 'Ventil',
     WINDOW: 'Fenster',
@@ -74,6 +82,9 @@ function stateLabel(state: SvStateRef): string {
     const role = state.role || '';
     if (/humidity/.test(role)) {
         return 'Luftfeuchte';
+    }
+    if (state.name === 'OUTDOOR') {
+        return 'Außentemperatur';
     }
     if (/temperature/.test(role) && (state.name === 'ACTUAL' || state.name === 'SECOND')) {
         return 'Temperatur';
@@ -398,7 +409,16 @@ export function DeviceDetail({
                 states={states}
             />
         );
-    } else if (device.type === 'thermostat' || device.type === 'airCondition') {
+    } else if (device.type === 'airCondition') {
+        const refs = acRefs(device);
+        used = Object.values(refs);
+        main = (
+            <AcControls
+                refs={refs}
+                states={states}
+            />
+        );
+    } else if (device.type === 'thermostat') {
         const refs = thermostatRefs(device);
         used = Object.values(refs);
         main = (
@@ -635,15 +655,18 @@ function ThermostatControls({ refs, states }: { refs: ThermostatRefs; states: St
     const { set, actual, humidity, boost } = refs;
     const min = set?.min ?? 5;
     const max = set?.max ?? 30;
-    const step = 0.5;
+    // Schrittweite vom Gerät (z. B. ganze Grad bei Klimageräten), sonst 0,5 °C
+    const step = set?.step ?? 0.5;
     const value = num(states, set);
     const nudge = (delta: number): void => {
         if (set && value !== undefined) {
             connection.setState(set.id, Math.min(max, Math.max(min, Math.round((value + delta) / step) * step)));
         }
     };
+    // Ganze Grad (Schrittweite 1) ohne Nachkommastelle
+    const digits = step >= 1 ? 0 : 1;
     const fmt = (v: number): string =>
-        `${v.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} °C`;
+        `${v.toLocaleString('de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits })} °C`;
 
     return (
         <div className="detail__controls">
@@ -721,6 +744,16 @@ function StateRow({ state, states }: { state: SvStateRef; states: States }): Rea
             </div>
         );
     }
+    if (state.write && state.states && Object.keys(state.states).length > 0) {
+        return (
+            <div className="facts__row facts__row--control">
+                <SelectState
+                    state={state}
+                    label={label}
+                />
+            </div>
+        );
+    }
     if (state.write && state.type === 'boolean') {
         return (
             <div className="facts__row facts__row--control">
@@ -744,6 +777,133 @@ function StateRow({ state, states }: { state: SvStateRef; states: States }): Rea
         <div className="facts__row">
             <dt>{label}</dt>
             <dd>{text}</dd>
+        </div>
+    );
+}
+
+interface AcRefs {
+    power?: SvStateRef;
+    mode?: SvStateRef;
+    set?: SvStateRef;
+    actual?: SvStateRef;
+    speed?: SvStateRef;
+    swing?: SvStateRef;
+}
+
+function acRefs(device: SvDevice): AcRefs {
+    return {
+        power: find(device, ['POWER'], { write: true, type: 'boolean' }),
+        mode: find(device, ['MODE'], { write: true }),
+        set: find(device, ['SET'], { write: true }),
+        actual: find(device, ['ACTUAL']),
+        speed: find(device, ['SPEED'], { write: true }),
+        swing: find(device, ['SWING'], { write: true }),
+    };
+}
+
+const AC_MODE_ICONS: Record<string, string> = { AUTO: '🔄', COOL: '❄️', HEAT: '🔥', DRY: '💧', FAN: '🌀' };
+
+/** Klimagerät: Ein/Aus, Betriebsart, Solltemperatur, Lüfter und Lamellen */
+function AcControls({ refs, states }: { refs: AcRefs; states: States }): React.JSX.Element {
+    const { power, mode, set, actual, speed, swing } = refs;
+    const on = power ? states[power.id]?.val === true : true;
+    const current = mode ? String(states[mode.id]?.val ?? '') : '';
+    return (
+        <>
+            <div className="detail__controls">
+                {power && (
+                    <Toggle
+                        state={power}
+                        label="Ein/Aus"
+                    />
+                )}
+                {mode?.states && (
+                    <div
+                        className={`segmented ac__modes${mode && states[mode.id]?.ack === false ? ' slider--pending' : ''}`}
+                        role="radiogroup"
+                        aria-label="Betriebsart"
+                    >
+                        {Object.entries(mode.states).map(([value, label]) => (
+                            <button
+                                key={value}
+                                type="button"
+                                role="radio"
+                                aria-checked={current === value}
+                                className={current === value ? 'segmented--active' : ''}
+                                onClick={() => connection.setState(mode.id, value)}
+                            >
+                                {AC_MODE_ICONS[value] && (
+                                    <span
+                                        className="ac__mode-icon"
+                                        aria-hidden="true"
+                                    >
+                                        {AC_MODE_ICONS[value]}
+                                    </span>
+                                )}
+                                <span>{label}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+                {!on && (
+                    <p className="detail__note">Ausgeschaltet – Einstellungen werden beim Einschalten übernommen.</p>
+                )}
+            </div>
+            <ThermostatControls
+                refs={{ set, actual }}
+                states={states}
+            />
+            {(speed || swing) && (
+                <div className="detail__controls ac__selects">
+                    {speed && (
+                        <SelectState
+                            state={speed}
+                            label="Lüfterstufe"
+                        />
+                    )}
+                    {swing && (
+                        <SelectState
+                            state={swing}
+                            label="Lamellen"
+                        />
+                    )}
+                </div>
+            )}
+        </>
+    );
+}
+
+/** Auswahlfeld für States mit Werteliste (common.states) */
+function SelectState({ state, label }: { state: SvStateRef; label: string }): React.JSX.Element {
+    const { states } = useConnection();
+    const value = states[state.id];
+    const current = value?.val === null || value?.val === undefined ? '' : String(value.val);
+    const id = `sel-${state.id}`;
+    const numeric = state.type === 'number';
+    return (
+        <div className={`setting setting--select${value?.ack === false ? ' setting--pending' : ''}`}>
+            <label
+                className="setting__text"
+                htmlFor={id}
+            >
+                {label}
+            </label>
+            <select
+                id={id}
+                className="field__input"
+                value={current}
+                onChange={e => connection.setState(state.id, numeric ? Number(e.target.value) : e.target.value)}
+            >
+                {!(current in (state.states || {})) && <option value={current}>{current || '–'}</option>}
+                {Object.entries(state.states || {}).map(([v, l]) => (
+                    <option
+                        key={v}
+                        value={v}
+                    >
+                        {l}
+                    </option>
+                ))}
+            </select>
         </div>
     );
 }

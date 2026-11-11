@@ -32,7 +32,9 @@ export const TYPE_LABELS: Record<string, string> = {
 
 /** Schaltbarer boolean-State (Hauptaktion bei Tap) */
 export function switchState(device: SvDevice): SvStateRef | undefined {
-    for (const name of SWITCH_NAMES) {
+    // Klimageräte: Ein/Aus heißt POWER (bei Thermostaten wäre POWER nicht die Hauptaktion)
+    const names = device.type === 'airCondition' ? ['POWER', ...SWITCH_NAMES] : SWITCH_NAMES;
+    for (const name of names) {
         const s = device.states.find(st => st.name === name && st.write && st.type === 'boolean');
         if (s) {
             return s;
@@ -92,11 +94,18 @@ export function formatValue(ref: SvStateRef | undefined, value: SvStateValue | n
         return '–';
     }
     const { val } = value;
+    // Werteliste (z. B. Betriebsart "COOL" → "Kühlen")
+    if (ref.states && (typeof val === 'string' || typeof val === 'number') && ref.states[String(val)] !== undefined) {
+        return ref.states[String(val)];
+    }
     if (typeof val === 'boolean') {
         if (['window', 'windowTilt', 'door'].some(t => ref.role?.includes(t)) || ref.role?.startsWith('sensor.')) {
             return val ? 'offen' : 'geschlossen';
         }
         return val ? 'an' : 'aus';
+    }
+    if (typeof val === 'number' && ref.unit === 'Wh' && Math.abs(val) >= 1000) {
+        return `${(Math.round(val / 100) / 10).toLocaleString('de-DE')} kWh`;
     }
     if (typeof val === 'number') {
         const rounded = Math.round(val * 10) / 10;
@@ -109,6 +118,13 @@ export function formatValue(ref: SvStateRef | undefined, value: SvStateValue | n
 export function warnings(device: SvDevice, states: Record<string, SvStateValue | null>): string[] {
     const result: string[] = [];
     for (const s of device.states) {
+        // Verbindungs-Indikator: false = nicht erreichbar
+        if (s.name === 'CONNECTED') {
+            if (states[s.id]?.val === false) {
+                result.push('nicht erreichbar');
+            }
+            continue;
+        }
         if (!s.indicator || states[s.id]?.val !== true) {
             continue;
         }

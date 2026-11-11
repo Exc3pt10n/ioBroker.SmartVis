@@ -1,4 +1,4 @@
-import type { SvDevice, SvStateValue } from '../../../src/shared/protocol';
+import type { SvDevice, SvStateRef, SvStateValue } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
 import { TYPE_LABELS, formatValue, isActive, isPlaying, tapAction, valueState, warnings } from '../device';
 import { useOpenDetail } from '../detail';
@@ -18,6 +18,21 @@ function mediaSummary(device: SvDevice, states: Record<string, SvStateValue | nu
         return title ? `▶ ${String(title)}` : '▶ spielt';
     }
     return 'pausiert';
+}
+
+/** Klimagerät: "Kühlen auf 22 °C" bzw. "aus · 24 °C" (Raumtemperatur) */
+function acSummary(device: SvDevice, states: Record<string, SvStateValue | null>): string {
+    const ref = (name: string): SvStateRef | undefined => device.states.find(s => s.name === name);
+    const power = ref('POWER');
+    const actual = ref('ACTUAL');
+    const room = actual ? formatValue(actual, states[actual.id]) : undefined;
+    if (power && states[power.id]?.val !== true) {
+        return room && room !== '–' ? `aus · ${room}` : 'aus';
+    }
+    const mode = ref('MODE');
+    const set = ref('SET');
+    const modeText = mode ? formatValue(mode, states[mode.id]) : 'an';
+    return set ? `${modeText} auf ${formatValue(set, states[set.id])}` : modeText;
 }
 
 export function DeviceTile({
@@ -121,7 +136,9 @@ export function DeviceTile({
                 <span className="tile__value">
                     {device.type === 'media' || device.type === 'mediaPlayer'
                         ? mediaSummary(device, states)
-                        : formatValue(value, value ? states[value.id] : undefined)}
+                        : device.type === 'airCondition'
+                          ? acSummary(device, states)
+                          : formatValue(value, value ? states[value.id] : undefined)}
                     {showRoom ? ` · ${showRoom}` : ` · ${TYPE_LABELS[device.type] || device.type}`}
                 </span>
                 {autoInfo && (
