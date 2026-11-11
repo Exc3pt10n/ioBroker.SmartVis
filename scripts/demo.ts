@@ -369,7 +369,9 @@ for (const [key, val] of Object.entries({
 // QCells Q.HOME+ ESS HYB-G2 (Struktur wie ioBroker.qhome-ess-hyb-g2)
 const Q = 'qhome-ess-hyb-g2.0';
 for (const [key, unit, val] of [
-    ['PvPw', 'kW', 4.2],
+    ['PvPw', 'kW', 2.8],
+    ['PvPwExt', 'kW', 1.4],
+    ['PvPwTotal', 'kW', 4.2],
     ['ConsPw', 'kW', 1.1],
     ['GridPwPurchaseWb', 'W', 0],
     ['GridPwFeedInWb', 'W', 1300],
@@ -515,7 +517,7 @@ for (const id of [
     'hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION',
     'hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION',
     'hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION',
-    `${Q}.PvPw`,
+    `${Q}.PvPwTotal`,
     `${Q}.BtSoc`,
     `${Q}.ConsPw`,
     'kecontact.0.statistics.surplus',
@@ -560,7 +562,7 @@ function demoHistory(id: string, range: string): [number, number][] {
             v = Math.max(0, 12 + noise() * 16);
         } else if (/ILLUMINATION/.test(id)) {
             v = day * (id.includes('SLO2') ? 45000 : 22000) * (0.7 + noise() * 0.4);
-        } else if (/PvPw$/.test(id)) {
+        } else if (/PvPwTotal$/.test(id)) {
             v = day * 6.5 * (0.85 + noise() * 0.3);
         } else if (/ConsPw/.test(id)) {
             v = 0.5 + Math.abs(noise()) * 1.2 + (hour > 17 && hour < 21 ? 0.8 : 0);
@@ -656,7 +658,11 @@ function simulateEnergy(): void {
     const charge = Math.min(Math.max(surplus, 0), 2500);
     const discharge = surplus < 0 ? Math.min(-surplus, 2500) : 0;
     const rest = surplus - charge + discharge;
-    set('PvPw', pv);
+    // Zweiter Wechselrichter (zusätzlicher Erzeuger): PvPwTotal = PvPw + PvPwExt
+    const ext = Math.max(0, pv * 0.35 + (Math.random() - 0.5) * 0.1);
+    set('PvPw', pv - ext);
+    set('PvPwExt', ext);
+    set('PvPwTotal', pv);
     set('ConsPw', cons);
     set('BtPwCharge', charge);
     set('BtPwDisCharge', discharge);

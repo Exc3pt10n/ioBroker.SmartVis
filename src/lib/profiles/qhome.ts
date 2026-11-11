@@ -7,6 +7,7 @@ import { ref, type AdapterProfile, type ObjectMap } from './types';
  *
  * Echtzeitwerte direkt unter der Instanz, Richtungen bereits getrennt:
  * GridPwPurchaseWb/GridPwFeedInWb (W), BtPwCharge/BtPwDisCharge (W), PvPw/ConsPw (kW).
+ * Ab Adapter 0.3.0 mit zusätzlichen Erzeugern: PvPwTotal (gesamt) = PvPw (Q.HOME) + PvPwExt.
  * Energiezähler unter counters.<zeitraum>.* (kWh / %), Vorperiode jeweils unter .previous.
  */
 
@@ -88,10 +89,13 @@ export const qhomeProfile: AdapterProfile = {
     claimsInstance: true,
     detect(instance, objects, lang) {
         const id = (s: string): string => `${instance}.${s}`;
-        const pv = ref(objects, id('PvPw'), 'PV');
-        if (!pv) {
+        const ownPv = ref(objects, id('PvPw'), 'Q.HOME');
+        if (!ownPv) {
             return null;
         }
+        // Zusätzliche Erzeuger (Adapter ab 0.3.0): PvPwTotal = PvPw + PvPwExt; ohne sie wie bisher PvPw
+        const extPv = ref(objects, id('PvPwExt'), 'Weitere Erzeuger');
+        const pv = ref(objects, id('PvPwTotal'), 'PV') || { ...ownPv, name: 'PV' };
         const periods = findPeriods(objects, instance, lang);
 
         const energy: SvEnergySystem = {
@@ -106,6 +110,7 @@ export const qhomeProfile: AdapterProfile = {
                 batteryCharge: ref(objects, id('BtPwCharge'), 'Laden'),
                 batteryDischarge: ref(objects, id('BtPwDisCharge'), 'Entladen'),
             },
+            ...(extPv && pv.id !== ownPv.id && { pvParts: [ownPv, extPv] }),
             battery: {
                 soc: ref(objects, id('BtSoc'), 'Ladezustand'),
                 remaining: ref(objects, id('BtLast'), 'Restlaufzeit'),
