@@ -1,4 +1,5 @@
 import type { SvDevice, SvStateRef, SvStateValue } from '../../../src/shared/protocol';
+import { HistoryPanel } from '../components/HistoryPanel';
 import { Sheet } from '../components/Sheet';
 import { Slider } from '../components/Slider';
 import { Toggle } from '../components/Toggle';
@@ -178,6 +179,16 @@ export function DeviceDetail({
     const shown = new Set(used.filter((r): r is SvStateRef => !!r).map(r => r.id));
 
     const warn = warnings(device, states);
+    // Verlauf: alle aufgezeichneten Zahlenwerte des Geräts, Istwert zuerst
+    const historySeries = device.states
+        .filter(st => st.history && st.type !== 'boolean' && st.type !== 'string')
+        .sort((a, b) => (a.name === 'ACTUAL' ? -1 : b.name === 'ACTUAL' ? 1 : 0))
+        .map(st => ({
+            key: st.id,
+            label: STATE_LABELS[st.name] || st.name,
+            ref: st,
+            zeroBased: !/temperature/i.test(st.role || '') && st.unit !== '°C',
+        }));
     const rest = device.states.filter(s => !shown.has(s.id));
 
     return (
@@ -203,6 +214,7 @@ export function DeviceDetail({
         >
             {warn.length > 0 && <div className="banner banner--offline">⚠️ {warn.join(', ')}</div>}
             {main}
+            {historySeries.length > 0 && <HistoryPanel series={historySeries} />}
             {rest.length > 0 && (
                 <details
                     className="detail__more"

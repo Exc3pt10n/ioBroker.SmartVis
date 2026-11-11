@@ -1,6 +1,7 @@
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { EnergyFlow } from '../components/EnergyFlow';
 import { ForecastCard } from '../components/ForecastCard';
+import { HistoryPanel, type HistorySeries } from '../components/HistoryPanel';
 import { WallboxCard } from '../components/WallboxCard';
 import { useConnection } from '../connection';
 import { kwh, num, snapshot } from '../energy';
@@ -22,6 +23,34 @@ export function EnergyView(): React.JSX.Element {
             </>
         );
     }
+
+    // Verläufe: Leistungsflüsse, Ladezustand und PV-Überschuss der Wallbox (sofern aufgezeichnet)
+    const main = model.energy[0];
+    const pvColor = 'var(--chart-pv)';
+    const energyHistory = (
+        [
+            main?.flows.pv && { key: 'pv', label: 'PV', ref: main.flows.pv, color: pvColor, zeroBased: true },
+            main?.flows.home && { key: 'home', label: 'Verbrauch', ref: main.flows.home, zeroBased: true },
+            main?.flows.gridImport && { key: 'gi', label: 'Netzbezug', ref: main.flows.gridImport, zeroBased: true },
+            main?.flows.gridExport && { key: 'ge', label: 'Einspeisung', ref: main.flows.gridExport, zeroBased: true },
+            main?.flows.batteryCharge && {
+                key: 'bc',
+                label: 'Batterie laden',
+                ref: main.flows.batteryCharge,
+                zeroBased: true,
+            },
+            main?.flows.batteryDischarge && {
+                key: 'bd',
+                label: 'Batterie entladen',
+                ref: main.flows.batteryDischarge,
+                zeroBased: true,
+            },
+            main?.battery?.soc && { key: 'soc', label: 'Ladezustand', ref: main.battery.soc, zeroBased: true },
+            ...model.wallboxes.map(w =>
+                w.surplus ? { key: `s-${w.id}`, label: 'PV-Überschuss', ref: w.surplus, color: pvColor } : undefined,
+            ),
+        ] as (HistorySeries | undefined | false)[]
+    ).filter((x): x is HistorySeries => !!x && !!x.ref.history);
 
     return (
         <>
@@ -106,6 +135,7 @@ export function EnergyView(): React.JSX.Element {
                         wallbox={wb}
                     />
                 ))}
+            {energyHistory.length > 0 && <HistoryPanel series={energyHistory} />}
             {model.pvForecast.map(pv => {
                 const main = model.energy[0];
                 return (

@@ -1,5 +1,6 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
 import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
+import { attachHistory } from './history';
 import { getName } from './names';
 import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
@@ -21,6 +22,8 @@ export interface DiscoveryResult {
     stateIds: string[];
     /** Schreibbare State-IDs (Whitelist für Schreibbefehle aus der App) */
     writableIds: Set<string>;
+    /** Aufgezeichnete State-IDs → History-Instanz (Whitelist für Verlaufsabfragen) */
+    historyIds: Map<string, string>;
 }
 
 type ObjectMap = Record<string, ioBroker.Object>;
@@ -260,21 +263,20 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     devices.sort((a, b) => a.name.localeCompare(b.name, lang));
     const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
 
-    return {
-        model: {
-            rooms: roomList,
-            devices,
-            energy: profiles.energy,
-            wallboxes: profiles.wallboxes,
-            pvForecast: profiles.pvForecast,
-            weather: profiles.weather,
-            shutterControl: profiles.shutterControl,
-            generatedAt: Date.now(),
-            editable: false,
-        },
-        stateIds: [...stateIds],
-        writableIds,
+    const model: SvModel = {
+        rooms: roomList,
+        devices,
+        energy: profiles.energy,
+        wallboxes: profiles.wallboxes,
+        pvForecast: profiles.pvForecast,
+        weather: profiles.weather,
+        shutterControl: profiles.shutterControl,
+        generatedAt: Date.now(),
+        editable: false,
     };
+    const historyIds = attachHistory(model, filtered);
+
+    return { model, stateIds: [...stateIds], writableIds, historyIds };
 }
 
 function toDevice(

@@ -7,6 +7,7 @@ import {
     type ClientMessage,
     type ServerMessage,
     type SvEdit,
+    type SvHistoryRange,
     type SvModel,
     type SvStateValue,
     type ioBrokerValue,
@@ -39,6 +40,8 @@ export interface ServerHandlers {
     setState(id: string, val: ioBrokerValue): Promise<void>;
     /** Änderung aus dem Bearbeiten-Modus speichern (wirft bei Fehlern) */
     edit?(edit: SvEdit): Promise<void>;
+    /** Verlauf eines aufgezeichneten States (Punkte [ts, wert]) */
+    history?(id: string, range: SvHistoryRange): Promise<[number, number][]>;
     onClientCountChange?(count: number): void;
     log: ioBroker.Logger;
 }
@@ -120,6 +123,19 @@ export class SmartVisServer {
                 msg = JSON.parse(raw.toString()) as ClientMessage;
             } catch {
                 return send(ws, { t: 'error', message: 'invalid json' });
+            }
+            if (msg.t === 'history') {
+                // Eigene Antwort mit reqId, damit die App sie der Anfrage zuordnen kann
+                try {
+                    if (!this.handlers.history) {
+                        throw new Error('Verläufe sind nicht verfügbar');
+                    }
+                    const points = await this.handlers.history(String(msg.id), msg.range);
+                    send(ws, { t: 'history', reqId: msg.reqId, points });
+                } catch (e) {
+                    send(ws, { t: 'history', reqId: msg.reqId, points: [], error: (e as Error).message });
+                }
+                return;
             }
             try {
                 if (msg.t === 'set') {

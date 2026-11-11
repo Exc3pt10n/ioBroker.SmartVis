@@ -1,9 +1,10 @@
 import * as utils from '@iobroker/adapter-core';
 import { join } from 'node:path';
 import { discover, type DiscoveryResult } from './lib/discovery';
+import { historyOptions, toPoints } from './lib/history';
 import { applyEdit, applyOverrides, emptyOverrides, parseOverrides } from './lib/overrides';
 import { SmartVisServer } from './lib/server';
-import type { SvEdit, SvModel, SvOverrides, SvStateValue, ioBrokerValue } from './shared/protocol';
+import type { SvEdit, SvHistoryRange, SvModel, SvOverrides, SvStateValue, ioBrokerValue } from './shared/protocol';
 
 /** Datei im ioBroker-Dateispeicher der Instanz (Teil von Backups) */
 const OVERRIDES_FILE = 'overrides.json';
@@ -44,6 +45,7 @@ class SmartVis extends utils.Adapter {
                 getStates: () => this.states,
                 setState: (id, val) => this.writeState(id, val),
                 edit: edit => this.handleEdit(edit),
+                history: (id, range) => this.readHistory(id, range),
                 onClientCountChange: count => void this.setState('info.clients', count, true),
                 log: this.log,
             },
@@ -185,6 +187,27 @@ class SmartVis extends utils.Adapter {
                 this.states[id] = toValue(current[id]);
             }
         }
+    }
+
+    /** Verlauf aus der History-Instanz (sql, history, influxdb) lesen – nur für erkannte, aufgezeichnete States */
+    private async readHistory(id: string, range: SvHistoryRange): Promise<[number, number][]> {
+        const instance = this.discovery?.historyIds.get(id);
+        if (!instance) {
+            throw new Error(`Kein Verlauf für ${id}`);
+        }
+        const response = (await this.sendToAsync(
+            instance,
+            'getHistory',
+            { id, options: historyOptions(range) },
+            { timeout: 20_000 },
+        )) as { result?: unknown; error?: string } | undefined;
+        if (!response) {
+            throw new Error(`${instance} antwortet nicht`);
+        }
+        if (response.error) {
+            throw new Error(String(response.error));
+        }
+        return toPoints(response.result);
     }
 
     private async writeState(id: string, val: ioBrokerValue): Promise<void> {

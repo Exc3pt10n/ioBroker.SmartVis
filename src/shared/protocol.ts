@@ -19,6 +19,17 @@ export interface SvRoom {
     originalName?: string;
 }
 
+/** Wo der Verlauf eines Werts aufgezeichnet wird */
+export interface SvHistoryRef {
+    /** History-Instanz, z. B. "sql.0" */
+    instance: string;
+    /** Aufgezeichneter State – kann vom angezeigten abweichen (z. B. PvPwTotal in kW statt PvPw) */
+    id: string;
+    unit?: string;
+}
+
+export type SvHistoryRange = '6h' | '24h' | '7d';
+
 export interface SvStateRef {
     /** Name der Rolle innerhalb des Geräts laut type-detector, z. B. "SET", "ACTUAL", "UNREACH" */
     name: string;
@@ -32,6 +43,8 @@ export interface SvStateRef {
     write: boolean;
     /** Nur Anzeige-Indikator (Batterie, Erreichbarkeit …) */
     indicator?: boolean;
+    /** Verlauf vorhanden (sql/history/influxdb) */
+    history?: SvHistoryRef;
 }
 
 export interface SvDevice {
@@ -324,7 +337,12 @@ export type ServerMessage =
     | { t: 'hello'; protocol: number; version: string }
     | { t: 'model'; model: SvModel }
     | { t: 'states'; states: Record<string, SvStateValue | null> }
-    | { t: 'error'; message: string };
+    | { t: 'error'; message: string }
+    | { t: 'history'; reqId: number; points: [number, number][]; error?: string };
 
 /** Nachrichten Client → Server */
-export type ClientMessage = { t: 'set'; id: string; val: ioBrokerValue } | { t: 'edit'; edit: SvEdit } | { t: 'ping' };
+export type ClientMessage =
+    | { t: 'set'; id: string; val: ioBrokerValue }
+    | { t: 'edit'; edit: SvEdit }
+    | { t: 'history'; reqId: number; id: string; range: SvHistoryRange }
+    | { t: 'ping' };
