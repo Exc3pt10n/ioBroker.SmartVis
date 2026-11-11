@@ -1,7 +1,10 @@
 const path = require('node:path');
 const { expect } = require('chai');
 const WebSocket = require('ws');
+const { readFileSync } = require('node:fs');
 const { tests } = require('@iobroker/testing');
+
+const fixture = name => JSON.parse(readFileSync(path.join(__dirname, 'fixtures', `${name}.json`), 'utf8'));
 
 /** Verbindet sich (mit Wiederholungen, bis der Webserver lauscht) und liefert das erste Model */
 async function connect(port) {
@@ -55,6 +58,59 @@ function nextModel(ws) {
 // Startet den Adapter in einer echten js-controller-Testinstanz
 tests.integration(path.join(__dirname, '..'), {
     defineAdditionalTests({ suite }) {
+        suite('Erkennung mit echten Objekten', getHarness => {
+            it('liest Geräte, Kanäle, Aufzählungen und Instanz-Konfigurationen aus der Datenbank', async function () {
+                this.timeout(90000);
+                const harness = getHarness();
+                const port = 18097;
+                await harness.changeAdapterConfig('smartvis', { native: { port, ignoreAdapters: 'admin' } });
+
+                // Auszüge aus einem echten Objektbaum: Wetterstation + CCU-Variablen, shuttercontrol, KEBA
+                const objects = { ...fixture('hmip-weather'), ...fixture('shuttercontrol'), ...fixture('kecontact') };
+                // Instanz soll nicht vom Controller gestartet werden
+                objects['system.adapter.shuttercontrol.0'].common.enabled = false;
+                // Homematic-Dimmer (Gerät → Kanal → State) in einem Raum aus enum.rooms
+                Object.assign(objects, {
+                    'hm-rpc.0.DIM1': { type: 'device', common: { name: 'Deckenlicht' }, native: { TYPE: 'HmIP-BDT' } },
+                    'hm-rpc.0.DIM1.4': {
+                        type: 'channel',
+                        common: { name: 'Deckenlicht:4' },
+                        native: { TYPE: 'DIMMER_VIRTUAL_RECEIVER' },
+                    },
+                    'hm-rpc.0.DIM1.3': {
+                        type: 'channel',
+                        common: { name: 'Deckenlicht:3' },
+                        native: { TYPE: 'DIMMER_TRANSMITTER' },
+                    },
+                    'hm-rpc.0.DIM1.4.LEVEL': {
+                        type: 'state',
+                        common: { name: 'LEVEL', role: 'level.dimmer', type: 'number', read: true, write: true, min: 0, max: 100, unit: '%' },
+                        native: {},
+                    },
+                    'enum.rooms.living': {
+                        type: 'enum',
+                        common: { name: 'Wohnzimmer', members: ['hm-rpc.0.DIM1.4'] },
+                        native: {},
+                    },
+                });
+                for (const [id, obj] of Object.entries(objects)) {
+                    await harness.objects.setObjectAsync(id, { ...obj, _id: id });
+                }
+
+                await harness.startAdapterAndWait();
+                const { ws, model } = await connect(port);
+                ws.close();
+
+                const dimmer = model.devices.find(d => d.id === 'hm-rpc.0.DIM1.4');
+                expect(dimmer, 'Homematic-Dimmer erkannt').to.exist;
+                expect(dimmer.roomId).to.equal('enum.rooms.living');
+                expect(model.weather.map(w => w.model)).to.include('HmIP-SWO-PL');
+                expect(model.wallboxes).to.have.length(1);
+                expect(model.shutterControl, 'shuttercontrol erkannt').to.have.length(1);
+                expect(model.shutterControl[0].shutters).to.have.length(13);
+            });
+        });
+
         // Hinweis: Der Harness startet den Adapter je suite nur einmal zuverlässig – daher je Szenario eine suite.
         suite('Bearbeiten-Modus: laden und speichern', getHarness => {
             it('lädt vorhandene Anpassungen und speichert neue im Dateispeicher', async function () {
