@@ -126,8 +126,11 @@ export function pvForecastRefs(pv: SvPvForecast): SvStateRef[] {
 
 /** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */
 export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): SvStateRef[] {
-    const nested: unknown[] =
-        'lightSensors' in item && item.lightSensors ? item.lightSensors.flatMap(l => Object.values(l)) : [];
+    const nested: unknown[] = [
+        ...('lightSensors' in item && item.lightSensors ? item.lightSensors.flatMap(l => Object.values(l)) : []),
+        // Wallbox-Einstellungen: schreibbare States (landen damit in der Whitelist)
+        ...('settings' in item && item.settings ? item.settings.map(s => s.state) : []),
+    ];
     const refs: unknown[] =
         'flows' in item
             ? [

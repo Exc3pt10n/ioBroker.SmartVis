@@ -278,6 +278,18 @@ for (const [key, val] of Object.entries({
     'automatic.calcPhases': 1,
     'statistics.surplus': 0,
     'automatic.photovoltaics': true,
+    // Einstellungen der Ladeautomatik (Werte wie in der echten Anlage)
+    'automatic.1p3pCharging': 0,
+    'automatic.addPower': 1380,
+    'automatic.maxGridPower': 0,
+    'automatic.limitCurrent': 0,
+    'automatic.limitCurrent1p': 0,
+    'automatic.batteryStorageStrategy': 2,
+    'automatic.batterySoCForCharging': 100,
+    'automatic.targetSoC': 0,
+    'automatic.maxSoC': 0,
+    'automatic.resetTargetSoC': true,
+    'automatic.stateVehicleSoC': '',
     'automatic.pauseWallbox': false,
     'info.connection': true,
 })) {

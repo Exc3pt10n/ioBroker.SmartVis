@@ -1,6 +1,7 @@
 import type { SvWallbox } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { Toggle } from './Toggle';
+import { WallboxSettings } from './WallboxSettings';
 import { formatPower, wallboxLabel, wallboxSnapshot } from '../energy';
 
 function fmtA(v: number): string {
@@ -79,6 +80,7 @@ export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Elem
                     />
                 )}
             </div>
+            <WallboxSettings wallbox={wallbox} />
         </section>
     );
 }

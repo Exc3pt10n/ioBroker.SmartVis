@@ -158,11 +158,37 @@ export interface SvWallbox {
     configuredPhases?: SvStateRef;
     /** PV-Überschuss, mit dem die Ladeautomatik rechnet (W; negativ = kein Überschuss) */
     surplus?: SvStateRef;
+    /** Weitere Einstellungen (Ladeautomatik, Batteriespeicher, Ziel-Ladung) */
+    settings?: SvWallboxSetting[];
+    /** Datenpunkt-Name des Fahrzeug-SoC (leer = Ziel-Ladung nicht möglich) */
+    vehicleSoCSource?: SvStateRef;
     /** Schalter: Laden nach PV-Überschuss */
     pvAutomatic?: SvStateRef;
     /** Schalter: Laden pausieren */
     pause?: SvStateRef;
     connected?: SvStateRef;
+}
+
+/** Einstellbarer Wert einer Wallbox (z. B. der Ladeautomatik des Adapters) */
+export interface SvWallboxSetting {
+    key: string;
+    label: string;
+    hint?: string;
+    group: string;
+    state: SvStateRef;
+    kind: 'switch' | 'number' | 'select';
+    /** Anzeige-Einheit (z. B. "A", auch wenn der State mA speichert) */
+    unit?: string;
+    /** Faktor State → Anzeige (z. B. 0.001 für mA → A) */
+    scale?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    options?: { value: number; label: string }[];
+    /** Bedeutung des Werts 0 (z. B. "keine Begrenzung") */
+    zeroLabel?: string;
+    /** Nur wirksam, wenn der SoC-Datenpunkt des Fahrzeugs im Adapter gesetzt ist */
+    needsVehicleSoC?: boolean;
 }
 
 export type SvWallboxStatus = 'starting' | 'notReady' | 'ready' | 'charging' | 'error' | 'interrupted';
