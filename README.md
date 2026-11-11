@@ -128,6 +128,10 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.1.1 (2026-11-11)
+
+- (Exc3pt10n) Neue Einstellung „Animationen“ unter Mehr → Darstellung (Wie im System / Immer an / Aus, je Gerät): Wünscht das Betriebssystem reduzierte Bewegung (z. B. Windows: Animationseffekte aus), standen Animationen wie der Energiefluss bisher still – mit „Immer an“ laufen sie trotzdem
+
 ### 0.1.0 (2026-11-11)
 
 - (Exc3pt10n) Erkennung: type-detector mit adapterspezifischen Regeln (Homematic, Hue, Alexa), Räume aus Enums, Hue und Gerätenamen; gegen einen echten Objektbaum abgestimmt (727 → 146 Kacheln)
