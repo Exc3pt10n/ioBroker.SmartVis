@@ -96,8 +96,10 @@ export interface SvEnergyTotals {
 export interface SvEnergyPeriod {
     /** z. B. "day", "day.previous", "total" */
     key: string;
-    /** Zeitraumart für die Auswahl: day | month | quarter | halfyear | year | total */
+    /** Zeitraumart für die Auswahl, z. B. day | week | month | quarter | halfyear | year | total */
     group: string;
+    /** Bezeichnung der Zeitraumart für die Auswahl, z. B. "Woche" */
+    groupLabel?: string;
     /** Anzeige, z. B. "Heute", "Vormonat" */
     label: string;
     /** Zeitraum-Kennung des Adapters (z. B. "2026-11"), falls vorhanden */

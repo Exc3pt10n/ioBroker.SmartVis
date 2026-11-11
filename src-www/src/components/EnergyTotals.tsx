@@ -4,6 +4,7 @@ import { num } from '../energy';
 
 const GROUP_LABELS: Record<string, string> = {
     day: 'Tag',
+    week: 'Woche',
     month: 'Monat',
     quarter: 'Quartal',
     halfyear: 'Halbjahr',
@@ -66,6 +67,10 @@ function periodText(raw: unknown): string | undefined {
     m = /^(\d{4})-(\d{2})$/.exec(raw);
     if (m && Number(m[2]) >= 1 && Number(m[2]) <= 12) {
         return `${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
+    }
+    m = /^(\d{4})-W(\d{1,2})$/i.exec(raw);
+    if (m) {
+        return `KW ${Number(m[2])} ${m[1]}`;
     }
     m = /^(\d{4})-Q([1-4])$/i.exec(raw);
     if (m) {
@@ -137,7 +142,7 @@ export function EnergyTotals({
                             className={`flag${g === period.group ? ' flag--on' : ''}`}
                             onClick={() => select(periods.find(p => p.group === g)!.key)}
                         >
-                            {GROUP_LABELS[g] || g}
+                            {periods.find(p => p.group === g)?.groupLabel || GROUP_LABELS[g] || g}
                         </button>
                     ))}
                 </div>

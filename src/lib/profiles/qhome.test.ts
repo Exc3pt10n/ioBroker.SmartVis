@@ -30,6 +30,19 @@ const objects = Object.fromEntries([
     st(`${I}.counters.month.PvGen`, 'kWh', 'value.energy'),
     st(`${I}.counters.month.SelfSupply`, 'kWh', 'value.energy'),
     st(`${I}.counters.total.PvGen`, 'kWh', 'value.energy'),
+    // Später hinzugefügte Zeiträume: bekannt (Woche) und unbekannt (Name aus dem Objekt)
+    st(`${I}.counters.week.PvGen`, 'kWh', 'value.energy'),
+    st(`${I}.counters.week.previous.PvGen`, 'kWh', 'value.energy'),
+    [
+        `${I}.counters.season`,
+        { _id: `${I}.counters.season`, type: 'channel', common: { name: 'Aktuelle Saison' }, native: {} },
+    ],
+    st(`${I}.counters.season.PvGen`, 'kWh', 'value.energy'),
+    [
+        `${I}.counters.season.previous`,
+        { _id: `${I}.counters.season.previous`, type: 'channel', common: { name: 'Vorsaison' }, native: {} },
+    ],
+    st(`${I}.counters.season.previous.PvGen`, 'kWh', 'value.energy'),
     [
         `${I}.counters.month.periodKey`,
         {
@@ -73,13 +86,19 @@ describe('profile: qhome-ess-hyb-g2', () => {
         expect(ignored.model.energy).to.have.length(0);
     });
 
-    it('liest alle Zählerzeiträume inkl. Vorperiode', () => {
+    it('liest alle Zählerzeiträume inkl. Vorperiode, auch neu hinzugekommene', () => {
         expect(system.periods?.map(p => `${p.group}:${p.label}`)).to.deep.equal([
             'day:Heute',
             'day:Gestern',
+            'week:Diese Woche',
+            'week:Vorwoche',
             'month:Dieser Monat',
+            'season:Aktuelle Saison',
+            'season:Vorsaison',
             'total:Gesamt',
         ]);
+        expect(system.periods?.find(p => p.key === 'season')?.groupLabel).to.equal('Saison');
+        expect(system.periods?.find(p => p.key === 'week')?.groupLabel).to.equal('Woche');
         const month = system.periods?.find(p => p.key === 'month');
         expect(month?.totals.selfSupply?.id).to.equal(`${I}.counters.month.SelfSupply`);
         expect(month?.periodKey?.id).to.equal(`${I}.counters.month.periodKey`);

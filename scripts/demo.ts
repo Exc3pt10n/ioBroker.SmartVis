@@ -368,6 +368,8 @@ state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
 // Weitere Zählerzeiträume: Faktor gegenüber dem Tag, Kennung des Zeitraums
 for (const [period, factor, key] of [
     ['day.previous', 0.8, undefined],
+    ['week', 4, '2026-W46'],
+    ['week.previous', 6.5, undefined],
     ['month', 9, '2026-11'],
     ['month.previous', 22, undefined],
     ['quarter', 31, '2026-Q4'],
