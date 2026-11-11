@@ -5,6 +5,7 @@ import { useOpenDetail } from '../detail';
 import { moved, useEditing } from '../editing';
 import { useRef } from 'react';
 import { MoveButtons } from './EditButton';
+import { DragHandle, useSortable } from './SortableGrid';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 import { Icon, iconForType } from './Icon';
 
@@ -47,6 +48,8 @@ export function DeviceTile({
     const pending = action ? states[action.state.id]?.ack === false : false;
 
     const openDetail = useOpenDetail();
+    const sort = useSortable();
+    const dragging = sort?.dragId === device.id;
     // Langes Drücken öffnet die Details; ohne Tap-Aktion öffnet schon ein normaler Tap
     const pressTimer = useRef<number | undefined>(undefined);
     const longPressed = useRef(false);
@@ -78,7 +81,10 @@ export function DeviceTile({
     };
 
     return (
-        <div className={`tile-wrap${device.hidden ? ' is-hidden' : ''}${editing ? ' is-editing' : ''}`}>
+        <div
+            className={`tile-wrap${device.hidden ? ' is-hidden' : ''}${editing ? ' is-editing' : ''}${dragging ? ' is-dragging' : ''}`}
+            data-sort-id={reorder ? device.id : undefined}
+        >
             <button
                 type="button"
                 className={`tile${active && !editing ? ' tile--active' : ''}${pending ? ' tile--pending' : ''}`}
@@ -124,6 +130,12 @@ export function DeviceTile({
                     </span>
                 )}
             </button>
+            {editing && reorder && (
+                <DragHandle
+                    id={device.id}
+                    label={device.name}
+                />
+            )}
             {editing && reorder && (
                 <MoveButtons
                     label={device.name}

@@ -7,10 +7,10 @@ export const HISTORY_ADAPTERS = ['sql', 'history', 'influxdb'];
 
 /**
  * Aufgezeichnete Alternativen, wenn der angezeigte State selbst nicht geloggt wird.
- * Q.HOME: Anzeige nutzt PvPw bzw. die W-Varianten, geloggt werden oft PvPwTotal bzw. die kW-Varianten.
+ * Q.HOME: Anzeige nutzt die W-Varianten des Netzflusses, geloggt werden oft die kW-Varianten.
+ * (PvPwTotal gibt es seit dem Adapter-Update nicht mehr – PvPw wird direkt aufgezeichnet.)
  */
 const ALTERNATIVES: [RegExp, string][] = [
-    [/^(qhome-ess-hyb-g2\.\d+)\.PvPw$/, '$1.PvPwTotal'],
     [/^(qhome-ess-hyb-g2\.\d+)\.GridPwPurchaseWb$/, '$1.GridPwPurchase'],
     [/^(qhome-ess-hyb-g2\.\d+)\.GridPwFeedInWb$/, '$1.GridPwFeedIn'],
 ];

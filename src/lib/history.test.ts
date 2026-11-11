@@ -56,9 +56,8 @@ const objects: Record<string, Obj> = Object.fromEntries([
     ],
     st('hm-rpc.0.WTH.1.ACTUAL_TEMPERATURE', 'value.temperature', '°C', false, sqlOn),
     st('hm-rpc.0.WTH.1.SET_POINT_TEMPERATURE', 'level.temperature', '°C', true, { 'iqontrol.0': { enabled: true } }),
-    // Q.HOME: angezeigt wird PvPw (kW), geloggt nur PvPwTotal; Netzbezug in W angezeigt, in kW geloggt
-    st('qhome-ess-hyb-g2.0.PvPw', 'value', 'kW', false),
-    st('qhome-ess-hyb-g2.0.PvPwTotal', 'value', 'kW', false, sqlOn),
+    // Q.HOME: PvPw wird direkt geloggt; Netzbezug in W angezeigt, in kW geloggt
+    st('qhome-ess-hyb-g2.0.PvPw', 'value', 'kW', false, sqlOn),
     st('qhome-ess-hyb-g2.0.GridPwPurchaseWb', 'value', 'W', false),
     st('qhome-ess-hyb-g2.0.GridPwPurchase', 'value', 'kW', false, sqlOn),
     st('qhome-ess-hyb-g2.0.BtSoc', 'value.battery', '%', false, sqlOn),
@@ -86,7 +85,7 @@ describe('history', () => {
     it('uses logged alternatives for the Q.HOME flows, with their own unit', () => {
         expect(energy.flows.pv?.history).to.deep.equal({
             instance: 'sql.0',
-            id: 'qhome-ess-hyb-g2.0.PvPwTotal',
+            id: 'qhome-ess-hyb-g2.0.PvPw',
             unit: 'kW',
         });
         expect(energy.flows.gridImport?.history?.id).to.equal('qhome-ess-hyb-g2.0.GridPwPurchase');
@@ -100,7 +99,7 @@ describe('history', () => {
             'hm-rpc.0.WTH.1.ACTUAL_TEMPERATURE',
             'qhome-ess-hyb-g2.0.BtSoc',
             'qhome-ess-hyb-g2.0.GridPwPurchase',
-            'qhome-ess-hyb-g2.0.PvPwTotal',
+            'qhome-ess-hyb-g2.0.PvPw',
         ]);
         expect(result.historyIds.get('qhome-ess-hyb-g2.0.BtSoc')).to.equal('sql.0');
     });

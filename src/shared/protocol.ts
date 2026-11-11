@@ -23,7 +23,7 @@ export interface SvRoom {
 export interface SvHistoryRef {
     /** History-Instanz, z. B. "sql.0" */
     instance: string;
-    /** Aufgezeichneter State – kann vom angezeigten abweichen (z. B. PvPwTotal in kW statt PvPw) */
+    /** Aufgezeichneter State – kann vom angezeigten abweichen (z. B. GridPwPurchase in kW statt GridPwPurchaseWb in W) */
     id: string;
     unit?: string;
 }

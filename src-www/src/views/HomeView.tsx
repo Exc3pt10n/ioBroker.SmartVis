@@ -1,9 +1,10 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
-import { groupByRoom, isActive, warnings } from '../device';
+import { groupByRoom, isActive, isPlaying, warnings } from '../device';
 import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
+import { SortableGrid } from '../components/SortableGrid';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
@@ -21,8 +22,16 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     // Statuslisten zeigen nie ausgeblendete Geräte
     const devices = visibleDevices(model, false);
     const favs = favorites(model, editing);
-    const favIds = favs.map(d => d.id);
 
+    // Medien, die gerade abspielen (z. B. Echos)
+    const playing = devices.filter(
+        d =>
+            (d.type === 'media' || d.type === 'mediaPlayer') &&
+            isPlaying(
+                states,
+                d.states.find(s => s.name === 'STATE'),
+            ),
+    );
     const lightsOn = devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
     const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
     const problems = devices.filter(d => warnings(d, states).length > 0);
@@ -59,16 +68,19 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 <section>
                     <h2 className="subtitle">⭐ Favoriten</h2>
                     {favs.length ? (
-                        <div className="grid">
-                            {favs.map(d => (
+                        <SortableGrid
+                            items={favs}
+                            getId={d => d.id}
+                            kind="favoriteOrder"
+                            render={(d, ids) => (
                                 <DeviceTile
                                     key={d.id}
                                     device={d}
                                     showRoom={roomName(d.roomId)}
-                                    reorder={{ ids: favIds, kind: 'favoriteOrder' }}
+                                    reorder={{ ids, kind: 'favoriteOrder' }}
                                 />
-                            ))}
-                        </div>
+                            )}
+                        />
                     ) : (
                         <p className="hint hint--static">
                             Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
@@ -172,6 +184,14 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 >
                     Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
                 </button>
+            )}
+
+            {playing.length > 0 && (
+                <Section
+                    title="🎵 Läuft gerade"
+                    devices={playing}
+                    roomName={roomName}
+                />
             )}
 
             {lightsOn.length > 0 && (
