@@ -106,3 +106,27 @@ describe('profile: qhome-ess-hyb-g2', () => {
         expect(result.stateIds).to.include(`${I}.counters.total.PvGen`);
     });
 });
+
+describe('profile: qhome-ess-hyb-g2 mit zusätzlichen Erzeugern (ab Adapter 0.3.0)', () => {
+    const withExt = {
+        ...objects,
+        ...Object.fromEntries([st(`${I}.PvPwExt`, 'kW'), st(`${I}.PvPwTotal`, 'kW')]),
+    } as Record<string, ioBroker.Object>;
+    const result = discover(withExt, { language: 'de', ignoreAdapters: [] });
+    const system = result.model.energy[0];
+
+    it('zeigt die Gesamt-PV-Leistung und die Aufteilung', () => {
+        expect(system.flows.pv?.id).to.equal(`${I}.PvPwTotal`);
+        expect(system.pvParts?.map(p => `${p.name}:${p.id}`)).to.deep.equal([
+            `Q.HOME:${I}.PvPw`,
+            `Weitere Erzeuger:${I}.PvPwExt`,
+        ]);
+        expect(result.stateIds).to.include.members([`${I}.PvPwTotal`, `${I}.PvPw`, `${I}.PvPwExt`]);
+    });
+
+    it('bleibt ohne zusätzliche Erzeuger bei PvPw ohne Aufteilung', () => {
+        const plain = discover(objects, { language: 'de', ignoreAdapters: [] }).model.energy[0];
+        expect(plain.flows.pv?.id).to.equal(`${I}.PvPw`);
+        expect(plain.pvParts).to.equal(undefined);
+    });
+});

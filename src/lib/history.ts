@@ -11,6 +11,8 @@ export const HISTORY_ADAPTERS = ['sql', 'history', 'influxdb'];
  * (PvPwTotal gibt es seit dem Adapter-Update nicht mehr – PvPw wird direkt aufgezeichnet.)
  */
 const ALTERNATIVES: [RegExp, string][] = [
+    // Gesamt-PV (inkl. weiterer Erzeuger) wird angezeigt; ohne eigene Aufzeichnung den Q.HOME-Anteil nehmen
+    [/^(qhome-ess-hyb-g2\.\d+)\.PvPwTotal$/, '$1.PvPw'],
     [/^(qhome-ess-hyb-g2\.\d+)\.GridPwPurchaseWb$/, '$1.GridPwPurchase'],
     [/^(qhome-ess-hyb-g2\.\d+)\.GridPwFeedInWb$/, '$1.GridPwFeedIn'],
 ];

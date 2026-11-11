@@ -135,6 +135,7 @@ export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): 
         'flows' in item
             ? [
                   ...Object.values(item.flows),
+                  ...(item.pvParts || []),
                   ...Object.values(item.battery || {}),
                   ...Object.values(item.today || {}),
                   ...(item.periods || []).flatMap(p => [p.periodKey, ...Object.values(p.totals)]),

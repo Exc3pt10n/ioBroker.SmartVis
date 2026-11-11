@@ -68,78 +68,89 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
     };
 
     return (
-        <svg
-            viewBox="0 0 320 320"
-            className="flow"
-            role="img"
-            aria-label="Energiefluss"
-        >
-            <Line
-                node={NODES.pv}
-                power={flow.pv ?? 0}
-                direction="in"
-            />
-            <Line
-                node={NODES.grid}
-                power={gridPower}
-                direction={gridIn ? 'in' : 'out'}
-            />
-            <Line
-                node={NODES.battery}
-                power={batPower}
-                direction={batOut ? 'in' : 'out'}
-            />
-            <Line
-                node={NODES.home}
-                power={flow.home ?? 0}
-                direction="out"
-            />
-            {hasCar && (
+        <>
+            {flowSvg()}
+            {flow.pvParts && flow.pvParts.length > 1 && (
+                <p className="flow__split">☀️ {flow.pvParts.map(p => `${p.label} ${formatPower(p.w)}`).join(' · ')}</p>
+            )}
+        </>
+    );
+
+    function flowSvg(): React.JSX.Element {
+        return (
+            <svg
+                viewBox="0 0 320 320"
+                className="flow"
+                role="img"
+                aria-label="Energiefluss"
+            >
                 <Line
-                    node={NODES.car}
-                    power={flow.car ?? 0}
+                    node={NODES.pv}
+                    power={flow.pv ?? 0}
+                    direction="in"
+                />
+                <Line
+                    node={NODES.grid}
+                    power={gridPower}
+                    direction={gridIn ? 'in' : 'out'}
+                />
+                <Line
+                    node={NODES.battery}
+                    power={batPower}
+                    direction={batOut ? 'in' : 'out'}
+                />
+                <Line
+                    node={NODES.home}
+                    power={flow.home ?? 0}
                     direction="out"
                 />
-            )}
-            <circle
-                cx={HUB.x}
-                cy={HUB.y}
-                r={5}
-                className="flow__hub"
-            />
-            {nodes.map(n => (
-                <g
-                    key={n.key}
-                    className={`flow__node flow__node--${n.key}`}
-                >
-                    <circle
-                        cx={n.x}
-                        cy={n.y}
-                        r={R}
+                {hasCar && (
+                    <Line
+                        node={NODES.car}
+                        power={flow.car ?? 0}
+                        direction="out"
                     />
-                    <text
-                        x={n.x}
-                        y={n.y - 12}
-                        className="flow__icon"
+                )}
+                <circle
+                    cx={HUB.x}
+                    cy={HUB.y}
+                    r={5}
+                    className="flow__hub"
+                />
+                {nodes.map(n => (
+                    <g
+                        key={n.key}
+                        className={`flow__node flow__node--${n.key}`}
                     >
-                        {n.icon}
-                    </text>
-                    <text
-                        x={n.x}
-                        y={n.y + 8}
-                        className="flow__value"
-                    >
-                        {values[n.key].value}
-                    </text>
-                    <text
-                        x={n.x}
-                        y={n.y + 22}
-                        className="flow__label"
-                    >
-                        {values[n.key].sub ?? n.label}
-                    </text>
-                </g>
-            ))}
-        </svg>
-    );
+                        <circle
+                            cx={n.x}
+                            cy={n.y}
+                            r={R}
+                        />
+                        <text
+                            x={n.x}
+                            y={n.y - 12}
+                            className="flow__icon"
+                        >
+                            {n.icon}
+                        </text>
+                        <text
+                            x={n.x}
+                            y={n.y + 8}
+                            className="flow__value"
+                        >
+                            {values[n.key].value}
+                        </text>
+                        <text
+                            x={n.x}
+                            y={n.y + 22}
+                            className="flow__label"
+                        >
+                            {values[n.key].sub ?? n.label}
+                        </text>
+                    </g>
+                ))}
+            </svg>
+        );
+    }
 }

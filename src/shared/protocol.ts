@@ -142,6 +142,8 @@ export interface SvEnergySystem {
     name: string;
     adapter: string;
     flows: SvEnergyFlows;
+    /** Aufteilung der PV-Leistung auf mehrere Erzeuger (z. B. Q.HOME + zweiter Wechselrichter); Name im Ref */
+    pvParts?: SvStateRef[];
     battery?: {
         soc?: SvStateRef;
         /** Restlaufzeit bis voll/leer */

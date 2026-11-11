@@ -2802,3 +2802,11 @@ button.kpi:hover {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
 }
+
+.flow__split {
+    margin: 0 0 4px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}

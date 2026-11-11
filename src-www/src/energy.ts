@@ -138,6 +138,8 @@ export interface FlowSnapshot {
     batteryCharge?: number;
     batteryDischarge?: number;
     soc?: number;
+    /** Aufteilung der PV-Leistung (z. B. Q.HOME / weitere Erzeuger) */
+    pvParts?: { label: string; w?: number }[];
 }
 
 /**
@@ -160,5 +162,6 @@ export function snapshot(system: SvEnergySystem, states: States, wallboxes: SvWa
         batteryCharge: watts(f.batteryCharge, states),
         batteryDischarge: watts(f.batteryDischarge, states),
         soc: num(system.battery?.soc, states),
+        pvParts: system.pvParts?.map(p => ({ label: p.name, w: watts(p, states) })),
     };
 }

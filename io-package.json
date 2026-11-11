@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.2.0",
+        "version": "0.2.1",
         "news": {
+            "0.2.1": {
+                "en": "Q.HOME with additional PV generators (qhome-ess-hyb-g2 from 0.3.0, e.g. a second inverter): PV power, energy flow and PV history now use the total (PvPwTotal); the flow shows the split per generator",
+                "de": "Q.HOME mit zusätzlichen PV-Erzeugern (qhome-ess-hyb-g2 ab 0.3.0, z. B. zweiter Wechselrichter): PV-Leistung, Energiefluss und PV-Verlauf nutzen jetzt die Gesamtleistung (PvPwTotal); der Energiefluss zeigt die Aufteilung je Erzeuger",
+                "ru": "Q.HOME с дополнительными PV-генераторами (qhome-ess-hyb-g2 от 0.3.0, например второй инвертор): мощность PV, поток энергии и история PV теперь используют общую мощность (PvPwTotal); поток показывает разделение по генераторам",
+                "pt": "Q.HOME com produtores FV adicionais (qhome-ess-hyb-g2 a partir de 0.3.0, p. ex. um segundo inversor): potência FV, fluxo de energia e histórico FV usam agora o total (PvPwTotal); o fluxo mostra a divisão por produtor",
+                "nl": "Q.HOME met extra PV-opwekkers (qhome-ess-hyb-g2 vanaf 0.3.0, bijv. een tweede omvormer): PV-vermogen, energiestroom en PV-historie gebruiken nu het totaal (PvPwTotal); de stroom toont de verdeling per opwekker",
+                "fr": "Q.HOME avec producteurs PV supplémentaires (qhome-ess-hyb-g2 à partir de 0.3.0, p. ex. un second onduleur) : la puissance PV, le flux d'énergie et l'historique PV utilisent désormais le total (PvPwTotal) ; le flux affiche la répartition par producteur",
+                "it": "Q.HOME con produttori FV aggiuntivi (qhome-ess-hyb-g2 da 0.3.0, ad es. un secondo inverter): potenza FV, flusso di energia e storico FV usano ora il totale (PvPwTotal); il flusso mostra la suddivisione per produttore",
+                "es": "Q.HOME con generadores FV adicionales (qhome-ess-hyb-g2 desde 0.3.0, p. ej. un segundo inversor): la potencia FV, el flujo de energía y el histórico FV usan ahora el total (PvPwTotal); el flujo muestra el reparto por generador",
+                "pl": "Q.HOME z dodatkowymi źródłami PV (qhome-ess-hyb-g2 od 0.3.0, np. drugi falownik): moc PV, przepływ energii i historia PV korzystają teraz z sumy (PvPwTotal); przepływ pokazuje podział na źródła",
+                "uk": "Q.HOME з додатковими PV-генераторами (qhome-ess-hyb-g2 від 0.3.0, напр. другий інвертор): потужність PV, потік енергії та історія PV тепер використовують загальну потужність (PvPwTotal); потік показує розподіл за генераторами",
+                "zh-cn": "Q.HOME 支持额外光伏发电设备（qhome-ess-hyb-g2 0.3.0 起，例如第二台逆变器）：光伏功率、能量流和光伏历史现在使用总功率（PvPwTotal）；能量流显示各发电设备的分配"
+            },
             "0.2.0": {
                 "en": "Customizations per device: names, rooms, favorites, hidden devices and layout now apply per phone/tablet/browser; new More → Customizations with rename, copy from another device and reset this device or all devices. Breaking: new format of overrides.json (migrated automatically)",
                 "de": "Anpassungen je Gerät: Namen, Räume, Favoriten, ausgeblendete Geräte und Anordnung gelten je Handy/Tablet/Browser; neu unter Mehr → Anpassungen: umbenennen, von anderem Gerät übernehmen, dieses oder alle Geräte zurücksetzen. Breaking: neues Format von overrides.json (wird automatisch übernommen)",
