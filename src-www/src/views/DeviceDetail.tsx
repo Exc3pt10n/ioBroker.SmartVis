@@ -1,10 +1,12 @@
 import type { SvDevice, SvStateRef, SvStateValue } from '../../../src/shared/protocol';
 import { HistoryPanel } from '../components/HistoryPanel';
+import { ScenePanel } from '../components/ScenePanel';
 import { Sheet } from '../components/Sheet';
 import { Slider } from '../components/Slider';
 import { Toggle } from '../components/Toggle';
 import { connection, useConnection } from '../connection';
 import { TYPE_LABELS, formatValue, isPlaying, warnings } from '../device';
+import { scenesForDevice } from '../scenes';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 
 type States = Record<string, SvStateValue | null>;
@@ -66,6 +68,18 @@ const STATE_LABELS: Record<string, string> = {
     EFFECT: 'Effekt',
     ON_TIME: 'Einschaltdauer',
 };
+
+/** Bezeichnung eines States; allgemeine Namen (Istwert, Zweiter Wert) anhand der Rolle präzisieren */
+function stateLabel(state: SvStateRef): string {
+    const role = state.role || '';
+    if (/humidity/.test(role)) {
+        return 'Luftfeuchte';
+    }
+    if (/temperature/.test(role) && (state.name === 'ACTUAL' || state.name === 'SECOND')) {
+        return 'Temperatur';
+    }
+    return STATE_LABELS[state.name] || state.name;
+}
 
 function find(
     device: SvDevice,
@@ -414,11 +428,12 @@ export function DeviceDetail({
         .sort((a, b) => (a.name === 'ACTUAL' ? -1 : b.name === 'ACTUAL' ? 1 : 0))
         .map(st => ({
             key: st.id,
-            label: STATE_LABELS[st.name] || st.name,
+            label: stateLabel(st),
             ref: st,
             zeroBased: !/temperature/i.test(st.role || '') && st.unit !== '°C',
         }));
     const rest = device.states.filter(s => !shown.has(s.id));
+    const sceneGroups = scenesForDevice(model, device.id);
 
     return (
         <Sheet
@@ -443,6 +458,7 @@ export function DeviceDetail({
         >
             {warn.length > 0 && <div className="banner banner--offline">⚠️ {warn.join(', ')}</div>}
             {main}
+            {sceneGroups.length > 0 && <ScenePanel groups={sceneGroups} />}
             {historySeries.length > 0 && <HistoryPanel series={historySeries} />}
             {rest.length > 0 && (
                 <details
@@ -688,7 +704,7 @@ function ThermostatControls({ refs, states }: { refs: ThermostatRefs; states: St
 }
 
 function StateRow({ state, states }: { state: SvStateRef; states: States }): React.JSX.Element {
-    const label = STATE_LABELS[state.name] || state.name;
+    const label = stateLabel(state);
     const value = states[state.id];
     // Taster (role button.*) lösen eine Aktion aus – kein Ein/Aus-Zustand
     if (state.write && state.type === 'boolean' && /^(button|action)\b/.test(state.role || '')) {

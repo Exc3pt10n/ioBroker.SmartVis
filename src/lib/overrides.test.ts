@@ -27,6 +27,7 @@ const model: SvModel = {
     pvForecast: [],
     weather: [],
     shutterControl: [],
+    scenes: [],
     generatedAt: 0,
     editable: false,
 };
@@ -108,6 +109,15 @@ describe('overrides', () => {
         expect(flur.name).to.equal('Diele');
         expect(flur.originalName).to.equal('Flur');
         expect(flur.hidden).to.equal(true);
+    });
+
+    it('hides and shows the "no room" hint', () => {
+        let o = applyEdit(emptyOverrides(), { kind: 'ui', patch: { hideNoRoomHint: true } });
+        expect(applyOverrides(model, o, true).ui).to.deep.equal({ hideNoRoomHint: true });
+        expect(parseOverrides(JSON.stringify(o)).ui).to.deep.equal({ hideNoRoomHint: true });
+        o = applyEdit(o, { kind: 'ui', patch: { hideNoRoomHint: null } });
+        expect(o.ui).to.equal(undefined);
+        expect(applyOverrides(model, o, true).ui).to.deep.equal({});
     });
 
     it('parses broken files as empty', () => {

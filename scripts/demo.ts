@@ -85,6 +85,43 @@ for (const [gid, name, lights] of [
     state(`hue.0.${name}.level`, 'level.dimmer', 'number', true, 0, { min: 0, max: 100, unit: '%' });
 }
 
+// Hue-Szenen: Knöpfe an Raum und Zone (der Adapter legt sie ohne type/write an)
+const hueScene = (group: string, key: string, name: string): void => {
+    const id = `hue.0.${group}.scene_${key}`;
+    objects[id] = {
+        _id: id,
+        type: 'state',
+        common: { name: `Scene ${name}`, role: 'button' },
+        native: {},
+    } as unknown as Obj;
+};
+for (const [key, name] of [
+    ['hell', 'Hell'],
+    ['gedimmt', 'Gedimmt'],
+    ['lesen', 'Lesen'],
+    ['konzentrieren', 'Konzentrieren'],
+    ['entspannen', 'Entspannen'],
+    ['nachtlicht', 'Nachtlicht'],
+    ['sonnenuntergang_savanne', 'Sonnenuntergang Savanne'],
+    ['scene_recoveryscene_', 'Scene recoveryScene '],
+]) {
+    hueScene('Küche', key, name);
+}
+folder('hue.0.Esstisch', 'channel', 'Esstisch', 'Zone');
+objects['hue.0.Esstisch'].native = { id: '9', type: 'Zone', name: 'Esstisch', lights: ['3'] };
+hueScene('Esstisch', 'hell', 'Hell');
+hueScene('Esstisch', 'essen', 'Essen');
+hueScene('Wohnzimmer', 'entspannen', 'Entspannen');
+hueScene('Wohnzimmer', 'fernsehen', 'Fernsehen');
+
+// HmIP-STHO Außensensor (Temperatur und Luftfeuchte)
+folder('hm-rpc.0.0000000000TH01', 'device', 'Temperatur- und Feuchtigkeitssensor');
+objects['hm-rpc.0.0000000000TH01'].native = { TYPE: 'HmIP-STHO' };
+folder('hm-rpc.0.0000000000TH01.1', 'channel', 'Temperatur- und Feuchtigkeitssensor:1');
+objects['hm-rpc.0.0000000000TH01.1'].native = { TYPE: 'CLIMATE_TRANSCEIVER', PARENT_TYPE: 'HmIP-STHO' };
+state('hm-rpc.0.0000000000TH01.1.ACTUAL_TEMPERATURE', 'value.temperature', 'number', false, 7.9, { unit: '°C' });
+state('hm-rpc.0.0000000000TH01.1.HUMIDITY', 'value.humidity', 'number', false, 88, { unit: '%' });
+
 // CCU-Raum, wie ihn hm-rega als Aufzählung anlegt
 objects['enum.rooms.Buero'] = {
     _id: 'enum.rooms.Buero',
@@ -328,6 +365,39 @@ for (const [key, unit, val] of [
     state(`${Q}.${key}`, key === 'BtSoc' ? 'value.battery' : 'value', 'number', false, val, { unit });
 }
 state(`${Q}.info.connection`, 'indicator.connected', 'boolean', false, true);
+// Weitere Zählerzeiträume: Faktor gegenüber dem Tag, Kennung des Zeitraums
+for (const [period, factor, key] of [
+    ['day.previous', 0.8, undefined],
+    ['week', 4, '2026-W46'],
+    ['week.previous', 6.5, undefined],
+    ['month', 9, '2026-11'],
+    ['month.previous', 22, undefined],
+    ['quarter', 31, '2026-Q4'],
+    ['quarter.previous', 95, undefined],
+    ['halfyear', 125, '2026-H2'],
+    ['halfyear.previous', 210, undefined],
+    ['year', 335, '2026'],
+    ['year.previous', 360, undefined],
+    ['total', 1180, undefined],
+] as const) {
+    for (const [name, unit, val] of [
+        ['PvGen', 'kWh', 12.4],
+        ['Cons', 'kWh', 7.9],
+        ['GridPurchase', 'kWh', 1.2],
+        ['GridFeedIn', 'kWh', 4.6],
+        ['BtCharged', 'kWh', 3.1],
+        ['BtDischarged', 'kWh', 1.4],
+        ['Autarky', '%', 85],
+        ['SelfConsRate', '%', 63],
+    ] as const) {
+        const v = unit === '%' ? val - (factor > 100 ? 12 : 4) : Math.round(val * factor * 10) / 10;
+        state(`${Q}.counters.${period}.${name}`, 'value', 'number', false, v, { unit });
+    }
+    if (key) {
+        state(`${Q}.counters.${period}.periodKey`, 'text', 'string', false, key);
+    }
+}
+state(`${Q}.counters.day.periodKey`, 'text', 'string', false, new Date().toISOString().slice(0, 10));
 
 // Echo-Player (gleiche Rollen wie alexa2), Raum über den Gerätenamen
 {
@@ -366,6 +436,9 @@ objects['system.adapter.sql.0'] = {
 state(`${Q}.PvPwTotal`, 'value', 'number', false, 4.2, { unit: 'kW' });
 for (const id of [
     'hm-rpc.0.MEQ003.1.ACTUAL_TEMPERATURE',
+    'hm-rpc.0.MEQ003.1.HUMIDITY',
+    'hm-rpc.0.0000000000TH01.1.ACTUAL_TEMPERATURE',
+    'hm-rpc.0.0000000000TH01.1.HUMIDITY',
     `${WS}.1.ACTUAL_TEMPERATURE`,
     `${WS}.1.WIND_SPEED`,
     'hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION',
@@ -401,6 +474,8 @@ function demoHistory(id: string, range: string): [number, number][] {
             v = 20.5 + Math.sin(((hour - 9) / 24) * 2 * Math.PI) * 1.2 + noise() * 0.3;
         } else if (/TEMPERATURE/.test(id)) {
             v = 6 + day * 6 + noise();
+        } else if (/HUMIDITY/.test(id)) {
+            v = (id.includes('MEQ003') ? 52 : 90 - day * 25) + noise() * 4;
         } else if (/WIND/.test(id)) {
             v = Math.max(0, 12 + noise() * 16);
         } else if (/ILLUMINATION/.test(id)) {

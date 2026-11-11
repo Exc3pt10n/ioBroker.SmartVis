@@ -1,4 +1,4 @@
-import type { SvDevice, SvEdit, SvModel, SvOverrides, SvRoom } from '../shared/protocol';
+import type { SvDevice, SvEdit, SvModel, SvOverrides, SvRoom, SvUiSettings } from '../shared/protocol';
 import { slug } from './rooms';
 
 export function emptyOverrides(): SvOverrides {
@@ -12,14 +12,31 @@ export function parseOverrides(raw: string | Buffer | undefined | null): SvOverr
     }
     try {
         const data = JSON.parse(raw.toString()) as Partial<SvOverrides>;
-        return {
+        const result: SvOverrides = {
             version: 1,
             devices: data.devices && typeof data.devices === 'object' ? data.devices : {},
             rooms: data.rooms && typeof data.rooms === 'object' ? data.rooms : {},
         };
+        const ui = parseUi(data.ui);
+        if (ui) {
+            result.ui = ui;
+        }
+        return result;
     } catch {
         return emptyOverrides();
     }
+}
+
+/** Nur bekannte Einstellungen übernehmen */
+function parseUi(raw: unknown): SvUiSettings | undefined {
+    if (!raw || typeof raw !== 'object') {
+        return undefined;
+    }
+    const ui: SvUiSettings = {};
+    if ((raw as SvUiSettings).hideNoRoomHint === true) {
+        ui.hideNoRoomHint = true;
+    }
+    return Object.keys(ui).length ? ui : undefined;
 }
 
 const MAX_NAME = 60;
@@ -46,6 +63,10 @@ function prune(o: SvOverrides): SvOverrides {
                 delete map[id];
             }
         }
+    }
+    o.ui = parseUi(o.ui);
+    if (!o.ui) {
+        delete o.ui;
     }
     return o;
 }
@@ -142,6 +163,14 @@ export function applyEdit(current: SvOverrides, edit: SvEdit): SvOverrides {
         case 'resetDevice':
             delete o.devices[edit.id];
             break;
+        case 'ui': {
+            const ui = { ...o.ui };
+            if ('hideNoRoomHint' in edit.patch) {
+                ui.hideNoRoomHint = edit.patch.hideNoRoomHint ? true : undefined;
+            }
+            o.ui = ui;
+            break;
+        }
         default:
             throw new Error('Unbekannte Änderung');
     }
@@ -201,5 +230,5 @@ export function applyOverrides(model: SvModel, overrides: SvOverrides, editable:
     rooms.sort(byOrder(r => overrides.rooms[r.id]?.order));
     devices.sort(byOrder(d => overrides.devices[d.id]?.order));
 
-    return { ...model, rooms, devices, editable };
+    return { ...model, rooms, devices, editable, ui: overrides.ui || {} };
 }

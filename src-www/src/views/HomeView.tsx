@@ -1,5 +1,5 @@
 import type { SvDevice } from '../../../src/shared/protocol';
-import { useConnection } from '../connection';
+import { connection, useConnection } from '../connection';
 import { groupByRoom, isActive, warnings } from '../device';
 import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
@@ -27,6 +27,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
     const problems = devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = devices.filter(d => !d.roomId).length;
+    const hintHidden = !!model.ui?.hideNoRoomHint;
     const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
     const pv = model.pvForecast[0];
     const forecastToday = pv ? kwh(pv.summary.energyToday, states) : undefined;
@@ -141,13 +142,35 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 {problems.length > 0 && <span className="chip chip--warn">⚠️ {problems.length} Störungen</span>}
             </div>
 
-            {withoutRoom > 0 && (
+            {withoutRoom > 0 && !hintHidden && (
+                <div className="hint-row">
+                    <button
+                        type="button"
+                        className="hint"
+                        onClick={() => onNavigate('rooms/_none')}
+                    >
+                        {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
+                    </button>
+                    {model.editable && (
+                        <button
+                            type="button"
+                            className="iconbtn hint-row__close"
+                            aria-label="Hinweis ausblenden"
+                            title="Hinweis ausblenden"
+                            onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: true } })}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
+            )}
+            {withoutRoom > 0 && hintHidden && editing && (
                 <button
                     type="button"
-                    className="hint"
-                    onClick={() => onNavigate('rooms/_none')}
+                    className="linkbtn"
+                    onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: null } })}
                 >
-                    {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
+                    Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
                 </button>
             )}
 

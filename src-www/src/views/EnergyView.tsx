@@ -1,14 +1,11 @@
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { EnergyFlow } from '../components/EnergyFlow';
+import { EnergyTotals } from '../components/EnergyTotals';
 import { ForecastCard } from '../components/ForecastCard';
 import { HistoryPanel, type HistorySeries } from '../components/HistoryPanel';
 import { WallboxCard } from '../components/WallboxCard';
 import { useConnection } from '../connection';
 import { kwh, num, snapshot } from '../energy';
-
-function fmt(value: number | undefined, unit: string, digits = 1): string {
-    return value === undefined ? '–' : `${value.toLocaleString('de-DE', { maximumFractionDigits: digits })} ${unit}`;
-}
 
 export function EnergyView(): React.JSX.Element {
     const { model, states } = useConnection();
@@ -58,7 +55,6 @@ export function EnergyView(): React.JSX.Element {
             {model.energy.map(system => {
                 // Wallboxen fließen in das erste Energiesystem ein
                 const flow = snapshot(system, states, system === model.energy[0] ? model.wallboxes : []);
-                const today = system.today || {};
                 const value = (ref: SvStateRef | undefined): number | undefined => num(ref, states);
                 const remaining = value(system.battery?.remaining);
                 const offline = system.connected && states[system.connected.id]?.val === false;
@@ -94,35 +90,10 @@ export function EnergyView(): React.JSX.Element {
                                             wallbox={wb}
                                         />
                                     ))}
-                                <div className="card">
-                                    <h2 className="subtitle">Heute</h2>
-                                    <div className="stats">
-                                        <Stat
-                                            label="PV-Erzeugung"
-                                            value={fmt(value(today.pv), 'kWh')}
-                                        />
-                                        <Stat
-                                            label="Verbrauch"
-                                            value={fmt(value(today.home), 'kWh')}
-                                        />
-                                        <Stat
-                                            label="Netzbezug"
-                                            value={fmt(value(today.gridImport), 'kWh')}
-                                        />
-                                        <Stat
-                                            label="Einspeisung"
-                                            value={fmt(value(today.gridExport), 'kWh')}
-                                        />
-                                        <Stat
-                                            label="Autarkie"
-                                            value={fmt(value(today.autarky), '%', 0)}
-                                        />
-                                        <Stat
-                                            label="Eigenverbrauch"
-                                            value={fmt(value(today.selfConsumption), '%', 0)}
-                                        />
-                                    </div>
-                                </div>
+                                <EnergyTotals
+                                    system={system}
+                                    states={states}
+                                />
                             </div>
                         </div>
                     </section>
@@ -148,14 +119,5 @@ export function EnergyView(): React.JSX.Element {
                 );
             })}
         </>
-    );
-}
-
-function Stat({ label, value }: { label: string; value: string }): React.JSX.Element {
-    return (
-        <div className="stat">
-            <span className="stat__value">{value}</span>
-            <span className="stat__label">{label}</span>
-        </div>
     );
 }
