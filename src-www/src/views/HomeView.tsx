@@ -39,6 +39,8 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             ),
     );
     const lightsOn = devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
+    // Eingeschaltete Klimageräte (Ein/Aus = POWER)
+    const climateOn = devices.filter(d => d.type === 'airCondition' && isActive(d, states));
     const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
     const problems = devices.filter(d => warnings(d, states).length > 0);
     const withoutRoom = devices.filter(d => !d.roomId).length;
@@ -110,6 +112,12 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             icon: '💡',
             value: String(lightsOn.length),
             label: lightsOn.length === 1 ? 'Licht an' : 'Lichter an',
+        },
+        climateOn.length > 0 && {
+            key: 'climate',
+            icon: '❄️',
+            value: String(climateOn.length),
+            label: 'Klima an',
         },
         { key: 'open', icon: '🪟', value: String(open.length), label: 'offen' },
         playing.length > 0 && { key: 'playing', icon: '🎵', value: String(playing.length), label: 'spielt' },
@@ -346,6 +354,19 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 ),
                             },
                             {
+                                key: 'climate',
+                                label: 'Klima aktiv',
+                                node: climateOn.length ? (
+                                    <Section
+                                        title="❄️ Klima aktiv"
+                                        devices={climateOn}
+                                        roomName={roomName}
+                                    />
+                                ) : (
+                                    placeholder('Erscheint, sobald ein Klimagerät eingeschaltet ist.')
+                                ),
+                            },
+                            {
                                 key: 'open',
                                 label: 'Offene Fenster & Türen',
                                 node: open.length ? (
@@ -373,7 +394,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                             },
                         ]}
                     />
-                    {!editing && lightsOn.length + open.length + problems.length === 0 && (
+                    {!editing && lightsOn.length + climateOn.length + open.length + problems.length === 0 && (
                         <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>
                     )}
                 </div>

@@ -4,8 +4,8 @@
         "version": "0.1.0",
         "news": {
             "0.1.0": {
-                "en": "Auto-discovered, mobile-first visualization: rooms, lights incl. Hue scenes, blinds, climate incl. Toshiba AC, media, energy (Q.HOME, KEBA, pvforecast), weather, shuttercontrol, history charts, edit mode with customizable views, ioBroker status",
-                "de": "Selbst erkennende, mobile Visualisierung: Räume, Licht inkl. Hue-Szenen, Rollläden, Klima inkl. Toshiba, Medien, Energie (Q.HOME, KEBA, pvforecast), Wetter, shuttercontrol, Verläufe, Bearbeiten-Modus mit anpassbaren Ansichten, ioBroker-Status",
+                "en": "Auto-discovered, mobile-first visualization: rooms, lights incl. Hue scenes, blinds, climate incl. Toshiba AC (active units on the home screen), media, energy (Q.HOME, KEBA, pvforecast), weather, shuttercontrol, history charts, edit mode with customizable views, ioBroker status",
+                "de": "Selbst erkennende, mobile Visualisierung: Räume, Licht inkl. Hue-Szenen, Rollläden, Klima inkl. Toshiba (aktive Geräte auf der Startseite), Medien, Energie (Q.HOME, KEBA, pvforecast), Wetter, shuttercontrol, Verläufe, Bearbeiten-Modus mit anpassbaren Ansichten, ioBroker-Status",
                 "ru": "Автоматически обнаруживаемая мобильная визуализация: комнаты, свет со сценами Hue, жалюзи, климат включая Toshiba, медиа, энергия (Q.HOME, KEBA, pvforecast), погода, shuttercontrol, графики истории, режим редактирования с настраиваемыми видами, статус ioBroker",
                 "pt": "Visualização móvel com deteção automática: divisões, luzes com cenas Hue, estores, climatização incl. Toshiba, multimédia, energia (Q.HOME, KEBA, pvforecast), meteorologia, shuttercontrol, históricos, modo de edição com vistas personalizáveis, estado do ioBroker",
                 "nl": "Automatisch herkennende, mobiele visualisatie: kamers, verlichting incl. Hue-scènes, rolluiken, klimaat incl. Toshiba, media, energie (Q.HOME, KEBA, pvforecast), weer, shuttercontrol, historie, bewerkmodus met aanpasbare weergaven, ioBroker-status",
