@@ -1,6 +1,6 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
-import { isActive, warnings } from '../device';
+import { groupByRoom, isActive, warnings } from '../device';
 import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
@@ -104,8 +104,11 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                         className="chip"
                         onClick={() => onNavigate('energy')}
                     >
-                        🔮 PV heute {forecastToday?.toLocaleString('de-DE', { maximumFractionDigits: 0 }) ?? '–'} ·
-                        morgen {forecastTomorrow.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh
+                        🔮 PV heute{' '}
+                        {forecastToday !== undefined
+                            ? `${forecastToday.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh`
+                            : '–'}{' '}
+                        · morgen {forecastTomorrow.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh
                     </button>
                 )}
                 {sunProtected > 0 && (
@@ -149,11 +152,33 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             )}
 
             {lightsOn.length > 0 && (
-                <Section
-                    title="Eingeschaltete Lichter"
-                    devices={lightsOn}
-                    roomName={roomName}
-                />
+                <section>
+                    <h2 className="subtitle">Eingeschaltete Lichter</h2>
+                    {groupByRoom(lightsOn, model.rooms).map(g => (
+                        <div
+                            key={g.roomId ?? '_none'}
+                            className="roomgroup"
+                        >
+                            <button
+                                type="button"
+                                className="roomgroup__title"
+                                onClick={() => onNavigate(`rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`)}
+                            >
+                                {g.name}
+                                <span className="group__count">{g.devices.length}</span>
+                                <span aria-hidden="true">›</span>
+                            </button>
+                            <div className="grid">
+                                {g.devices.map(d => (
+                                    <DeviceTile
+                                        key={d.id}
+                                        device={d}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </section>
             )}
             {open.length > 0 && (
                 <Section
