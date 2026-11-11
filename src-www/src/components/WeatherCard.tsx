@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { SvWeather } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
-import { compass, condition, fmt, formatMinutes, weatherSnapshot, windLabel } from '../weather';
+import { compass, condition, fmt, formatLux, formatMinutes, weatherSnapshot, windLabel } from '../weather';
 
 export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: SvWeather[] }): React.JSX.Element {
     const { states } = useConnection();
@@ -65,6 +65,25 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
                         </div>
                     ))}
                 </dl>
+            )}
+            {s.light.length > 0 && (
+                <div
+                    className="weather__light"
+                    aria-label="Helligkeit je Himmelsrichtung"
+                >
+                    <span className="weather__light-title">☀️ Helligkeit</span>
+                    <dl>
+                        {s.light.map(l => (
+                            <div
+                                key={l.name}
+                                title={l.average !== undefined ? `Mittelwert ${formatLux(l.average)}` : undefined}
+                            >
+                                <dt>{l.name}</dt>
+                                <dd>{l.online ? formatLux(l.lux) : 'nicht erreichbar'}</dd>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
             )}
             {(extra || []).map(x => {
                 const xs = weatherSnapshot(x, states);

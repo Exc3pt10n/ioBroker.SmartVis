@@ -1166,5 +1166,2123 @@
       "DEFAULT": false,
       "CONTROL": "WEATHER_TRANSMIT.WIND_THRESHOLD_OVERRUN"
     }
+  },
+  "hm-rpc.0.0000000000SLO1": {
+    "_id": "hm-rpc.0.0000000000SLO1",
+    "type": "device",
+    "common": {
+      "name": "Lichtsensor Osten",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MCA1MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIj48bWFzayBpZD0iaG1pXzE3NF9obWlwX3Nsb190aHVtYiI+PGltYWdlIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgc3R5bGU9IndpZHRoOjUwcHg7aGVpZ2h0OjUwcHgiIGhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBRElBQUFBeUNBQUFBQUE3Vk5kdEFBQUMwMGxFUVZSNEFZWEJ2NHNlUlJ6QTRjOThkOTdkdWZjMlhFUU5lSm95WXBGRzBGWkZBaXFpNWtERVVrSFFTZ1IvL1FVQkxTd3Q3ZXl1VkJCTEJRT1NRb0tCNUNKWUtKYzd3cDNoOU83ZGQzWm1kOFEzTTh4dWNNbnpLRVllZlB6cGM1dmRvbkd6elVmNnZkMDdmMTMvOHpiMnBHTkFNZlRabTN6N3krOVc2M0wyMW14di8vamNoVDkySGhWOWN1UFg3dzlKRkFQdjMvandnMUlVemgyLy9kWGZTaGRxVmwxNnQ5S3llT0dUVjNlSk5BTlB6ZWNQUzFCU1ZPVVRyL25RZDMxWXJyOVlpdWl1UEw5THBCazQrdkg1SXhNSW5XK2UvTTZKcUVKeFpVYm8rdTdDQm9sbW9EdmF2OHBkaDd1T29YMU5JZ3owbFNVS2lwRm1uVVFZOEtZbFVvdzFjeEloRTJjc0V4WnJKRUpXZUdPWjBLeVRDSmwyYXkwVG1qbUprQld1YkpuUXpFbUVyUERHTW1FeEp4R3l3cG1XQ2MyY1JNaTBxeXdUMnBKRXlBcHZXaWEwQlltUUZkNVlKdlJDSW1TRnF5eFRGSW1RYVdkYTdrL0lDbWNza2VJZWdVVElDbDlaN2svSXRGdHJpUUwzNkVtRXJIQlZ5d1MxbUJNSm1lcU5KVkxjNDdnbUVvWk15NFRlMWtUQ2tMRk04TDRtRWdhQ3NVendyaVlTTXQyWmxnbmUxVVJDVnJXVlpZTDNOWkdRbWRhMFRQQytKaEl5MHhySEJPOXFJaUdyMm9wRU1lWmRUU1JrcGpVa2dUSHZheUlocTNvbWViZE9KR1NWV2pMRnUxTkVRbWFVSlZHTWVUVWpFcktLaGltK1ZFUkNac1F5cFN0N0lrMVdzU1FKckp4OTQrS3B3NiszajZGVVJKcXNWRXZHM2puL3pSZm9yYzh2M1VLUmFLTG5Udk1ZbHBGbk5qN3k0TGQvMi9xU0VJaUU2TlBidDJESnlNWlBudi9zb1VBUmFhS2R5emhaTWhKbXJQUWFWRThrUkFLVnNvd0V4VXFuUVMySmhFeVZEU05Cc2RKcDRJUkl5RUpsK1YrZEJ0VVFDVm5QZ3BHZ1dQRWFXQkpwb2dmT2hKZTNGaHMvM0x4emNOQVNDU3U5aHNZUWFhSnIyMmRQT3V0ZXViWno1aUc1Y3JscmdYOGNLMjBYT0hpZFNCR3A0dUo3TWp1d0wxMy91ZDU4dGd5N0RtVk85eWhReXQwODloOWY1YTUvQVVrREIrWFZtVk83QUFBQUFFbEZUa1N1UW1DQyIvPjwvbWFzaz48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHN0eWxlPSJ3aWR0aDo1MHB4O2hlaWdodDo1MHB4IiBmaWxsPSJjdXJyZW50Q29sb3IiIG1hc2s9InVybCgjaG1pXzE3NF9obWlwX3Nsb190aHVtYikiLz48L3N2Zz4K"
+    },
+    "native": {
+      "TYPE": "HmIP-SLO",
+      "SUBTYPE": "SLO",
+      "ADDRESS": "0000000000SLO1",
+      "RF_ADDRESS": 10078427,
+      "CHILDREN": [
+        "0000000000SLO1:0",
+        "0000000000SLO1:1",
+        "0000000000SLO1:2",
+        "0000000000SLO1:3"
+      ],
+      "PARENT": "",
+      "PARENT_TYPE": "",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "SERVICE"
+      ],
+      "FIRMWARE": "1.0.16",
+      "AVAILABLE_FIRMWARE": "0.0.0",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "UP_TO_DATE",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 4
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0": {
+    "_id": "hm-rpc.0.0000000000SLO1.0",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Osten:0"
+    },
+    "native": {
+      "TYPE": "MAINTENANCE",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO1:0",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO1",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.CONFIG_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.CONFIG_PENDING",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator",
+      "name": "Lichtsensor Osten:0.CONFIG_PENDING"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "CONFIG_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.CONFIG_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.CONFIG_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Osten:0.CONFIG_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SLO 0000000000SLO1:0.CONFIG_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5518"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.DUTY_CYCLE": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.DUTY_CYCLE",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "name": "Lichtsensor Osten:0.DUTY_CYCLE",
+      "role": "value"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "DUTY_CYCLE",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.INSTALL_TEST": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.INSTALL_TEST",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": true,
+      "role": "indicator",
+      "name": "Lichtsensor Osten:0.INSTALL_TEST"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 3,
+      "MAX": true,
+      "FLAGS": 2,
+      "ID": "INSTALL_TEST",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.LOW_BAT": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.LOW_BAT",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "name": "Lichtsensor Osten:0.LOW_BAT",
+      "role": "indicator.lowbat"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "LOW_BAT",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.LOW_BAT_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.LOW_BAT_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Osten:0.LOW_BAT_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SLO 0000000000SLO1:0.LOW_BAT_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5524"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.OPERATING_VOLTAGE": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.OPERATING_VOLTAGE",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 25.2,
+      "unit": "V",
+      "role": "value.voltage",
+      "name": "Lichtsensor Osten:0.OPERATING_VOLTAGE"
+    },
+    "native": {
+      "MIN": 0,
+      "OPERATIONS": 5,
+      "MAX": 25.2,
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.OPERATING_VOLTAGE_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.OPERATING_VOLTAGE_STATUS",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 3,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW",
+        "3": "EXTERNAL"
+      },
+      "name": "Lichtsensor Osten:0.OPERATING_VOLTAGE_STATUS",
+      "role": "value"
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "EXTERNAL",
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW",
+        "EXTERNAL"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.RSSI_DEVICE": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.RSSI_DEVICE",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 128,
+      "unit": "dBm",
+      "role": "value.rssi",
+      "name": "Lichtsensor Osten:0.RSSI_DEVICE"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 127,
+      "FLAGS": 1,
+      "ID": "RSSI_DEVICE",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.RSSI_PEER": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.RSSI_PEER",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 127,
+      "unit": "dBm",
+      "role": "value.rssi",
+      "name": "Lichtsensor Osten:0.RSSI_PEER"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 127,
+      "FLAGS": 1,
+      "ID": "RSSI_PEER",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.UNREACH": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.UNREACH",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "role": "indicator.unreach",
+      "name": "Lichtsensor Osten:0.UNREACH"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 25,
+      "ID": "UNREACH",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.UNREACH_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.UNREACH_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Osten:0.UNREACH_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SLO 0000000000SLO1:0.UNREACH_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5532"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.UPDATE_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.UPDATE_PENDING",
+    "type": "state",
+    "common": {
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false,
+      "name": "Lichtsensor Osten:0.UPDATE_PENDING",
+      "role": "indicator"
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "UPDATE_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.0.UPDATE_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO1.0.UPDATE_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Osten:0.UPDATE_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "HmIP-SLO 0000000000SLO1:0.UPDATE_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "5536"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1": {
+    "_id": "hm-rpc.0.0000000000SLO1.1",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Osten:1"
+    },
+    "native": {
+      "TYPE": "BRIGHTNESS_TRANSMITTER",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO1:1",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO1",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 1,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "name": "Lichtsensor Osten:1.AVERAGE_ILLUMINATION",
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.AVERAGE_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "name": "Lichtsensor Osten:1.AVERAGE_ILLUMINATION_STATUS",
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "name": "Lichtsensor Osten:1.CURRENT_ILLUMINATION",
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "changesOnly": true,
+          "debounce": "1000",
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "retention": 604800,
+          "debounceTime": 0,
+          "blockTime": 0,
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false
+        }
+      },
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.CURRENT_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "name": "Lichtsensor Osten:1.CURRENT_ILLUMINATION_STATUS",
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.HIGHEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.HIGHEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "name": "Lichtsensor Osten:1.HIGHEST_ILLUMINATION",
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.HIGHEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.HIGHEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.HIGHEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "name": "Lichtsensor Osten:1.HIGHEST_ILLUMINATION_STATUS",
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.LOWEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.LOWEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "name": "Lichtsensor Osten:1.LOWEST_ILLUMINATION",
+      "role": ""
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.LOWEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO1.1.LOWEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO1.1.LOWEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      },
+      "name": "Lichtsensor Osten:1.LOWEST_ILLUMINATION_STATUS",
+      "role": ""
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO2": {
+    "_id": "hm-rpc.0.0000000000SLO2",
+    "type": "device",
+    "common": {
+      "name": "Lichtsensor Süden",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MCA1MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIj48bWFzayBpZD0iaG1pXzE3NF9obWlwX3Nsb190aHVtYiI+PGltYWdlIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgc3R5bGU9IndpZHRoOjUwcHg7aGVpZ2h0OjUwcHgiIGhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBRElBQUFBeUNBQUFBQUE3Vk5kdEFBQUMwMGxFUVZSNEFZWEJ2NHNlUlJ6QTRjOThkOTdkdWZjMlhFUU5lSm95WXBGRzBGWkZBaXFpNWtERVVrSFFTZ1IvL1FVQkxTd3Q3ZXl1VkJCTEJRT1NRb0tCNUNKWUtKYzd3cDNoOU83ZGQzWm1kOFEzTTh4dWNNbnpLRVllZlB6cGM1dmRvbkd6elVmNnZkMDdmMTMvOHpiMnBHTkFNZlRabTN6N3krOVc2M0wyMW14di8vamNoVDkySGhWOWN1UFg3dzlKRkFQdjMvandnMUlVemgyLy9kWGZTaGRxVmwxNnQ5S3llT0dUVjNlSk5BTlB6ZWNQUzFCU1ZPVVRyL25RZDMxWXJyOVlpdWl1UEw5THBCazQrdkg1SXhNSW5XK2UvTTZKcUVKeFpVYm8rdTdDQm9sbW9EdmF2OHBkaDd1T29YMU5JZ3owbFNVS2lwRm1uVVFZOEtZbFVvdzFjeEloRTJjc0V4WnJKRUpXZUdPWjBLeVRDSmwyYXkwVG1qbUprQld1YkpuUXpFbUVyUERHTW1FeEp4R3l3cG1XQ2MyY1JNaTBxeXdUMnBKRXlBcHZXaWEwQlltUUZkNVlKdlJDSW1TRnF5eFRGSW1RYVdkYTdrL0lDbWNza2VJZWdVVElDbDlaN2svSXRGdHJpUUwzNkVtRXJIQlZ5d1MxbUJNSm1lcU5KVkxjNDdnbUVvWk15NFRlMWtUQ2tMRk04TDRtRWdhQ3NVendyaVlTTXQyWmxnbmUxVVJDVnJXVlpZTDNOWkdRbWRhMFRQQytKaEl5MHhySEJPOXFJaUdyMm9wRU1lWmRUU1JrcGpVa2dUSHZheUlocTNvbWViZE9KR1NWV2pMRnUxTkVRbWFVSlZHTWVUVWpFcktLaGltK1ZFUkNac1F5cFN0N0lrMVdzU1FKckp4OTQrS3B3NiszajZGVVJKcXNWRXZHM2puL3pSZm9yYzh2M1VLUmFLTG5Udk1ZbHBGbk5qN3k0TGQvMi9xU0VJaUU2TlBidDJESnlNWlBudi9zb1VBUmFhS2R5emhaTWhKbXJQUWFWRThrUkFLVnNvd0V4VXFuUVMySmhFeVZEU05Cc2RKcDRJUkl5RUpsK1YrZEJ0VVFDVm5QZ3BHZ1dQRWFXQkpwb2dmT2hKZTNGaHMvM0x4emNOQVNDU3U5aHNZUWFhSnIyMmRQT3V0ZXViWno1aUc1Y3JscmdYOGNLMjBYT0hpZFNCR3A0dUo3TWp1d0wxMy91ZDU4dGd5N0RtVk85eWhReXQwODloOWY1YTUvQVVrREIrWFZtVk83QUFBQUFFbEZUa1N1UW1DQyIvPjwvbWFzaz48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHN0eWxlPSJ3aWR0aDo1MHB4O2hlaWdodDo1MHB4IiBmaWxsPSJjdXJyZW50Q29sb3IiIG1hc2s9InVybCgjaG1pXzE3NF9obWlwX3Nsb190aHVtYikiLz48L3N2Zz4K"
+    },
+    "native": {
+      "TYPE": "HmIP-SLO",
+      "SUBTYPE": "SLO",
+      "ADDRESS": "0000000000SLO2",
+      "RF_ADDRESS": 5790613,
+      "CHILDREN": [
+        "0000000000SLO2:0",
+        "0000000000SLO2:1",
+        "0000000000SLO2:2",
+        "0000000000SLO2:3"
+      ],
+      "PARENT": "",
+      "PARENT_TYPE": "",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "SERVICE"
+      ],
+      "FIRMWARE": "1.0.16",
+      "AVAILABLE_FIRMWARE": "0.0.0",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "UP_TO_DATE",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 4
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0": {
+    "_id": "hm-rpc.0.0000000000SLO2.0",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Süden:0"
+    },
+    "native": {
+      "TYPE": "MAINTENANCE",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO2:0",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO2",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.CONFIG_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.CONFIG_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.CONFIG_PENDING",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "CONFIG_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.CONFIG_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.CONFIG_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.CONFIG_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO2:0.CONFIG_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6169"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.DUTY_CYCLE": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.DUTY_CYCLE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.DUTY_CYCLE",
+      "role": "value",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "DUTY_CYCLE",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.INSTALL_TEST": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.INSTALL_TEST",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.INSTALL_TEST",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": true
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 3,
+      "MAX": true,
+      "FLAGS": 2,
+      "ID": "INSTALL_TEST",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.LOW_BAT": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.LOW_BAT",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.LOW_BAT",
+      "role": "indicator.lowbat",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "LOW_BAT",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.LOW_BAT_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.LOW_BAT_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.LOW_BAT_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO2:0.LOW_BAT_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6175"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.OPERATING_VOLTAGE": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.OPERATING_VOLTAGE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.OPERATING_VOLTAGE",
+      "role": "value.voltage",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 25.2,
+      "unit": "V"
+    },
+    "native": {
+      "MIN": 0,
+      "OPERATIONS": 5,
+      "MAX": 25.2,
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.OPERATING_VOLTAGE_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.OPERATING_VOLTAGE_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.OPERATING_VOLTAGE_STATUS",
+      "role": "value",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 3,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW",
+        "3": "EXTERNAL"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "EXTERNAL",
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW",
+        "EXTERNAL"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.RSSI_DEVICE": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.RSSI_DEVICE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.RSSI_DEVICE",
+      "role": "value.rssi",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 128,
+      "unit": "dBm"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 128,
+      "FLAGS": 1,
+      "ID": "RSSI_DEVICE",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.RSSI_PEER": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.RSSI_PEER",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.RSSI_PEER",
+      "role": "value.rssi",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 127,
+      "unit": "dBm"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 127,
+      "FLAGS": 1,
+      "ID": "RSSI_PEER",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.UNREACH": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.UNREACH",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.UNREACH",
+      "role": "indicator.unreach",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 25,
+      "ID": "UNREACH",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.UNREACH_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.UNREACH_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.UNREACH_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO2:0.UNREACH_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6183"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.UPDATE_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.UPDATE_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.UPDATE_PENDING",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "UPDATE_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.0.UPDATE_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO2.0.UPDATE_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:0.UPDATE_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO2:0.UPDATE_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6187"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1": {
+    "_id": "hm-rpc.0.0000000000SLO2.1",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Süden:1"
+    },
+    "native": {
+      "TYPE": "BRIGHTNESS_TRANSMITTER",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO2:1",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO2",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 1,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.AVERAGE_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.AVERAGE_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.AVERAGE_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.AVERAGE_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.AVERAGE_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.AVERAGE_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.AVERAGE_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.CURRENT_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "debounceTime": 0,
+          "blockTime": 0,
+          "changesOnly": true,
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "retention": 604800,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false,
+          "debounce": "1000"
+        }
+      }
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.CURRENT_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.CURRENT_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.HIGHEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.HIGHEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.HIGHEST_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.HIGHEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.HIGHEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.HIGHEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.HIGHEST_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.LOWEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.LOWEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.LOWEST_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.LOWEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO2.1.LOWEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO2.1.LOWEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Süden:1.LOWEST_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO3": {
+    "_id": "hm-rpc.0.0000000000SLO3",
+    "type": "device",
+    "common": {
+      "name": "Lichtsensor Westen",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MCA1MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIj48bWFzayBpZD0iaG1pXzE3NF9obWlwX3Nsb190aHVtYiI+PGltYWdlIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgc3R5bGU9IndpZHRoOjUwcHg7aGVpZ2h0OjUwcHgiIGhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBRElBQUFBeUNBQUFBQUE3Vk5kdEFBQUMwMGxFUVZSNEFZWEJ2NHNlUlJ6QTRjOThkOTdkdWZjMlhFUU5lSm95WXBGRzBGWkZBaXFpNWtERVVrSFFTZ1IvL1FVQkxTd3Q3ZXl1VkJCTEJRT1NRb0tCNUNKWUtKYzd3cDNoOU83ZGQzWm1kOFEzTTh4dWNNbnpLRVllZlB6cGM1dmRvbkd6elVmNnZkMDdmMTMvOHpiMnBHTkFNZlRabTN6N3krOVc2M0wyMW14di8vamNoVDkySGhWOWN1UFg3dzlKRkFQdjMvandnMUlVemgyLy9kWGZTaGRxVmwxNnQ5S3llT0dUVjNlSk5BTlB6ZWNQUzFCU1ZPVVRyL25RZDMxWXJyOVlpdWl1UEw5THBCazQrdkg1SXhNSW5XK2UvTTZKcUVKeFpVYm8rdTdDQm9sbW9EdmF2OHBkaDd1T29YMU5JZ3owbFNVS2lwRm1uVVFZOEtZbFVvdzFjeEloRTJjc0V4WnJKRUpXZUdPWjBLeVRDSmwyYXkwVG1qbUprQld1YkpuUXpFbUVyUERHTW1FeEp4R3l3cG1XQ2MyY1JNaTBxeXdUMnBKRXlBcHZXaWEwQlltUUZkNVlKdlJDSW1TRnF5eFRGSW1RYVdkYTdrL0lDbWNza2VJZWdVVElDbDlaN2svSXRGdHJpUUwzNkVtRXJIQlZ5d1MxbUJNSm1lcU5KVkxjNDdnbUVvWk15NFRlMWtUQ2tMRk04TDRtRWdhQ3NVendyaVlTTXQyWmxnbmUxVVJDVnJXVlpZTDNOWkdRbWRhMFRQQytKaEl5MHhySEJPOXFJaUdyMm9wRU1lWmRUU1JrcGpVa2dUSHZheUlocTNvbWViZE9KR1NWV2pMRnUxTkVRbWFVSlZHTWVUVWpFcktLaGltK1ZFUkNac1F5cFN0N0lrMVdzU1FKckp4OTQrS3B3NiszajZGVVJKcXNWRXZHM2puL3pSZm9yYzh2M1VLUmFLTG5Udk1ZbHBGbk5qN3k0TGQvMi9xU0VJaUU2TlBidDJESnlNWlBudi9zb1VBUmFhS2R5emhaTWhKbXJQUWFWRThrUkFLVnNvd0V4VXFuUVMySmhFeVZEU05Cc2RKcDRJUkl5RUpsK1YrZEJ0VVFDVm5QZ3BHZ1dQRWFXQkpwb2dmT2hKZTNGaHMvM0x4emNOQVNDU3U5aHNZUWFhSnIyMmRQT3V0ZXViWno1aUc1Y3JscmdYOGNLMjBYT0hpZFNCR3A0dUo3TWp1d0wxMy91ZDU4dGd5N0RtVk85eWhReXQwODloOWY1YTUvQVVrREIrWFZtVk83QUFBQUFFbEZUa1N1UW1DQyIvPjwvbWFzaz48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHN0eWxlPSJ3aWR0aDo1MHB4O2hlaWdodDo1MHB4IiBmaWxsPSJjdXJyZW50Q29sb3IiIG1hc2s9InVybCgjaG1pXzE3NF9obWlwX3Nsb190aHVtYikiLz48L3N2Zz4K"
+    },
+    "native": {
+      "TYPE": "HmIP-SLO",
+      "SUBTYPE": "SLO",
+      "ADDRESS": "0000000000SLO3",
+      "RF_ADDRESS": 7452989,
+      "CHILDREN": [
+        "0000000000SLO3:0",
+        "0000000000SLO3:1",
+        "0000000000SLO3:2",
+        "0000000000SLO3:3"
+      ],
+      "PARENT": "",
+      "PARENT_TYPE": "",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "SERVICE"
+      ],
+      "FIRMWARE": "1.0.18",
+      "AVAILABLE_FIRMWARE": "0.0.0",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "UP_TO_DATE",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 4
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0": {
+    "_id": "hm-rpc.0.0000000000SLO3.0",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Westen:0"
+    },
+    "native": {
+      "TYPE": "MAINTENANCE",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO3:0",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO3",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 0,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.BOOTED": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.BOOTED",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.BOOTED",
+      "role": "",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "BOOTED",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.CONFIG_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.CONFIG_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.CONFIG_PENDING",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "CONFIG_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.CONFIG_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.CONFIG_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.CONFIG_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO3:0.CONFIG_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6252"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.DUTY_CYCLE": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.DUTY_CYCLE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.DUTY_CYCLE",
+      "role": "value.dutycycle",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 1,
+      "ID": "DUTY_CYCLE",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.INSTALL_TEST": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.INSTALL_TEST",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.INSTALL_TEST",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": true
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 3,
+      "MAX": true,
+      "FLAGS": 2,
+      "ID": "INSTALL_TEST",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.LOW_BAT": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.LOW_BAT",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.LOW_BAT",
+      "role": "indicator.lowbat",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "LOW_BAT",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.LOW_BAT_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.LOW_BAT_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.LOW_BAT_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO3:0.LOW_BAT_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6258"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.OPERATING_VOLTAGE": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.OPERATING_VOLTAGE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.OPERATING_VOLTAGE",
+      "role": "value.voltage",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 25.2,
+      "unit": "V"
+    },
+    "native": {
+      "MIN": 0,
+      "OPERATIONS": 5,
+      "MAX": 25.2,
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.OPERATING_VOLTAGE_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.OPERATING_VOLTAGE_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.OPERATING_VOLTAGE_STATUS",
+      "role": "value.voltage.status",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 3,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW",
+        "3": "EXTERNAL"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "EXTERNAL",
+      "FLAGS": 1,
+      "ID": "OPERATING_VOLTAGE_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW",
+        "EXTERNAL"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.RSSI_DEVICE": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.RSSI_DEVICE",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.RSSI_DEVICE",
+      "role": "value.rssi",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 128,
+      "unit": "dBm"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 128,
+      "FLAGS": 1,
+      "ID": "RSSI_DEVICE",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.RSSI_PEER": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.RSSI_PEER",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.RSSI_PEER",
+      "role": "value.rssi",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": -128,
+      "max": 127,
+      "unit": "dBm"
+    },
+    "native": {
+      "MIN": -128,
+      "OPERATIONS": 5,
+      "MAX": 127,
+      "FLAGS": 1,
+      "ID": "RSSI_PEER",
+      "TYPE": "INTEGER",
+      "DEFAULT": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.UNREACH": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.UNREACH",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.UNREACH",
+      "role": "indicator.unreach",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 25,
+      "ID": "UNREACH",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.UNREACH_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.UNREACH_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.UNREACH_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO3:0.UNREACH_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6266"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.UPDATE_PENDING": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.UPDATE_PENDING",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.UPDATE_PENDING",
+      "role": "indicator",
+      "def": false,
+      "type": "boolean",
+      "read": true,
+      "write": false
+    },
+    "native": {
+      "MIN": false,
+      "OPERATIONS": 5,
+      "MAX": true,
+      "FLAGS": 9,
+      "ID": "UPDATE_PENDING",
+      "TYPE": "BOOL",
+      "DEFAULT": false
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.0.UPDATE_PENDING_ALARM": {
+    "_id": "hm-rpc.0.0000000000SLO3.0.UPDATE_PENDING_ALARM",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:0.UPDATE_PENDING_ALARM",
+      "type": "number",
+      "role": "indicator.alarm",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "states": {
+        "0": "NO ALARM",
+        "1": "ALARM",
+        "2": "ACKNOWLEDGED"
+      }
+    },
+    "native": {
+      "Name": "0000000000SLO3:0.UPDATE_PENDING_ALARM",
+      "TypeName": "ALARM",
+      "DP": "6270"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1": {
+    "_id": "hm-rpc.0.0000000000SLO3.1",
+    "type": "channel",
+    "common": {
+      "name": "Lichtsensor Westen:1"
+    },
+    "native": {
+      "TYPE": "BRIGHTNESS_TRANSMITTER",
+      "SUBTYPE": "",
+      "ADDRESS": "0000000000SLO3:1",
+      "RF_ADDRESS": 0,
+      "CHILDREN": [],
+      "PARENT": "0000000000SLO3",
+      "PARENT_TYPE": "HmIP-SLO",
+      "INDEX": 1,
+      "AES_ACTIVE": 1,
+      "PARAMSETS": [
+        "MASTER",
+        "VALUES",
+        "SERVICE"
+      ],
+      "FIRMWARE": "",
+      "AVAILABLE_FIRMWARE": "",
+      "UPDATABLE": true,
+      "FIRMWARE_UPDATE_STATE": "",
+      "VERSION": 1,
+      "FLAGS": 1,
+      "LINK_SOURCE_ROLES": "",
+      "LINK_TARGET_ROLES": "",
+      "DIRECTION": 0,
+      "GROUP": "",
+      "TEAM": "",
+      "TEAM_TAG": "",
+      "TEAM_CHANNELS": [],
+      "INTERFACE": "",
+      "ROAMING": 0,
+      "RX_MODE": 0
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.AVERAGE_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.AVERAGE_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.AVERAGE_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.AVERAGE_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.AVERAGE_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.AVERAGE_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.AVERAGE_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "AVERAGE_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.CURRENT_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux",
+      "custom": {
+        "sql.0": {
+          "enabled": true,
+          "storageType": "",
+          "counter": false,
+          "aliasId": "",
+          "debounceTime": 0,
+          "blockTime": 0,
+          "changesOnly": true,
+          "changesRelogInterval": "0",
+          "changesMinDelta": "0",
+          "ignoreBelowNumber": "",
+          "disableSkippedValueLogging": false,
+          "retention": 604800,
+          "customRetentionDuration": 365,
+          "maxLength": 0,
+          "enableDebugLogs": false,
+          "debounce": "1000"
+        }
+      }
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.CURRENT_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.CURRENT_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "CURRENT_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.HIGHEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.HIGHEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.HIGHEST_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.HIGHEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.HIGHEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.HIGHEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.HIGHEST_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "HIGHEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.LOWEST_ILLUMINATION": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.LOWEST_ILLUMINATION",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.LOWEST_ILLUMINATION",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 163830,
+      "unit": "Lux"
+    },
+    "native": {
+      "MIN": 0,
+      "UNIT": "Lux",
+      "OPERATIONS": 5,
+      "MAX": 163830,
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION",
+      "TYPE": "FLOAT",
+      "DEFAULT": 0,
+      "CONTROL": "BRIGHTNESS_TRANSMITTER.LOWEST_ILLUMINATION"
+    }
+  },
+  "hm-rpc.0.0000000000SLO3.1.LOWEST_ILLUMINATION_STATUS": {
+    "_id": "hm-rpc.0.0000000000SLO3.1.LOWEST_ILLUMINATION_STATUS",
+    "type": "state",
+    "common": {
+      "name": "Lichtsensor Westen:1.LOWEST_ILLUMINATION_STATUS",
+      "role": "",
+      "def": 0,
+      "type": "number",
+      "read": true,
+      "write": false,
+      "min": 0,
+      "max": 2,
+      "states": {
+        "0": "NORMAL",
+        "1": "UNKNOWN",
+        "2": "OVERFLOW"
+      }
+    },
+    "native": {
+      "MIN": "NORMAL",
+      "OPERATIONS": 5,
+      "MAX": "OVERFLOW",
+      "FLAGS": 1,
+      "ID": "LOWEST_ILLUMINATION_STATUS",
+      "TYPE": "ENUM",
+      "DEFAULT": "NORMAL",
+      "VALUE_LIST": [
+        "NORMAL",
+        "UNKNOWN",
+        "OVERFLOW"
+      ]
+    }
   }
 }

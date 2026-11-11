@@ -1,4 +1,4 @@
-import type { SvWallbox } from '../../shared/protocol';
+import type { SvStateRef, SvWallbox } from '../../shared/protocol';
 import { ref, type AdapterProfile } from './types';
 
 /**
@@ -7,9 +7,18 @@ import { ref, type AdapterProfile } from './types';
  * - p: Ladeleistung in mW
  * - state: 0 Start, 1 nicht bereit, 2 bereit, 3 lädt, 4 Fehler, 5 unterbrochen
  * - plug: 0 kein Kabel, 1/3 Kabel an Wallbox, 5/7 Fahrzeug verbunden
- * - ePres: Energie der laufenden Sitzung (Wh)
+ * - currentUser: Ladestrom, den die Automatik des Adapters vorgibt (mA) = aktuelles Limit
+ * - statistics.surplus: PV-Überschuss, mit dem die Automatik zuletzt gerechnet hat (W)
  * - automatic.photovoltaics / automatic.pauseWallbox: Schalter der Lade-Automatik des Adapters
+ *
+ * Die "Deutschland-Edition" (Produkt …-DE) hat keinen Energiezähler: p, ePres und die Statistik bleiben 0.
+ * Der Adapter schätzt die Leistung selbst aus currentUser × 230 V × Phasen (chargingPhases bzw.
+ * automatic.calcPhases) – die App macht es ebenso. Sitzungsenergie wird deshalb nicht angezeigt.
  */
+function readOnly(r: SvStateRef | undefined): SvStateRef | undefined {
+    return r ? { ...r, write: false } : undefined;
+}
+
 export const kecontactProfile: AdapterProfile = {
     adapter: 'kecontact',
     claimsInstance: true,
@@ -37,8 +46,12 @@ export const kecontactProfile: AdapterProfile = {
             },
             plug: ref(objects, id('plug'), 'Stecker'),
             vehiclePluggedValues: [5, 7],
-            sessionEnergy: ref(objects, id('ePres'), 'Geladen (Sitzung)'),
-            lastSessionEnergy: ref(objects, id('statistics.lastChargeAmount'), 'Letzte Ladung'),
+            // nur lesen: der Ladestrom wird von der PV-Automatik des Adapters geregelt
+            current: readOnly(ref(objects, id('currentUser'), 'Ladestrom')),
+            currentMax: ref(objects, id('currentHardware'), 'Maximaler Ladestrom'),
+            phases: ref(objects, id('statistics.chargingPhases'), 'Phasen'),
+            configuredPhases: readOnly(ref(objects, id('automatic.calcPhases'), 'Phasen (Einstellung)')),
+            surplus: ref(objects, id('statistics.surplus'), 'PV-Überschuss'),
             pvAutomatic: ref(objects, id('automatic.photovoltaics'), 'PV-Überschussladen'),
             pause: ref(objects, id('automatic.pauseWallbox'), 'Pausieren'),
             connected: ref(objects, id('info.connection'), 'Verbunden'),

@@ -309,5 +309,81 @@
       "write": true,
       "desc": "Message to display on wallbox for a certain (short) time (max. 23 characters)"
     }
+  },
+  "kecontact.0.maxCurrent": {
+    "_id": "kecontact.0.maxCurrent",
+    "type": "state",
+    "common": {
+      "name": "Maximum Current",
+      "type": "number",
+      "role": "value.max",
+      "unit": "mA",
+      "read": true,
+      "write": false,
+      "desc": "Current preset value via Control pilot in milliampere."
+    },
+    "native": {
+      "udpKey": "Max curr"
+    }
+  },
+  "kecontact.0.currentHardware": {
+    "_id": "kecontact.0.currentHardware",
+    "type": "state",
+    "common": {
+      "name": "Maximum Current Hardware",
+      "type": "number",
+      "role": "value.max",
+      "unit": "mA",
+      "read": true,
+      "write": false,
+      "desc": "Highest possible charging current of the charging connection."
+    },
+    "native": {
+      "udpKey": "Curr HW"
+    }
+  },
+  "kecontact.0.statistics.chargingPhases": {
+    "_id": "kecontact.0.statistics.chargingPhases",
+    "type": "state",
+    "common": {
+      "name": "number of current charging phases",
+      "type": "number",
+      "role": "value",
+      "read": true,
+      "write": false,
+      "def": 0,
+      "desc": "number of phases with which vehicle is currently charging"
+    },
+    "native": {}
+  },
+  "kecontact.0.automatic.calcPhases": {
+    "_id": "kecontact.0.automatic.calcPhases",
+    "type": "state",
+    "common": {
+      "name": "count of phases to calculate with for KeContact Deutschland-Edition",
+      "type": "number",
+      "role": "level",
+      "unit": "phases",
+      "read": true,
+      "write": true,
+      "def": 0,
+      "desc": "Keba charging station KeContact Deutschland-Edition has no energy meter. Therefore the adapter cannot measure power comsuptions of vehicle. The help estimation please enter number of phases here."
+    },
+    "native": {}
+  },
+  "kecontact.0.product": {
+    "_id": "kecontact.0.product",
+    "type": "state",
+    "common": {
+      "name": "Product ID",
+      "type": "string",
+      "role": "text",
+      "read": true,
+      "write": false,
+      "desc": "Model name (variant)"
+    },
+    "native": {
+      "udpKey": "Product"
+    }
   }
 }

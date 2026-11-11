@@ -45,26 +45,60 @@ export function kwh(ref: SvStateRef | undefined, states: States): number | undef
     return (ref.unit || '').trim().toLowerCase() === 'wh' ? v / 1000 : v;
 }
 
+/** Netzspannung für Schätzungen (wie der kecontact-Adapter) */
+const VOLTAGE = 230;
+
 export interface WallboxSnapshot {
+    /** Ladeleistung in W (gemessen oder geschätzt) */
     power?: number;
+    /** true, wenn die Leistung aus Strom × Spannung × Phasen geschätzt wurde */
+    estimated: boolean;
     status?: SvWallboxStatus;
     plugged: boolean;
-    sessionKwh?: number;
-    lastKwh?: number;
+    /** Eingestellter Ladestrom (Limit) in A */
+    limitA?: number;
+    /** Hardware-Maximum in A */
+    maxA?: number;
+    phases: number;
+    /** Leistung, die das Limit erlaubt, in W */
+    limitW?: number;
+    /** PV-Überschuss in W (negativ = kein Überschuss) */
+    surplusW?: number;
     pvAutomatic?: boolean;
     paused?: boolean;
     online: boolean;
 }
 
+/** Strom in A, unabhängig davon, ob der State mA oder A liefert */
+function amps(ref: SvStateRef | undefined, states: States): number | undefined {
+    const v = num(ref, states);
+    if (v === undefined || !ref) {
+        return undefined;
+    }
+    return (ref.unit || '').trim() === 'mA' ? v / 1000 : v;
+}
+
 export function wallboxSnapshot(wb: SvWallbox, states: States): WallboxSnapshot {
     const statusVal = wb.status ? states[wb.status.id]?.val : undefined;
     const plugVal = num(wb.plug, states);
+    const status = statusVal !== undefined && statusVal !== null ? wb.statusMap?.[String(statusVal)] : undefined;
+    const limitA = amps(wb.current, states);
+    // Gemessene Phasen, sonst eingestellte (Wallbox ohne Zähler), sonst 1
+    const measuredPhases = num(wb.phases, states);
+    const phases = measuredPhases && measuredPhases > 0 ? measuredPhases : num(wb.configuredPhases, states) || 1;
+    const measured = watts(wb.power, states);
+    // Ohne Energiezähler (z. B. KEBA Deutschland-Edition) meldet die Box 0 W – dann wie der kecontact-Adapter schätzen
+    const estimate = status === 'charging' && !measured && limitA ? limitA * VOLTAGE * phases : undefined;
     return {
-        power: watts(wb.power, states),
-        status: statusVal !== undefined && statusVal !== null ? wb.statusMap?.[String(statusVal)] : undefined,
+        power: estimate ?? measured,
+        estimated: estimate !== undefined,
+        status,
         plugged: plugVal !== undefined && (wb.vehiclePluggedValues || []).includes(plugVal),
-        sessionKwh: kwh(wb.sessionEnergy, states),
-        lastKwh: kwh(wb.lastSessionEnergy, states),
+        limitA,
+        maxA: amps(wb.currentMax, states),
+        phases,
+        limitW: limitA !== undefined ? limitA * VOLTAGE * phases : undefined,
+        surplusW: num(wb.surplus, states),
         pvAutomatic: wb.pvAutomatic ? states[wb.pvAutomatic.id]?.val === true : undefined,
         paused: wb.pause ? states[wb.pause.id]?.val === true : undefined,
         online: !wb.connected || states[wb.connected.id]?.val !== false,
@@ -95,6 +129,8 @@ export function wallboxLabel(s: WallboxSnapshot): string {
 export interface FlowSnapshot {
     /** Ladeleistung Auto (Wallbox) */
     car?: number;
+    /** Ladeleistung ist geschätzt (Wallbox ohne Energiezähler) */
+    carEstimated?: boolean;
     pv?: number;
     home?: number;
     gridImport?: number;
@@ -111,11 +147,12 @@ export interface FlowSnapshot {
  */
 export function snapshot(system: SvEnergySystem, states: States, wallboxes: SvWallbox[] = []): FlowSnapshot {
     const f = system.flows;
-    const carValues = wallboxes.map(w => watts(w.power, states)).filter((v): v is number => v !== undefined);
+    const carValues = wallboxes.map(w => wallboxSnapshot(w, states).power).filter((v): v is number => v !== undefined);
     const car = carValues.length ? carValues.reduce((a, b) => a + b, 0) : undefined;
     const home = watts(f.home, states);
     return {
         car,
+        carEstimated: wallboxes.some(w => wallboxSnapshot(w, states).estimated),
         pv: watts(f.pv, states),
         home: home !== undefined && car !== undefined ? Math.max(0, home - car) : home,
         gridImport: watts(f.gridImport, states),

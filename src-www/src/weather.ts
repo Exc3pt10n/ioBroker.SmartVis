@@ -26,6 +26,8 @@ export interface WeatherSnapshot {
     illumination?: number;
     sunshine?: boolean;
     sunshineToday?: number;
+    /** Helligkeit je Lichtsensor (Lux) */
+    light: { name: string; lux?: number; average?: number; online: boolean }[];
     online: boolean;
     /** Zeitpunkt der letzten Temperaturmessung */
     updated?: number;
@@ -43,6 +45,12 @@ export function weatherSnapshot(w: SvWeather, states: States): WeatherSnapshot {
         illumination: num(w.illumination, states),
         sunshine: bool(w.sunshine, states),
         sunshineToday: num(w.sunshineToday, states),
+        light: (w.lightSensors || []).map(l => ({
+            name: l.name,
+            lux: num(l.current, states),
+            average: num(l.average, states),
+            online: bool(l.unreach, states) !== true,
+        })),
         online: bool(w.unreach, states) !== true,
         updated: w.temperature ? states[w.temperature.id]?.ts : undefined,
     };
@@ -69,10 +77,13 @@ export function condition(s: WeatherSnapshot): Condition {
     if (s.sunshine) {
         return { icon: '☀️', label: 'Sonnig' };
     }
-    if (s.illumination !== undefined && s.illumination < 10) {
+    // Hellster Lichtsensor (Lux) ist aussagekräftiger als der Helligkeitswert der Station
+    const lux = s.light.map(l => l.lux).filter((v): v is number => v !== undefined);
+    const brightness = lux.length ? Math.max(...lux) : s.illumination;
+    if (brightness !== undefined && brightness < 10) {
         return { icon: '🌙', label: 'Dunkel' };
     }
-    if (s.illumination !== undefined) {
+    if (brightness !== undefined) {
         return { icon: '⛅', label: 'Bewölkt' };
     }
     return { icon: '🌡️', label: 'Außen' };
@@ -107,6 +118,11 @@ export function windLabel(kmh: number): string {
 export function formatMinutes(min: number): string {
     const m = Math.round(min);
     return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+}
+
+/** Helligkeit: 12.400 lx bzw. 85 lx */
+export function formatLux(lux: number | undefined): string {
+    return lux === undefined ? '–' : `${Math.round(lux).toLocaleString('de-DE')} lx`;
 }
 
 export function fmt(v: number | undefined, digits = 1): string {

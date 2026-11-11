@@ -1560,3 +1560,33 @@ button.chip {
 section + .chips {
     margin-top: 16px;
 }
+
+.weather__light {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+}
+
+.weather__light-title {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.weather__light dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 8px;
+    margin: 6px 0 0;
+}
+
+.weather__light dt {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.weather__light dd {
+    margin: 2px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}

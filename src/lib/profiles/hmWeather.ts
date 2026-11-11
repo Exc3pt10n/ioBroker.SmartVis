@@ -1,4 +1,4 @@
-import type { SvWeather } from '../../shared/protocol';
+import type { SvLightSensor, SvWeather } from '../../shared/protocol';
 import { getName } from '../names';
 import { ref, type AdapterProfile, type ObjectMap } from './types';
 
@@ -65,6 +65,42 @@ function varRef(objects: ObjectMap, id: string | undefined, label: string, unit:
     return r ? { ...r, unit: r.unit || unit, write: false } : undefined;
 }
 
+/**
+ * Homematic-IP-Lichtsensoren (HmIP-SLO), z. B. je Himmelsrichtung.
+ * Kanal 1: CURRENT_ILLUMINATION / AVERAGE_ILLUMINATION in Lux.
+ */
+function lightSensors(instance: string, objects: ObjectMap, lang: string): SvLightSensor[] {
+    const result: SvLightSensor[] = [];
+    for (const [id, obj] of Object.entries(objects)) {
+        if (obj.type !== 'device' || !id.startsWith(`${instance}.`) || id.split('.').length !== 3) {
+            continue;
+        }
+        const model = String((obj.native as { TYPE?: string })?.TYPE || '');
+        if (!/^HmIP-SLO$/i.test(model)) {
+            continue;
+        }
+        const current = ref(objects, `${id}.1.CURRENT_ILLUMINATION`, 'Helligkeit');
+        if (!current) {
+            continue;
+        }
+        // "Lichtsensor Osten" → "Osten"
+        const name = (getName(obj, lang) || model).replace(/^(licht|helligkeits)sensor\s*/i, '').trim() || model;
+        result.push({
+            name,
+            current: { ...current, unit: current.unit || 'lx' },
+            average: ref(objects, `${id}.1.AVERAGE_ILLUMINATION`, 'Mittelwert'),
+            unreach: first(objects, `${id}.0`, ['UNREACH'], 'Nicht erreichbar'),
+        });
+    }
+    // Himmelsrichtungen in natürlicher Reihenfolge, sonst alphabetisch
+    const order = ['norden', 'nordosten', 'osten', 'südosten', 'süden', 'südwesten', 'westen', 'nordwesten'];
+    const rank = (n: string): number => {
+        const i = order.indexOf(n.toLowerCase());
+        return i < 0 ? order.length : i;
+    };
+    return result.sort((a, b) => rank(a.name) - rank(b.name) || a.name.localeCompare(b.name, lang));
+}
+
 export const hmWeatherProfile: AdapterProfile = {
     adapter: 'hm-rpc',
     // Die Station bleibt zusätzlich als normale Kachel (z. B. im Garten) erhalten
@@ -109,6 +145,12 @@ export const hmWeatherProfile: AdapterProfile = {
         if (!found.length) {
             return null;
         }
-        return { weather: found.sort((a, b) => a.rank - b.rank).map(f => f.weather) };
+        const weather = found.sort((a, b) => a.rank - b.rank).map(f => f.weather);
+        // Lichtsensoren gehören zur Hauptstation (Startseite)
+        const sensors = lightSensors(instance, objects, lang);
+        if (sensors.length) {
+            weather[0].lightSensors = sensors;
+        }
+        return { weather };
     },
 };

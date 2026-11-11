@@ -51,7 +51,10 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
     const hasCar = flow.car !== undefined;
     const nodes = Object.values(NODES).filter(n => n.key !== 'car' || hasCar);
     const values: Record<string, { value: string; sub?: string }> = {
-        car: { value: formatPower(flow.car), sub: (flow.car ?? 0) >= THRESHOLD_W ? 'lädt' : undefined },
+        car: {
+            value: `${flow.carEstimated ? '≈ ' : ''}${formatPower(flow.car)}`,
+            sub: (flow.car ?? 0) >= THRESHOLD_W ? 'lädt' : undefined,
+        },
         pv: { value: formatPower(flow.pv) },
         grid: {
             value: formatPower(gridPower),
