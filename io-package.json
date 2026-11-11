@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.1.1",
+        "version": "0.2.0",
         "news": {
+            "0.2.0": {
+                "en": "Customizations per device: names, rooms, favorites, hidden devices and layout now apply per phone/tablet/browser; new More → Customizations with rename, copy from another device and reset this device or all devices. Breaking: new format of overrides.json (migrated automatically)",
+                "de": "Anpassungen je Gerät: Namen, Räume, Favoriten, ausgeblendete Geräte und Anordnung gelten je Handy/Tablet/Browser; neu unter Mehr → Anpassungen: umbenennen, von anderem Gerät übernehmen, dieses oder alle Geräte zurücksetzen. Breaking: neues Format von overrides.json (wird automatisch übernommen)",
+                "ru": "Настройки для каждого устройства: имена, комнаты, избранное, скрытые устройства и расположение теперь сохраняются для каждого телефона/планшета/браузера; новое: Ещё → Настройки (переименование, копирование с другого устройства, сброс этого или всех устройств). Breaking: новый формат overrides.json (переносится автоматически)",
+                "pt": "Personalizações por dispositivo: nomes, divisões, favoritos, dispositivos ocultos e disposição aplicam-se por telemóvel/tablet/navegador; novo Mais → Personalizações para renomear, copiar de outro dispositivo e repor este ou todos os dispositivos. Breaking: novo formato de overrides.json (migrado automaticamente)",
+                "nl": "Aanpassingen per apparaat: namen, kamers, favorieten, verborgen apparaten en indeling gelden per telefoon/tablet/browser; nieuw Meer → Aanpassingen: hernoemen, overnemen van een ander apparaat, dit of alle apparaten resetten. Breaking: nieuw formaat van overrides.json (automatisch overgenomen)",
+                "fr": "Personnalisations par appareil : noms, pièces, favoris, appareils masqués et disposition s'appliquent par téléphone/tablette/navigateur ; nouveau Plus → Personnalisations : renommer, copier depuis un autre appareil, réinitialiser cet appareil ou tous. Breaking : nouveau format de overrides.json (migré automatiquement)",
+                "it": "Personalizzazioni per dispositivo: nomi, stanze, preferiti, dispositivi nascosti e disposizione valgono per telefono/tablet/browser; nuovo Altro → Personalizzazioni: rinomina, copia da un altro dispositivo, ripristina questo o tutti i dispositivi. Breaking: nuovo formato di overrides.json (migrato automaticamente)",
+                "es": "Personalizaciones por dispositivo: nombres, habitaciones, favoritos, dispositivos ocultos y disposición se aplican por móvil/tableta/navegador; nuevo Más → Personalizaciones: renombrar, copiar de otro dispositivo, restablecer este o todos los dispositivos. Breaking: nuevo formato de overrides.json (migrado automáticamente)",
+                "pl": "Dostosowania dla każdego urządzenia: nazwy, pokoje, ulubione, ukryte urządzenia i układ obowiązują osobno dla telefonu/tabletu/przeglądarki; nowe Więcej → Dostosowania: zmiana nazwy, kopiowanie z innego urządzenia, reset tego lub wszystkich urządzeń. Breaking: nowy format overrides.json (migrowany automatycznie)",
+                "uk": "Налаштування для кожного пристрою: назви, кімнати, обране, приховані пристрої та розташування тепер діють окремо для телефону/планшета/браузера; нове: Ще → Налаштування (перейменування, копіювання з іншого пристрою, скидання цього або всіх пристроїв). Breaking: новий формат overrides.json (переноситься автоматично)",
+                "zh-cn": "按设备保存自定义：名称、房间、收藏、隐藏的设备和布局现在按手机/平板/浏览器分别保存；新增“更多 → 自定义”：重命名、从其他设备复制、重置本设备或所有设备。Breaking：overrides.json 新格式（自动迁移）"
+            },
             "0.1.1": {
                 "en": "New setting \"Animations\" (More → Display): animations such as the energy flow can now run even if the operating system requests reduced motion",
                 "de": "Neue Einstellung „Animationen“ (Mehr → Darstellung): Animationen wie der Energiefluss laufen auf Wunsch auch, wenn das Betriebssystem reduzierte Bewegung wünscht",

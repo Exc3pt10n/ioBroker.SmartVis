@@ -6,9 +6,17 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { discover } from '../src/lib/discovery';
-import { applyEdit, applyOverrides, emptyOverrides } from '../src/lib/overrides';
+import { applyEdit, applyOverrides } from '../src/lib/overrides';
+import {
+    applyClientAction,
+    clientInfo,
+    emptyStore,
+    overridesFor,
+    registerClient,
+    withOverrides,
+} from '../src/lib/clientOverrides';
 import { SmartVisServer } from '../src/lib/server';
-import type { SvStateValue } from '../src/shared/protocol';
+import type { SvModel, SvStateValue } from '../src/shared/protocol';
 
 type Obj = ioBroker.Object;
 const objects: Record<string, Obj> = {};
@@ -568,13 +576,30 @@ function demoHistory(id: string, range: string): [number, number][] {
 
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
 // Anpassungen aus dem Bearbeiten-Modus (in der Demo nur im Speicher)
-let overrides = emptyOverrides();
-let model = applyOverrides(result.model, overrides, true);
+// Anpassungen je Endgerät, nur im Speicher (wie overrides.json im Adapter)
+let store = emptyStore();
+const modelFor = (clientId?: string): SvModel => ({
+    ...applyOverrides(result.model, overridesFor(store, clientId), true),
+    client: clientInfo(store, clientId),
+});
 
 const server = new SmartVisServer(
     { port: Number(process.env.PORT) || 8099, bind: '0.0.0.0', wwwDir: join(__dirname, '..', 'www'), version: 'demo' },
     {
-        getModel: () => model,
+        getModel: modelFor,
+        hello: (clientId, name) => {
+            const known = !!store.clients[clientId];
+            store = registerClient(store, clientId, name, Date.now());
+            if (!known) {
+                server.publishModels(false);
+            }
+            return Promise.resolve();
+        },
+        client: (clientId, request) => {
+            store = applyClientAction(store, clientId, request);
+            server.publishModels(false);
+            return Promise.resolve();
+        },
         history: (id, range) => {
             if (!result.historyIds.has(id)) {
                 return Promise.reject(new Error(`Kein Verlauf für ${id}`));
@@ -582,10 +607,9 @@ const server = new SmartVisServer(
             // kurze Verzögerung wie bei einer echten Datenbankabfrage
             return new Promise(resolve => setTimeout(() => resolve(demoHistory(id, range)), 250));
         },
-        edit: edit => {
-            overrides = applyEdit(overrides, edit);
-            model = applyOverrides(result.model, overrides, true);
-            server.publishModel(model, false);
+        edit: (clientId, edit) => {
+            store = withOverrides(store, clientId, applyEdit(overridesFor(store, clientId), edit));
+            server.publishModels(false, clientId);
             return Promise.resolve();
         },
         getStates: () => states,

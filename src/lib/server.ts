@@ -6,12 +6,14 @@ import {
     PROTOCOL_VERSION,
     type ClientMessage,
     type ServerMessage,
+    type SvClientAction,
     type SvEdit,
     type SvHistoryRange,
     type SvModel,
     type SvStateValue,
     type ioBrokerValue,
 } from '../shared/protocol';
+import { isClientId } from './clientOverrides';
 
 const MIME: Record<string, string> = {
     '.html': 'text/html; charset=utf-8',
@@ -35,11 +37,16 @@ export interface ServerOptions {
 }
 
 export interface ServerHandlers {
-    getModel(): SvModel;
+    /** Model mit den Anpassungen dieses Endgeräts (ohne Kennung: gemeinsame Ausgangsbasis) */
+    getModel(clientId?: string): SvModel;
     getStates(): Record<string, SvStateValue | null>;
     setState(id: string, val: ioBrokerValue): Promise<void>;
+    /** Endgerät anmelden (legt es bei Bedarf an) */
+    hello?(clientId: string, name?: string): Promise<void>;
     /** Änderung aus dem Bearbeiten-Modus speichern (wirft bei Fehlern) */
-    edit?(edit: SvEdit): Promise<void>;
+    edit?(clientId: string | undefined, edit: SvEdit): Promise<void>;
+    /** Verwaltung der Endgeräte-Anpassungen (zurücksetzen, übernehmen …) */
+    client?(clientId: string | undefined, request: SvClientAction): Promise<void>;
     /** Verlauf eines aufgezeichneten States (Punkte [ts, wert]) */
     history?(id: string, range: SvHistoryRange): Promise<[number, number][]>;
     onClientCountChange?(count: number): void;
@@ -55,6 +62,8 @@ export class SmartVisServer {
     private pending: Record<string, SvStateValue | null> = {};
     private flushTimer?: NodeJS.Timeout;
     private readonly root: string;
+    /** Angemeldete Verbindungen → Geräte-Kennung (undefined = ohne Kennung, z. B. ältere App) */
+    private readonly sessions = new Map<WebSocket, string | undefined>();
 
     constructor(
         private readonly options: ServerOptions,
@@ -86,11 +95,25 @@ export class SmartVisServer {
         await new Promise<void>(r => (this.http ? this.http.close(() => r()) : r()));
     }
 
-    /** Neues Model an alle Clients senden (nach einer Neu-Erkennung auch alle Werte) */
-    publishModel(model: SvModel, withStates = true): void {
-        this.broadcast({ t: 'model', model });
-        if (withStates) {
-            this.broadcast({ t: 'states', states: this.handlers.getStates() });
+    /**
+     * Model an die angemeldeten Clients senden – jedes Endgerät mit seinen eigenen Anpassungen.
+     * Mit clientId nur an die Verbindungen dieses Geräts (z. B. nach einer Anpassung).
+     */
+    publishModels(withStates = true, clientId?: string): void {
+        const cache = new Map<string, string>();
+        const states = withStates ? JSON.stringify({ t: 'states', states: this.handlers.getStates() }) : undefined;
+        for (const [ws, id] of this.sessions) {
+            if (ws.readyState !== WebSocket.OPEN || (clientId !== undefined && id !== clientId)) {
+                continue;
+            }
+            const key = id ?? '';
+            if (!cache.has(key)) {
+                cache.set(key, JSON.stringify({ t: 'model', model: this.handlers.getModel(id) }));
+            }
+            ws.send(cache.get(key)!);
+            if (states) {
+                ws.send(states);
+            }
         }
     }
 
@@ -111,11 +134,19 @@ export class SmartVisServer {
         }
     }
 
+    /** Verbindung anmelden und Model + Werte senden */
+    private startSession(ws: WebSocket, clientId: string | undefined): void {
+        this.sessions.set(ws, clientId);
+        send(ws, { t: 'model', model: this.handlers.getModel(clientId) });
+        send(ws, { t: 'states', states: this.handlers.getStates() });
+    }
+
     private onConnection(ws: WebSocket): void {
         this.handlers.onClientCountChange?.(this.wss!.clients.size);
         send(ws, { t: 'hello', protocol: PROTOCOL_VERSION, version: this.options.version });
-        send(ws, { t: 'model', model: this.handlers.getModel() });
-        send(ws, { t: 'states', states: this.handlers.getStates() });
+        // Die App meldet sich mit ihrer Geräte-Kennung; ältere Apps/Tools ohne Kennung nach kurzer Wartezeit
+        // mit der gemeinsamen Ausgangsbasis
+        const fallback = setTimeout(() => !this.sessions.has(ws) && this.startSession(ws, undefined), 500);
 
         ws.on('message', async (raw: Buffer) => {
             let msg: ClientMessage;
@@ -137,6 +168,21 @@ export class SmartVisServer {
                 }
                 return;
             }
+            if (msg.t === 'hello') {
+                if (this.sessions.has(ws) || !isClientId(msg.clientId)) {
+                    return;
+                }
+                clearTimeout(fallback);
+                try {
+                    await this.handlers.hello?.(msg.clientId, msg.name);
+                    this.startSession(ws, msg.clientId);
+                } catch (e) {
+                    this.handlers.log.warn(`Anmeldung fehlgeschlagen: ${(e as Error).message}`);
+                    this.startSession(ws, undefined);
+                }
+                return;
+            }
+            const clientId = this.sessions.get(ws);
             try {
                 if (msg.t === 'set') {
                     await this.handlers.setState(msg.id, msg.val);
@@ -144,13 +190,22 @@ export class SmartVisServer {
                     if (!this.handlers.edit) {
                         throw new Error('Bearbeiten ist nicht verfügbar');
                     }
-                    await this.handlers.edit(msg.edit);
+                    await this.handlers.edit(clientId, msg.edit);
+                } else if (msg.t === 'client') {
+                    if (!this.handlers.client) {
+                        throw new Error('Bearbeiten ist nicht verfügbar');
+                    }
+                    await this.handlers.client(clientId, msg.request);
                 }
             } catch (e) {
                 send(ws, { t: 'error', message: (e as Error).message });
             }
         });
-        ws.on('close', () => this.handlers.onClientCountChange?.(this.wss!.clients.size));
+        ws.on('close', () => {
+            clearTimeout(fallback);
+            this.sessions.delete(ws);
+            this.handlers.onClientCountChange?.(this.wss!.clients.size);
+        });
     }
 
     private broadcast(msg: ServerMessage): void {

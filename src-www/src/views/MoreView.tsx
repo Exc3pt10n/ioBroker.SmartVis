@@ -2,6 +2,7 @@ import { useCardColumns } from '../media';
 import { CustomSections } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { SystemCard } from '../components/SystemCard';
+import { CustomizationsCard } from '../components/CustomizationsCard';
 import { useConnection } from '../connection';
 import { setMotion, useMotion, type MotionSetting } from '../motion';
 
@@ -72,6 +73,17 @@ export function MoreView(): React.JSX.Element {
                         ) : null,
                     },
                     { key: 'display', label: 'Darstellung', node: <DisplayCard /> },
+                    {
+                        key: 'customizations',
+                        label: 'Anpassungen',
+                        node:
+                            model?.editable && model.client ? (
+                                <CustomizationsCard
+                                    key={model.client.name || ''}
+                                    client={model.client}
+                                />
+                            ) : null,
+                    },
                     { key: 'connection', label: 'Verbindung', node: connectionCard },
                     { key: 'adapters', label: 'Erkannte Geräte je Adapter', node: adapterCard },
                 ]}
