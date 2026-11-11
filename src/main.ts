@@ -68,16 +68,12 @@ class SmartVis extends utils.Adapter {
 
     private async runDiscovery(): Promise<void> {
         const started = Date.now();
-        const objects: Record<string, ioBroker.Object> = await this.getForeignObjectsAsync('*');
-        const enums = (await this.getForeignObjectsAsync('enum.*', 'enum')) as Record<string, ioBroker.Object>;
+        const objects = await this.loadObjects();
 
-        this.discovery = discover(
-            { ...objects, ...enums },
-            {
-                language: this.config.language || 'de',
-                ignoreAdapters: [this.name, ...(this.config.ignoreAdapters || '').split(',')],
-            },
-        );
+        this.discovery = discover(objects, {
+            language: this.config.language || 'de',
+            ignoreAdapters: [this.name, ...(this.config.ignoreAdapters || '').split(',')],
+        });
 
         await this.syncSubscriptions(this.discovery.stateIds);
 
@@ -141,6 +137,32 @@ class SmartVis extends utils.Adapter {
         }
         this.overrides = next;
         this.updateModel(false);
+    }
+
+    /**
+     * Lädt alle für die Erkennung nötigen Objekte.
+     * Achtung: getForeignObjects('*') ohne Typ liefert nur Objekte vom Typ "state" –
+     * Geräte, Kanäle, Ordner, Aufzählungen und Instanzen müssen einzeln geholt werden.
+     */
+    private async loadObjects(): Promise<Record<string, ioBroker.Object>> {
+        const types: { pattern: string; type: ioBroker.ObjectType }[] = [
+            { pattern: '*', type: 'state' },
+            { pattern: '*', type: 'channel' },
+            { pattern: '*', type: 'device' },
+            { pattern: '*', type: 'folder' },
+            { pattern: 'enum.*', type: 'enum' },
+            // Instanz-Konfigurationen (z. B. shuttercontrol: Zuordnung Rollladen → Level-State)
+            { pattern: 'system.adapter.*', type: 'instance' },
+        ];
+        const result: Record<string, ioBroker.Object> = {};
+        for (const { pattern, type } of types) {
+            try {
+                Object.assign(result, await this.getForeignObjectsAsync(pattern, type as 'state'));
+            } catch (e) {
+                this.log.warn(`Objekte vom Typ ${type} konnten nicht gelesen werden: ${(e as Error).message}`);
+            }
+        }
+        return result;
     }
 
     private async syncSubscriptions(ids: string[]): Promise<void> {
