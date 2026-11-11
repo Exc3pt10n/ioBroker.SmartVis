@@ -5,7 +5,7 @@
   "author": {
     "name": "Exc3pt10n"
   },
-  "homepage": "https://github.com/Exc3pt10n/ioBroker.SmartVis",
+  "homepage": "https://github.com/Exc3pt10n/ioBroker.smartvis",
   "license": "MIT",
   "keywords": [
     "ioBroker",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Exc3pt10n/ioBroker.SmartVis.git"
+    "url": "https://github.com/Exc3pt10n/ioBroker.smartvis.git"
   },
   "engines": {
     "node": ">=20"

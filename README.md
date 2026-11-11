@@ -1,6 +1,6 @@
 ![Logo](admin/smartvis.svg)
 
-# ioBroker.SmartVis
+# ioBroker.smartvis
 
 Selbstkonfigurierende, **mobile-first** Visualisierung für ioBroker.
 SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anlegen von Widgets als installierbare Web-App (PWA) an – auf dem Smartphone wie im Browser.
@@ -50,15 +50,17 @@ SmartVis ist (noch) nicht auf npm veröffentlicht und wird direkt aus GitHub ins
 **Admin-Oberfläche:** Reiter *Adapter* → GitHub-Symbol („Installieren aus eigener URL“; ggf. Expertenmodus aktivieren) → Reiter *Beliebig* → URL eintragen, installieren, danach eine Instanz anlegen:
 
 ```
-https://github.com/Exc3pt10n/ioBroker.SmartVis/tarball/main
+https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/main
 ```
 
 **Konsole** auf dem ioBroker-Host:
 
 ```bash
-iobroker url https://github.com/Exc3pt10n/ioBroker.SmartVis/tarball/main
+iobroker url https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/main
 iobroker add smartvis
 ```
+
+> Hinweis: ioBroker leitet den Adapternamen aus dem Repository-Namen ab und unterscheidet dabei Groß-/Kleinschreibung. Der Name muss daher `ioBroker.smartvis` lauten (klein). Bei abweichender Schreibweise den Namen explizit angeben: `iobroker url <URL> smartvis`.
 
 Statt `main` lässt sich jeder Branch oder Commit angeben, z. B. zum Testen eines Entwicklungsstands. Updates werden genauso installiert; Instanz, Einstellungen und Anpassungen bleiben erhalten.
 
