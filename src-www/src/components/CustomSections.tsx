@@ -43,11 +43,18 @@ export function CustomSections({
     view,
     sections,
     className = 'csecs',
+    columns = 1,
 }: {
     /** Schlüssel der Ansicht, z. B. "energy" */
     view: string;
     sections: SectionDef[];
     className?: string;
+    /**
+     * Anzahl Spalten außerhalb des Bearbeiten-Modus. Die Bereiche werden zeilenweise verteilt
+     * (1. links, 2. rechts …). Bewusst keine CSS-Mehrspalten (column-count): Darin zeichnen
+     * manche Browser Animationen (z. B. den Energiefluss) nicht zuverlässig neu.
+     */
+    columns?: number;
 }): React.JSX.Element | null {
     const { model } = useConnection();
     const { editing } = useEditing();
@@ -61,6 +68,33 @@ export function CustomSections({
         const visible = ordered.filter(s => !hidden.has(s.key));
         if (!visible.length) {
             return null;
+        }
+        if (columns > 1) {
+            const cols = Array.from({ length: Math.min(columns, visible.length) }, (_, c) =>
+                visible.filter((_, i) => i % columns === c),
+            );
+            return (
+                <div
+                    className={`${className} csecs--split`}
+                    style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(0, 1fr))` }}
+                >
+                    {cols.map((col, c) => (
+                        <div
+                            key={c}
+                            className="csecs__col"
+                        >
+                            {col.map(s => (
+                                <div
+                                    key={s.key}
+                                    className="csec"
+                                >
+                                    {s.node}
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            );
         }
         return (
             <div className={className}>

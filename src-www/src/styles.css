@@ -675,7 +675,6 @@ button.chip {
     margin: 16px 0 0;
 }
 
-
 .weather__details dt {
     font-size: 13px;
     color: var(--text-muted);
@@ -687,7 +686,6 @@ button.chip {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
-
 
 .weather__warn {
     margin: 12px 0 0;
@@ -2358,19 +2356,10 @@ button.kpi:hover {
     min-width: 0;
 }
 
-/* Sehr breit: Favoriten und Statuslisten zusätzlich in zwei Spalten */
+/* Sehr breit: Favoriten und Statuslisten zusätzlich in zwei Spalten (Verteilung in CustomSections) */
 @media (min-width: 1800px) {
     .home--dashboard {
         grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    }
-
-    .home--dashboard .home__sections:not(.csecs--editing) {
-        column-count: 2;
-        column-gap: 24px;
-    }
-
-    .home--dashboard .home__sections > .csec {
-        break-inside: avoid;
     }
 }
 
@@ -2399,7 +2388,7 @@ button.kpi:hover {
     margin: 0;
 }
 
-/* Karten-Ansichten (Energie, Beschattung, Mehr): auf breiten Bildschirmen in Spalten */
+/* Karten-Ansichten (Energie, Beschattung, Mehr) */
 .csecs--cols {
     display: grid;
     gap: 16px;
@@ -2410,23 +2399,31 @@ button.kpi:hover {
     margin: 0;
 }
 
-@media (min-width: 1100px) {
-    .csecs--cols:not(.csecs--editing) {
-        display: block;
-        column-count: 2;
-        column-gap: 16px;
-    }
-
-    .csecs--cols:not(.csecs--editing) > .csec {
-        break-inside: avoid;
-        margin-bottom: 16px;
-    }
+/* Feste Spalten (zeilenweise befüllt) statt CSS-Mehrspalten */
+.csecs--split {
+    display: grid;
+    gap: 16px;
+    align-items: start;
 }
 
-@media (min-width: 1800px) {
-    .csecs--cols:not(.csecs--editing) {
-        column-count: 3;
-    }
+.csecs__col {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+}
+
+.csecs__col > .csec > .card,
+.csecs__col > .csec > section {
+    margin: 0;
+}
+
+.home__sections.csecs--split {
+    column-gap: 24px;
+    row-gap: 0;
+}
+
+.home__sections .csecs__col {
+    gap: 0;
 }
 
 /* Bearbeiten-Modus: jede Karte mit Leiste (Griff, Name, ↑ ↓, Aus-/Einblenden) */
@@ -2530,4 +2527,179 @@ button.kpi:hover {
     .csec__toggle {
         min-width: 0;
     }
+}
+
+/* ===== ioBroker-Status ===== */
+.host + .host {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--surface-2);
+}
+
+.host__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 12px;
+}
+
+.host__name {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.host__meta,
+.host__versions {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.host__versions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 10px 0 0;
+}
+
+.meters {
+    display: grid;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.meter {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+}
+
+.meter dt {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.meter dd {
+    display: grid;
+    grid-template-columns: minmax(40px, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.meter__track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+
+.meter__fill {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 4px;
+    background: var(--accent);
+    transition: width 0.4s;
+}
+
+.meter--warn .meter__fill {
+    background: var(--warn);
+}
+
+.meter__value {
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+    .meter {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+}
+
+.system__summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 12px;
+    margin: 16px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-weight: 600;
+}
+
+.system__summary--warn {
+    color: var(--warn);
+}
+
+.system__count {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.instances {
+    display: grid;
+    gap: 2px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.instance {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--surface-2);
+    font-size: 14px;
+}
+
+.instance:last-child {
+    border-bottom: 0;
+}
+
+.instance__name {
+    display: grid;
+    min-width: 0;
+}
+
+.instance__id {
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.instance__state {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.instance--stopped .instance__state,
+.instance--disconnected .instance__state {
+    color: var(--warn);
+    font-weight: 600;
+}
+
+.instance--disabled {
+    opacity: 0.6;
+}
+
+.system__all {
+    margin-top: 12px;
+}
+
+.system__all summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
 }

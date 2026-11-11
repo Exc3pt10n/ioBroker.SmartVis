@@ -49,6 +49,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Startseite zeigt unter „Läuft gerade“ alle Medien-Player (z. B. Echos), die gerade abspielen
 - Auf dem Desktop nutzt die Oberfläche die gesamte Fensterbreite: Die Startseite wird ab 1200 px zum Dashboard mit Spalten (Wetter · Favoriten und Status · Energiefluss und PV-Prognose), darüber Kennzahl-Kacheln (PV, Batterie, Verbrauch, Prognose, Lichter, offene Fenster …); auf dem Handy stehen die Kennzahlen als kompaktes Raster (alle gleichzeitig sichtbar)
 - Wetterkarte mit 24-Stunden-Temperaturkurve (wenn aufgezeichnet), Helligkeit als Balken je Himmelsrichtung und weiteren Außensensoren als eigene Zeilen; passt sich der verfügbaren Breite an
+- „Mehr“ zeigt den Zustand von ioBroker: je Host Prozessor, Arbeitsspeicher, Festplatte (mit Warnschwelle), Laufzeit, js-controller- und Node.js-Version; dazu alle Adapter-Instanzen mit Status (läuft, läuft nicht, keine Verbindung, geplant, deaktiviert) – Probleme stehen oben
 - Raumansicht nach Gerätegruppen (Licht, Beschattung, Heizung & Klima, Fenster & Türen, Steckdosen & Schalter, Medien, Sensoren); eingeschaltete Lichter auf der Startseite nach Raum
 - Responsive Oberfläche: Bottom-Navigation auf dem Handy, Seitenleiste ab Tablet, Hell/Dunkel automatisch
 

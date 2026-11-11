@@ -155,6 +155,8 @@ class SmartVis extends utils.Adapter {
             { pattern: 'enum.*', type: 'enum' },
             // Instanz-Konfigurationen (z. B. shuttercontrol: Zuordnung Rollladen → Level-State)
             { pattern: 'system.adapter.*', type: 'instance' },
+            // Hosts (js-controller) für die Statuskarte
+            { pattern: 'system.host.*', type: 'host' },
         ];
         const result: Record<string, ioBroker.Object> = {};
         for (const { pattern, type } of types) {
