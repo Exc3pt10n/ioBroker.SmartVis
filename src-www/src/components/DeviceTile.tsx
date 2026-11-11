@@ -1,12 +1,23 @@
-import type { SvDevice } from '../../../src/shared/protocol';
+import type { SvDevice, SvStateValue } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
-import { TYPE_LABELS, formatValue, isActive, tapAction, valueState, warnings } from '../device';
+import { TYPE_LABELS, formatValue, isActive, isPlaying, tapAction, valueState, warnings } from '../device';
 import { useOpenDetail } from '../detail';
 import { moved, useEditing } from '../editing';
 import { useRef } from 'react';
 import { MoveButtons } from './EditButton';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 import { Icon, iconForType } from './Icon';
+
+/** Medien: Titel beim Abspielen, sonst "pausiert" */
+function mediaSummary(device: SvDevice, states: Record<string, SvStateValue | null>): string {
+    const stateRef = device.states.find(s => s.name === 'STATE');
+    const titleRef = device.states.find(s => s.name === 'TITLE');
+    const title = titleRef ? states[titleRef.id]?.val : undefined;
+    if (isPlaying(states, stateRef)) {
+        return title ? `▶ ${String(title)}` : '▶ spielt';
+    }
+    return 'pausiert';
+}
 
 export function DeviceTile({
     device,
@@ -102,7 +113,9 @@ export function DeviceTile({
                 </span>
                 {editing && device.hidden && <span className="badge">ausgeblendet</span>}
                 <span className="tile__value">
-                    {formatValue(value, value ? states[value.id] : undefined)}
+                    {device.type === 'media' || device.type === 'mediaPlayer'
+                        ? mediaSummary(device, states)
+                        : formatValue(value, value ? states[value.id] : undefined)}
                     {showRoom ? ` · ${showRoom}` : ` · ${TYPE_LABELS[device.type] || device.type}`}
                 </span>
                 {autoInfo && (

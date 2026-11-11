@@ -193,3 +193,15 @@ export function groupByRoom(devices: SvDevice[], rooms: SvRoom[]): RoomGroup[] {
     }
     return result;
 }
+
+/** Läuft gerade etwas? media.state ist je nach Adapter boolean, Zahl (1 = play) oder Text */
+export function isPlaying(states: Record<string, SvStateValue | null>, ref: SvStateRef | undefined): boolean {
+    const v = ref ? states[ref.id]?.val : undefined;
+    if (typeof v === 'boolean') {
+        return v;
+    }
+    if (typeof v === 'number') {
+        return v === 1;
+    }
+    return typeof v === 'string' && /^(play|playing|1)$/i.test(v);
+}
