@@ -6,6 +6,7 @@ import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } fro
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { hueSceneGroups } from './profiles/hueScenes';
+import { systemStatus, systemStateIds } from './system';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
 
 export { getName };
@@ -276,6 +277,10 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
+    // ioBroker-Status (Hosts, Instanzen) aus allen Objekten – unabhängig von der Ignorierliste
+    const system = systemStatus(objects, lang);
+    systemStateIds(system).forEach(id => stateIds.add(id));
+
     const model: SvModel = {
         rooms: roomList,
         devices,
@@ -285,6 +290,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         weather: profiles.weather,
         shutterControl: profiles.shutterControl,
         scenes,
+        system,
         generatedAt: Date.now(),
         editable: false,
     };

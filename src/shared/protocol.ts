@@ -377,6 +377,53 @@ export interface SvScene {
     state: SvStateRef;
 }
 
+/** Zustand eines ioBroker-Hosts (js-controller) */
+export interface SvHostStatus {
+    /** z. B. "system.host.homeserver" */
+    id: string;
+    name: string;
+    /** js-controller-Version */
+    controllerVersion?: string;
+    alive?: SvStateRef;
+    /** CPU-Last des Controllers (% eines Kerns) */
+    cpu?: SvStateRef;
+    /** Belegter Arbeitsspeicher des Systems (%) */
+    mem?: SvStateRef;
+    memAvailable?: SvStateRef;
+    load?: SvStateRef;
+    uptime?: SvStateRef;
+    diskFree?: SvStateRef;
+    diskSize?: SvStateRef;
+    /** Warnschwelle für belegten Speicherplatz (%) */
+    diskWarning?: SvStateRef;
+    nodeVersion?: SvStateRef;
+    nodeNewest?: SvStateRef;
+}
+
+/** Zustand einer Adapter-Instanz */
+export interface SvInstanceStatus {
+    /** z. B. "hue.0" */
+    id: string;
+    /** Adaptername, z. B. "hue" */
+    adapter: string;
+    title: string;
+    version?: string;
+    /** daemon | schedule | once | … */
+    mode?: string;
+    enabled: boolean;
+    host?: string;
+    alive?: SvStateRef;
+    /** Instanz ist mit dem Host verbunden */
+    connected?: SvStateRef;
+    /** Verbindung des Adapters zu seinem Gerät/Dienst (info.connection) */
+    connection?: SvStateRef;
+}
+
+export interface SvSystemStatus {
+    hosts: SvHostStatus[];
+    instances: SvInstanceStatus[];
+}
+
 /** Hue-Raum oder -Zone mit ihren Szenen */
 export interface SvSceneGroup {
     /** Kanal-ID der Gruppe (z. B. "hue.0.Esszimmer") */
@@ -400,6 +447,8 @@ export interface SvModel {
     shutterControl: SvShutterControl[];
     /** Hue-Szenen je Raum/Zone */
     scenes: SvSceneGroup[];
+    /** Zustand von ioBroker (Hosts, Instanzen) */
+    system?: SvSystemStatus;
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
     /** Darf die App Anpassungen speichern? */

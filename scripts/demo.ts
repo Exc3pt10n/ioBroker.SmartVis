@@ -426,6 +426,54 @@ state(`${Q}.counters.day.periodKey`, 'text', 'string', false, new Date().toISOSt
     }
 }
 
+// ioBroker-Status: ein Host und einige Instanzen (eine gestoppt, eine ohne Verbindung, eine deaktiviert)
+{
+    const H = 'system.host.demo';
+    objects[H] = {
+        _id: H,
+        type: 'host',
+        common: { name: 'demo', hostname: 'demo', installedVersion: '7.2.5' },
+        native: {},
+    } as unknown as Obj;
+    for (const [key, type, val, unit] of [
+        ['alive', 'boolean', true, undefined],
+        ['cpu', 'number', 7.4, '% of one core'],
+        ['mem', 'number', 62, '%'],
+        ['memAvailable', 'number', 2950, 'MB'],
+        ['load', 'number', 0.42, undefined],
+        ['uptime', 'number', 1_123_456, 'seconds'],
+        ['diskFree', 'number', 41_200, 'MiB'],
+        ['diskSize', 'number', 118_000, 'MiB'],
+        ['diskWarning', 'number', 85, '%'],
+        ['versions.nodeCurrent', 'string', '22.11.0', undefined],
+        ['versions.nodeNewest', 'string', '22.12.0', undefined],
+    ] as const) {
+        state(`${H}.${key}`, 'value', type, false, val, unit ? { unit } : {});
+    }
+    for (const [id, title, mode, enabled, alive, connection] of [
+        ['admin.0', 'Admin', 'daemon', true, true, undefined],
+        ['hm-rpc.0', 'HomeMatic RPC', 'daemon', true, true, true],
+        ['hue.0', 'Philips Hue-Bridge', 'daemon', true, true, true],
+        ['meross.0', 'Meross', 'daemon', true, true, false],
+        ['backitup.0', 'BackItUp', 'daemon', true, false, undefined],
+        ['feiertage.0', 'Feiertage', 'schedule', true, false, undefined],
+        ['jarvis.0', 'Jarvis', 'daemon', false, false, undefined],
+    ] as const) {
+        const sid = `system.adapter.${id}`;
+        objects[sid] = {
+            _id: sid,
+            type: 'instance',
+            common: { name: id.split('.')[0], title, mode, enabled, version: '1.0.0', host: 'demo' },
+            native: {},
+        } as unknown as Obj;
+        state(`${sid}.alive`, 'indicator', 'boolean', false, alive);
+        state(`${sid}.connected`, 'indicator', 'boolean', false, alive);
+        if (connection !== undefined) {
+            state(`${id}.info.connection`, 'indicator.connected', 'boolean', false, connection);
+        }
+    }
+}
+
 // Verläufe: sql.0-Instanz und Aufzeichnung für ausgewählte Werte (wie im echten System)
 objects['system.adapter.sql.0'] = {
     _id: 'system.adapter.sql.0',
@@ -451,6 +499,15 @@ for (const id of [
     const obj = objects[id] as ioBroker.StateObject | undefined;
     if (obj) {
         obj.common = { ...obj.common, custom: { 'sql.0': { enabled: true } } };
+    }
+}
+
+// Instanzen aus den Fixtures: als laufende Dienste kennzeichnen
+for (const id of ['shuttercontrol.0', 'sql.0', 'kecontact.0', 'pvforecast.0', 'qhome-ess-hyb-g2.0', 'alexa2.0']) {
+    const sid = `system.adapter.${id}`;
+    if (objects[sid]?.type === 'instance') {
+        objects[sid].common = { ...objects[sid].common, enabled: true, mode: 'daemon' } as ioBroker.InstanceCommon;
+        state(`${sid}.alive`, 'indicator', 'boolean', false, true);
     }
 }
 

@@ -1,9 +1,10 @@
 import { CustomSections } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
+import { SystemCard } from '../components/SystemCard';
 import { useConnection } from '../connection';
 
 export function MoreView(): React.JSX.Element {
-    const { status, version, model, lastError } = useConnection();
+    const { status, version, model, lastError, states } = useConnection();
     const byAdapter = new Map<string, number>();
     for (const d of model?.devices || []) {
         byAdapter.set(d.adapter, (byAdapter.get(d.adapter) || 0) + 1);
@@ -56,6 +57,16 @@ export function MoreView(): React.JSX.Element {
                 view="more"
                 className="csecs csecs--cols"
                 sections={[
+                    {
+                        key: 'iobroker',
+                        label: 'ioBroker',
+                        node: model?.system ? (
+                            <SystemCard
+                                system={model.system}
+                                states={states}
+                            />
+                        ) : null,
+                    },
                     { key: 'connection', label: 'Verbindung', node: connectionCard },
                     { key: 'adapters', label: 'Erkannte Geräte je Adapter', node: adapterCard },
                 ]}
