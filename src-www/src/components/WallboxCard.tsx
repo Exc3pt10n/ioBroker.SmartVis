@@ -3,8 +3,8 @@ import { useConnection } from '../connection';
 import { Toggle } from './Toggle';
 import { formatPower, wallboxLabel, wallboxSnapshot } from '../energy';
 
-function fmtKwh(v: number | undefined): string {
-    return v === undefined ? '–' : `${v.toLocaleString('de-DE', { maximumFractionDigits: 1 })} kWh`;
+function fmtA(v: number): string {
+    return `${v.toLocaleString('de-DE', { maximumFractionDigits: 1 })} A`;
 }
 
 export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Element {
@@ -24,17 +24,45 @@ export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Elem
                     </div>
                     <div className={`wallbox__status wallbox__status--${s.status ?? 'unknown'}`}>{wallboxLabel(s)}</div>
                 </div>
-                {charging && <div className="wallbox__power">{formatPower(s.power)}</div>}
+                {charging && (
+                    <div
+                        className="wallbox__power"
+                        title={
+                            s.estimated
+                                ? 'Geschätzt aus Ladestrom × 230 V × Phasen (Wallbox ohne Energiezähler)'
+                                : undefined
+                        }
+                    >
+                        {s.estimated ? '≈ ' : ''}
+                        {formatPower(s.power)}
+                    </div>
+                )}
             </div>
             <div className="stats">
-                <div className="stat">
-                    <span className="stat__value">{fmtKwh(s.sessionKwh)}</span>
-                    <span className="stat__label">Aktuelle Ladung</span>
-                </div>
-                <div className="stat">
-                    <span className="stat__value">{fmtKwh(s.lastKwh)}</span>
-                    <span className="stat__label">Letzte Ladung</span>
-                </div>
+                {wallbox.surplus && (
+                    <div className="stat">
+                        <span className="stat__value">
+                            {s.surplusW === undefined
+                                ? '–'
+                                : s.surplusW > 0
+                                  ? formatPower(s.surplusW)
+                                  : `−${formatPower(-s.surplusW)}`}
+                        </span>
+                        <span className="stat__label">
+                            PV-Überschuss{s.surplusW !== undefined && s.surplusW <= 0 ? ' · keiner' : ''}
+                        </span>
+                    </div>
+                )}
+                {wallbox.current && (
+                    <div className="stat">
+                        <span className="stat__value">{s.limitA !== undefined ? fmtA(s.limitA) : '–'}</span>
+                        <span className="stat__label">
+                            Ladelimit
+                            {s.limitW !== undefined ? ` · ≈ ${formatPower(s.limitW)} (${s.phases}-phasig)` : ''}
+                            {s.maxA !== undefined ? ` · max. ${fmtA(s.maxA)}` : ''}
+                        </span>
+                    </div>
+                )}
             </div>
             <div style={{ marginTop: 12 }}>
                 {wallbox.pvAutomatic && (

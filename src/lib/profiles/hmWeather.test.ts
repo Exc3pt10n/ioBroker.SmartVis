@@ -41,6 +41,15 @@ describe('profile: Homematic weather station', () => {
         expect(result.writableIds.has('hm-rega.0.5755')).to.equal(false);
     });
 
+    it('attaches the HmIP-SLO light sensors in compass order', () => {
+        const sensors = weather.lightSensors || [];
+        expect(sensors.map(l => l.name)).to.deep.equal(['Osten', 'Süden', 'Westen']);
+        expect(sensors[0].current?.id).to.equal('hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION');
+        expect(sensors[0].current?.unit).to.equal('Lux');
+        expect(sensors[0].average?.id).to.equal('hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION');
+        expect(result.stateIds).to.include('hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION');
+    });
+
     it('maps maintenance indicators', () => {
         expect(weather.unreach?.id).to.equal(`${DEV}.0.UNREACH`);
     });

@@ -132,10 +132,19 @@ export interface SvWallbox {
     /** Steckerzustand; Werte in vehiclePluggedValues = Fahrzeug verbunden */
     plug?: SvStateRef;
     vehiclePluggedValues?: number[];
-    /** Geladene Energie der laufenden Sitzung */
-    sessionEnergy?: SvStateRef;
-    /** Energie der letzten abgeschlossenen Sitzung */
-    lastSessionEnergy?: SvStateRef;
+    /**
+     * Eingestellter Ladestrom (Limit), z. B. in mA. Wallboxen ohne Energiezähler (KEBA Deutschland-Edition)
+     * melden keine Leistung – die App schätzt sie dann aus Strom × 230 V × Phasen.
+     */
+    current?: SvStateRef;
+    /** Hardware-Maximum des Ladestroms */
+    currentMax?: SvStateRef;
+    /** Phasen, mit denen gerade geladen wird (falls gemessen) */
+    phases?: SvStateRef;
+    /** Konfigurierte Phasenzahl (Schätzung bei Wallboxen ohne Zähler) */
+    configuredPhases?: SvStateRef;
+    /** PV-Überschuss, mit dem die Ladeautomatik rechnet (W; negativ = kein Überschuss) */
+    surplus?: SvStateRef;
     /** Schalter: Laden nach PV-Überschuss */
     pvAutomatic?: SvStateRef;
     /** Schalter: Laden pausieren */
@@ -171,6 +180,18 @@ export interface SvWeather {
     sunshineToday?: SvStateRef;
     unreach?: SvStateRef;
     lowBat?: SvStateRef;
+    /** Zusätzliche Helligkeitssensoren (z. B. HmIP-SLO je Himmelsrichtung) */
+    lightSensors?: SvLightSensor[];
+}
+
+export interface SvLightSensor {
+    /** Anzeigename, z. B. "Osten" */
+    name: string;
+    /** Aktuelle Helligkeit in Lux */
+    current?: SvStateRef;
+    /** Mittelwert der letzten Minuten in Lux */
+    average?: SvStateRef;
+    unreach?: SvStateRef;
 }
 
 /** Schalter, dessen Anzeige- und Schreib-State verschieden sein können (z. B. gespiegelte Trigger-Datenpunkte) */

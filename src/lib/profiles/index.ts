@@ -126,6 +126,8 @@ export function pvForecastRefs(pv: SvPvForecast): SvStateRef[] {
 
 /** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */
 export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): SvStateRef[] {
+    const nested: unknown[] =
+        'lightSensors' in item && item.lightSensors ? item.lightSensors.flatMap(l => Object.values(l)) : [];
     const refs: unknown[] =
         'flows' in item
             ? [
@@ -134,6 +136,6 @@ export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): 
                   ...Object.values(item.today || {}),
                   item.connected,
               ]
-            : Object.values(item);
+            : [...Object.values(item), ...nested];
     return refs.filter((r): r is SvStateRef => !!r && typeof r === 'object' && 'id' in r && 'write' in r);
 }

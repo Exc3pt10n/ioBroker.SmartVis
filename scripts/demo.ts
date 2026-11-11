@@ -109,6 +109,12 @@ for (const [id, val] of Object.entries({
     'hm-rega.0.5755': 2.3,
     'hm-rega.0.5753': 6.1,
     'hm-rega.0.5738': 134,
+    'hm-rpc.0.0000000000SLO1.1.CURRENT_ILLUMINATION': 18400,
+    'hm-rpc.0.0000000000SLO1.1.AVERAGE_ILLUMINATION': 17900,
+    'hm-rpc.0.0000000000SLO2.1.CURRENT_ILLUMINATION': 42300,
+    'hm-rpc.0.0000000000SLO2.1.AVERAGE_ILLUMINATION': 40100,
+    'hm-rpc.0.0000000000SLO3.1.CURRENT_ILLUMINATION': 9600,
+    'hm-rpc.0.0000000000SLO3.1.AVERAGE_ILLUMINATION': 9200,
 })) {
     states[id] = { val, ack: true, ts: Date.now() };
 }
@@ -265,7 +271,12 @@ for (const [key, val] of Object.entries({
     state: 2,
     plug: 7,
     ePres: 0,
-    'statistics.lastChargeAmount': 18.4,
+    // Deutschland-Edition: kein Energiezähler, Leistung bleibt 0
+    'statistics.lastChargeAmount': 0,
+    currentUser: 16000,
+    currentHardware: 16000,
+    'automatic.calcPhases': 1,
+    'statistics.surplus': 0,
     'automatic.photovoltaics': true,
     'automatic.pauseWallbox': false,
     'info.connection': true,
@@ -345,9 +356,12 @@ function simulateEnergy(): void {
         states[kid] = { val, ack: true, ts: Date.now() };
         server.queueState(kid, states[kid]);
     };
-    setKeba('p', carW * 1000); // mW
+    // Wie der kecontact-Adapter: Ladestrom aus dem Überschuss (6–16 A, 1-phasig), p bleibt 0 (kein Zähler)
+    const amps = carW > 0 ? Math.min(16, Math.max(6, Math.round(carW / 230))) : 6;
+    setKeba('p', 0);
     setKeba('state', carW > 0 ? 3 : 2);
-    setKeba('ePres', Number(states['kecontact.0.ePres']?.val || 0) + (carW * 2) / 3600);
+    setKeba('currentUser', amps * 1000);
+    setKeba('statistics.surplus', Math.round((pv - 0.8) * 1000 - (carW > 0 ? amps * 230 : 0)));
     const cons = 0.8 + Math.random() * 0.8 + carW / 1000;
     const surplus = (pv - cons) * 1000;
     const charge = Math.min(Math.max(surplus, 0), 2500);
