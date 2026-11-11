@@ -20,6 +20,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const { model, states } = useConnection();
     const { editing } = useEditing();
     const dashboard = useMediaQuery(DASHBOARD_QUERY);
+    const wide = useMediaQuery('(min-width: 1800px)');
     if (!model) {
         return <p className="empty">Lade Geräte …</p>;
     }
@@ -259,6 +260,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 <div className="home__main">
                     <CustomSections
                         view="home.main"
+                        columns={dashboard && wide ? 2 : 1}
                         className="csecs home__sections"
                         sections={[
                             {

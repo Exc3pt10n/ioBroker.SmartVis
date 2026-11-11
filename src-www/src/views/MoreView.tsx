@@ -1,3 +1,4 @@
+import { useCardColumns } from '../media';
 import { CustomSections } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { SystemCard } from '../components/SystemCard';
@@ -5,6 +6,7 @@ import { useConnection } from '../connection';
 
 export function MoreView(): React.JSX.Element {
     const { status, version, model, lastError, states } = useConnection();
+    const columns = useCardColumns();
     const byAdapter = new Map<string, number>();
     for (const d of model?.devices || []) {
         byAdapter.set(d.adapter, (byAdapter.get(d.adapter) || 0) + 1);
@@ -55,6 +57,7 @@ export function MoreView(): React.JSX.Element {
             <EditBanner text="Bereiche am Griff ⠿ ziehen oder mit ↑ ↓ sortieren und aus- oder einblenden" />
             <CustomSections
                 view="more"
+                columns={columns}
                 className="csecs csecs--cols"
                 sections={[
                     {

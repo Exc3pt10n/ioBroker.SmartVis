@@ -1,3 +1,4 @@
+import { useCardColumns } from '../media';
 import type { SvAutoShutter, SvShutterControl } from '../../../src/shared/protocol';
 import { ActionButton, Toggle } from '../components/Toggle';
 import { CustomSections, type SectionDef } from '../components/CustomSections';
@@ -7,6 +8,7 @@ import { autoStateInfo, text, timeText } from '../shutters';
 
 export function ShutterView(): React.JSX.Element {
     const { model } = useConnection();
+    const columns = useCardColumns();
     if (!model) {
         return <p className="empty">Lade …</p>;
     }
@@ -27,6 +29,7 @@ export function ShutterView(): React.JSX.Element {
             <EditBanner text="Bereiche am Griff ⠿ ziehen oder mit ↑ ↓ sortieren und aus- oder einblenden" />
             <CustomSections
                 view="shutters"
+                columns={columns}
                 className="csecs csecs--cols"
                 sections={model.shutterControl.flatMap(sc => shutterSections(sc, model.shutterControl.length > 1))}
             />

@@ -1,3 +1,4 @@
+import { useCardColumns } from '../media';
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { EnergyFlow } from '../components/EnergyFlow';
 import { EnergyTotals } from '../components/EnergyTotals';
@@ -11,6 +12,7 @@ import { kwh, num, snapshot } from '../energy';
 
 export function EnergyView(): React.JSX.Element {
     const { model, states } = useConnection();
+    const columns = useCardColumns();
     if (!model) {
         return <p className="empty">Lade …</p>;
     }
@@ -139,6 +141,7 @@ export function EnergyView(): React.JSX.Element {
             <EditBanner text="Bereiche am Griff ⠿ ziehen oder mit ↑ ↓ sortieren und aus- oder einblenden" />
             <CustomSections
                 view="energy"
+                columns={columns}
                 sections={sections}
                 className="csecs csecs--cols"
             />
