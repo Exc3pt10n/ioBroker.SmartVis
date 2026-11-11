@@ -18,12 +18,7 @@ const RANGES: { key: SvHistoryRange; label: string }[] = [
     { key: '7d', label: '7 Tage' },
 ];
 
-type Load =
-    | { status: 'loading' }
-    | { status: 'error'; message: string }
-    | { status: 'ok'; points: [number, number][]; from: number; to: number };
-
-const SPAN_MS: Record<SvHistoryRange, number> = { '6h': 6 * 3600_000, '24h': 24 * 3600_000, '7d': 7 * 86_400_000 };
+type Load = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ok'; points: [number, number][] };
 
 /** Verlauf mit Auswahl der Größe (eine Serie je Diagramm) und des Zeitraums */
 export function HistoryPanel({
@@ -44,9 +39,8 @@ export function HistoryPanel({
             return;
         }
         let cancelled = false;
-        const to = Date.now();
         connection.history(historyId, range).then(
-            points => !cancelled && setLoad({ status: 'ok', points, from: to - SPAN_MS[range], to }),
+            points => !cancelled && setLoad({ status: 'ok', points }),
             (e: Error) => !cancelled && setLoad({ status: 'error', message: e.message }),
         );
         return () => {
@@ -134,20 +128,6 @@ export function HistoryPanel({
                         <p className="history__stats">
                             Min. {formatNumber(stats.min, unit)} · Ø {formatNumber(stats.avg, unit)} · Max.{' '}
                             {formatNumber(stats.max, unit)}
-                            {/* Daten beginnen deutlich nach dem Anfang des Zeitraums (z. B. Aufzeichnung erst neu) */}
-                            {load.points[0][0] - load.from > SPAN_MS[range] * 0.05 && (
-                                <>
-                                    <br />
-                                    Daten erst ab{' '}
-                                    {new Date(load.points[0][0]).toLocaleString('de-DE', {
-                                        weekday: 'short',
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </>
-                            )}
                         </p>
                     )}
                     <HistoryChart
@@ -157,8 +137,6 @@ export function HistoryPanel({
                         label={`${current.label}, Verlauf ${RANGES.find(r => r.key === range)?.label}`}
                         color={current.color}
                         zeroBased={current.zeroBased}
-                        from={load.from}
-                        to={load.to}
                     />
                 </>
             )}

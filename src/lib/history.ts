@@ -112,11 +112,7 @@ export function historyOptions(range: SvHistoryRange, now = Date.now()): Record<
         end: now,
         aggregate: 'average',
         step: span.step,
-        // Leere Intervalle weglassen: bei "nur Änderungen loggen" gilt der letzte Wert weiter
         ignoreNull: true,
-        // Keine künstlichen Randpunkte: ohne ältere Daten setzt @iobroker/aggregate sonst einen Punkt an den
-        // Beginn des Zeitraums (mit dem ersten echten Wert) – der Verlauf schiene dann weiter zurückzureichen
-        removeBorderValues: true,
         limit: 2000,
         ack: false,
         q: false,

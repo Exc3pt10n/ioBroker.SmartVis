@@ -55,13 +55,8 @@ export function HistoryChart({
     label,
     color = 'var(--chart-series)',
     zeroBased = false,
-    from,
-    to,
 }: {
     points: [number, number][];
-    /** Angefragter Zeitraum: die Achse zeigt ihn vollständig, auch wenn Daten erst später beginnen */
-    from?: number;
-    to?: number;
     unit?: string;
     range: SvHistoryRange;
     label: string;
@@ -86,8 +81,8 @@ export function HistoryChart({
         if (points.length < 2) {
             return null;
         }
-        const t0 = Math.min(from ?? points[0][0], points[0][0]);
-        const t1 = Math.max(to ?? points[points.length - 1][0], points[points.length - 1][0]);
+        const t0 = points[0][0];
+        const t1 = points[points.length - 1][0];
         const values = points.map(p => p[1]);
         const { lo, hi, step } = niceScale(Math.min(...values), Math.max(...values), zeroBased);
         const iw = width - PAD.left - PAD.right;
@@ -96,10 +91,7 @@ export function HistoryChart({
         const y = (v: number): number => PAD.top + ih - ((v - lo) / (hi - lo)) * ih;
         const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
         const base = y(Math.max(lo, Math.min(0, hi)));
-        // Fläche nur unter den vorhandenen Daten (nicht über den ganzen Zeitraum)
-        const first = points[0][0];
-        const last = points[points.length - 1][0];
-        const area = `${line}L${x(last).toFixed(1)},${base}L${x(first).toFixed(1)},${base}Z`;
+        const area = `${line}L${x(t1).toFixed(1)},${base}L${x(t0).toFixed(1)},${base}Z`;
         const yTicks: number[] = [];
         for (let v = lo; v <= hi + step / 2; v += step) {
             yTicks.push(Math.round(v * 1000) / 1000);
@@ -116,7 +108,7 @@ export function HistoryChart({
             }
         }
         return { x, y, line, area, yTicks, xTicks, t0, t1 };
-    }, [points, width, range, zeroBased, from, to]);
+    }, [points, width, range, zeroBased]);
 
     if (!geometry) {
         return (

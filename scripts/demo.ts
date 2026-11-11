@@ -366,10 +366,6 @@ function demoHistory(id: string, range: string): [number, number][] {
         } else {
             v = (day * 5 - 1.5) * 1000 + noise() * 400;
         }
-        // Q.HOME-Adapter läuft (wie im echten System) erst seit gut einem Tag
-        if (id.startsWith('qhome') && t < now - 30 * 3600_000) {
-            continue;
-        }
         points.push([t, Math.round(v * 100) / 100]);
     }
     return points;
