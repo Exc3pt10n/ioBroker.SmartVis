@@ -3,7 +3,7 @@
  * Änderungen hier betreffen beide Seiten – PROTOCOL_VERSION erhöhen, wenn inkompatibel.
  */
 
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 
 /** Woher stammt eine Raumzuordnung? enum = ioBroker-Aufzählung, adapter = z. B. Hue-Raum, name = aus dem Gerätenamen */
 export type RoomSource = 'enum' | 'adapter' | 'name';
@@ -358,6 +358,38 @@ export interface SvOverrides {
     ui?: SvUiSettings;
 }
 
+/** Ein Endgerät (Browser) mit eigenen Anpassungen */
+export interface SvClientEntry {
+    name: string;
+    created: number;
+    lastSeen: number;
+    overrides: SvOverrides;
+}
+
+/** Gespeicherte Anpassungen aller Endgeräte (Datei overrides.json, Format 2) */
+export interface SvOverrideStore {
+    version: 2;
+    /** Ausgangsbasis für neue Geräte (frühere gemeinsame Anpassungen) und für Clients ohne Kennung */
+    shared: SvOverrides;
+    clients: Record<string, SvClientEntry>;
+}
+
+/** Infos zum eigenen Endgerät und den anderen Geräten (für "Mehr → Anpassungen") */
+export interface SvClientInfo {
+    /** Eigene Kennung; fehlt bei Clients ohne Kennung (ältere App) */
+    id?: string;
+    name?: string;
+    devices: { id: string; name: string; lastSeen: number }[];
+}
+
+/** Verwaltung der Endgeräte-Anpassungen */
+export type SvClientAction =
+    | { action: 'rename'; name: string }
+    | { action: 'reset' }
+    | { action: 'resetAll' }
+    | { action: 'copyFrom'; id: string }
+    | { action: 'remove'; id: string };
+
 /**
  * Änderung aus dem Bearbeiten-Modus; null löscht ein Feld (zurück zur Erkennung).
  * Ausnahme roomId: null = "Ohne Raum", '' = zurück zum erkannten Raum.
@@ -459,6 +491,8 @@ export interface SvModel {
     editable: boolean;
     /** Anzeige-Einstellungen aus den Anpassungen */
     ui?: SvUiSettings;
+    /** Eigenes Endgerät und andere Geräte mit eigenen Anpassungen */
+    client?: SvClientInfo;
 }
 
 export interface SvStateValue {
@@ -479,6 +513,9 @@ export type ServerMessage =
 
 /** Nachrichten Client → Server */
 export type ClientMessage =
+    /** Anmeldung mit stabiler Geräte-Kennung (im Browser gespeichert) und Vorschlag für den Namen */
+    | { t: 'hello'; clientId: string; name?: string }
+    | { t: 'client'; request: SvClientAction }
     | { t: 'set'; id: string; val: ioBrokerValue }
     | { t: 'edit'; edit: SvEdit }
     | { t: 'history'; reqId: number; id: string; range: SvHistoryRange }

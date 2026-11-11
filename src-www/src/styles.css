@@ -2764,3 +2764,41 @@ button.kpi:hover {
 .setting--first {
     border-top: 0;
 }
+
+/* ===== Anpassungen je Gerät ===== */
+.custom__row {
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.custom__row .field__input {
+    flex: 1;
+    min-width: 0;
+}
+
+.custom__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.custom__devices {
+    margin-top: 12px;
+}
+
+.custom__devices summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.custom__device {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.setting--stack {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+}

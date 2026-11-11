@@ -2,9 +2,26 @@ import * as utils from '@iobroker/adapter-core';
 import { join } from 'node:path';
 import { discover, type DiscoveryResult } from './lib/discovery';
 import { historyOptions, toPoints } from './lib/history';
-import { applyEdit, applyOverrides, emptyOverrides, parseOverrides } from './lib/overrides';
+import {
+    applyClientAction,
+    clientInfo,
+    emptyStore,
+    overridesFor,
+    parseStore,
+    registerClient,
+    withOverrides,
+} from './lib/clientOverrides';
+import { applyEdit, applyOverrides } from './lib/overrides';
 import { SmartVisServer } from './lib/server';
-import type { SvEdit, SvHistoryRange, SvModel, SvOverrides, SvStateValue, ioBrokerValue } from './shared/protocol';
+import type {
+    SvClientAction,
+    SvEdit,
+    SvHistoryRange,
+    SvModel,
+    SvOverrideStore,
+    SvStateValue,
+    ioBrokerValue,
+} from './shared/protocol';
 
 /** Datei im ioBroker-Dateispeicher der Instanz (Teil von Backups) */
 const OVERRIDES_FILE = 'overrides.json';
@@ -12,9 +29,8 @@ const OVERRIDES_FILE = 'overrides.json';
 class SmartVis extends utils.Adapter {
     private server?: SmartVisServer;
     private discovery?: DiscoveryResult;
-    /** Erkanntes Model mit angewendeten Nutzer-Anpassungen */
-    private model?: SvModel;
-    private overrides: SvOverrides = emptyOverrides();
+    /** Anpassungen je Endgerät (overrides.json) */
+    private store: SvOverrideStore = emptyStore();
     /** Änderungen nacheinander ausführen */
     private saveQueue: Promise<void> = Promise.resolve();
     private states: Record<string, SvStateValue | null> = {};
@@ -41,10 +57,12 @@ class SmartVis extends utils.Adapter {
                 version: this.version || '0.0.0',
             },
             {
-                getModel: () => this.model!,
+                getModel: clientId => this.modelFor(clientId),
+                hello: (clientId, name) => this.queue(() => this.registerClient(clientId, name)),
+                client: (clientId, request) => this.queue(() => this.clientAction(clientId, request)),
                 getStates: () => this.states,
                 setState: (id, val) => this.writeState(id, val),
-                edit: edit => this.handleEdit(edit),
+                edit: (clientId, edit) => this.queue(() => this.applyAndSave(clientId, edit)),
                 history: (id, range) => this.readHistory(id, range),
                 onClientCountChange: count => void this.setState('info.clients', count, true),
                 log: this.log,
@@ -92,8 +110,17 @@ class SmartVis extends utils.Adapter {
         if (!this.discovery) {
             return;
         }
-        this.model = applyOverrides(this.discovery.model, this.overrides, this.config.allowEdit !== false);
-        this.server?.publishModel(this.model, withStates);
+        this.server?.publishModels(withStates);
+    }
+
+    /** Erkanntes Model mit den Anpassungen eines Endgeräts */
+    private modelFor(clientId: string | undefined): SvModel {
+        const model = applyOverrides(
+            this.discovery!.model,
+            overridesFor(this.store, clientId),
+            this.config.allowEdit !== false,
+        );
+        return { ...model, client: clientInfo(this.store, clientId) };
     }
 
     private async loadOverrides(): Promise<void> {
@@ -106,9 +133,9 @@ class SmartVis extends utils.Adapter {
         try {
             if (await this.fileExistsAsync(this.namespace, OVERRIDES_FILE)) {
                 const { file } = await this.readFileAsync(this.namespace, OVERRIDES_FILE);
-                this.overrides = parseOverrides(file);
-                const n = Object.keys(this.overrides.devices).length + Object.keys(this.overrides.rooms).length;
-                this.log.info(`Anpassungen geladen (${n} Einträge)`);
+                this.store = parseStore(file);
+                const n = Object.keys(this.store.clients).length;
+                this.log.info(`Anpassungen geladen (${n} ${n === 1 ? 'Gerät' : 'Geräte'})`);
             }
         } catch (e) {
             this.log.warn(`Anpassungen konnten nicht gelesen werden: ${(e as Error).message}`);
@@ -119,26 +146,57 @@ class SmartVis extends utils.Adapter {
      * Änderungen strikt nacheinander verarbeiten: jede baut auf dem gespeicherten Stand der vorherigen auf
      * (sonst gingen schnell aufeinanderfolgende Änderungen verloren).
      */
-    private handleEdit(edit: SvEdit): Promise<void> {
-        const run = this.saveQueue.then(() => this.applyAndSave(edit));
+    private queue(task: () => Promise<void>): Promise<void> {
+        const run = this.saveQueue.then(task);
         this.saveQueue = run.catch(() => undefined);
         return run;
     }
 
-    private async applyAndSave(edit: SvEdit): Promise<void> {
-        if (this.config.allowEdit === false) {
-            throw new Error('Bearbeiten ist in den Adapter-Einstellungen deaktiviert');
-        }
-        const next = applyEdit(this.overrides, edit);
+    /** Erst speichern, dann übernehmen: die App sieht nur, was wirklich gesichert ist */
+    private async save(next: SvOverrideStore): Promise<void> {
         try {
-            // Erst speichern, dann übernehmen und verteilen: die App sieht nur, was wirklich gesichert ist
             await this.writeFileAsync(this.namespace, OVERRIDES_FILE, JSON.stringify(next, null, 2));
         } catch (e) {
             this.log.error(`Anpassungen konnten nicht gespeichert werden: ${(e as Error).message}`);
             throw new Error('Anpassung konnte nicht gespeichert werden');
         }
-        this.overrides = next;
-        this.updateModel(false);
+        this.store = next;
+    }
+
+    private async registerClient(clientId: string, name: string | undefined): Promise<void> {
+        const known = !!this.store.clients[clientId];
+        const next = registerClient(this.store, clientId, name, Date.now());
+        // "Zuletzt gesehen" höchstens stündlich speichern, neue Geräte sofort
+        const last = this.store.clients[clientId]?.lastSeen ?? 0;
+        if (!known || Date.now() - last > 3600_000) {
+            await this.save(next);
+        } else {
+            this.store = next;
+        }
+        if (!known) {
+            this.log.info(`Neues Gerät angemeldet: ${next.clients[clientId].name}`);
+            // Geräteliste der anderen Clients aktualisieren
+            this.server?.publishModels(false);
+        }
+    }
+
+    private async applyAndSave(clientId: string | undefined, edit: SvEdit): Promise<void> {
+        if (this.config.allowEdit === false) {
+            throw new Error('Bearbeiten ist in den Adapter-Einstellungen deaktiviert');
+        }
+        const next = withOverrides(this.store, clientId, applyEdit(overridesFor(this.store, clientId), edit));
+        await this.save(next);
+        // Nur dieses Gerät sieht die Änderung (ohne Kennung: alle ohne Kennung)
+        this.server?.publishModels(false, clientId);
+    }
+
+    private async clientAction(clientId: string | undefined, request: SvClientAction): Promise<void> {
+        if (this.config.allowEdit === false) {
+            throw new Error('Bearbeiten ist in den Adapter-Einstellungen deaktiviert');
+        }
+        await this.save(applyClientAction(this.store, clientId, request));
+        this.log.info(`Anpassungen: ${request.action}${clientId ? ` (${this.store.clients[clientId]?.name})` : ''}`);
+        this.server?.publishModels(false);
     }
 
     /**

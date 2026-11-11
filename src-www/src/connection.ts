@@ -2,12 +2,14 @@ import { useSyncExternalStore } from 'react';
 import type {
     ClientMessage,
     ServerMessage,
+    SvClientAction,
     SvEdit,
     SvHistoryRange,
     SvModel,
     SvStateValue,
     ioBrokerValue,
 } from '../../src/shared/protocol';
+import { getClientId, suggestedName } from './clientId';
 
 export type ConnectionStatus = 'connecting' | 'online' | 'offline';
 
@@ -79,6 +81,12 @@ class Connection {
         this.send({ t: 'edit', edit });
     }
 
+    /** Anpassungen der Endgeräte verwalten (zurücksetzen, übernehmen, umbenennen …) */
+    client(request: SvClientAction): void {
+        this.update({ lastError: undefined });
+        this.send({ t: 'client', request });
+    }
+
     /** Wert nur lokal anzeigen (z. B. gespiegelte States), bis die echte Bestätigung kommt */
     preview(id: string, val: ioBrokerValue): void {
         this.update({ states: { ...this.snapshot.states, [id]: { val, ack: false, ts: Date.now() } } });
@@ -95,6 +103,8 @@ class Connection {
         ws.onopen = () => {
             this.retry = 0;
             this.update({ status: 'online', lastError: undefined });
+            // Anmeldung mit Geräte-Kennung: der Server schickt dann das Model mit den Anpassungen dieses Geräts
+            this.send({ t: 'hello', clientId: getClientId(), name: suggestedName() });
         };
         ws.onmessage = event => this.onMessage(JSON.parse(event.data as string) as ServerMessage);
         ws.onclose = () => {

@@ -6,12 +6,15 @@ const { tests } = require('@iobroker/testing');
 
 const fixture = name => JSON.parse(readFileSync(path.join(__dirname, 'fixtures', `${name}.json`), 'utf8'));
 
-/** Verbindet sich (mit Wiederholungen, bis der Webserver lauscht) und liefert das erste Model */
-async function connect(port) {
+/**
+ * Verbindet sich (mit Wiederholungen, bis der Webserver lauscht) und liefert das erste Model.
+ * Mit clientId meldet sich die Verbindung wie die App als Endgerät an.
+ */
+async function connect(port, clientId) {
     const until = Date.now() + 15000;
     for (;;) {
         try {
-            return await connectOnce(port);
+            return await connectOnce(port, clientId);
         } catch (e) {
             if (Date.now() > until || !/ECONNREFUSED/.test(String(e))) {
                 throw e;
@@ -21,9 +24,12 @@ async function connect(port) {
     }
 }
 
-function connectOnce(port) {
+function connectOnce(port, clientId) {
     return new Promise((resolve, reject) => {
         const ws = new WebSocket(`ws://127.0.0.1:${port}/ws`);
+        if (clientId) {
+            ws.on('open', () => ws.send(JSON.stringify({ t: 'hello', clientId, name: 'Testgerät' })));
+        }
         const timer = setTimeout(() => reject(new Error('Kein Model erhalten')), 10000);
         ws.on('message', raw => {
             const msg = JSON.parse(raw.toString());
@@ -143,6 +149,7 @@ tests.integration(path.join(__dirname, '..'), {
                 await harness.objects.writeFileAsync('smartvis.0', 'overrides.json', JSON.stringify(existing));
 
                 await harness.startAdapterAndWait();
+                // Ohne Geräte-Kennung (ältere App): gemeinsame Ausgangsbasis nach kurzer Wartezeit
                 const { ws, model } = await connect(port);
                 expect(model.editable).to.equal(true);
                 expect(model.rooms.map(r => r.name)).to.include('Vorhanden');
@@ -157,12 +164,32 @@ tests.integration(path.join(__dirname, '..'), {
                 expect(second.rooms.find(r => r.id === 'custom.vorhanden').hidden).to.equal(true);
                 ws.close();
 
-                const { file } = await harness.objects.readFile('smartvis.0', 'overrides.json');
-                const saved = JSON.parse(file.toString());
-                expect(saved.rooms).to.deep.equal({
+                // Ohne Geräte-Kennung landen Änderungen in der gemeinsamen Ausgangsbasis (Format 2)
+                let saved = JSON.parse((await harness.objects.readFile('smartvis.0', 'overrides.json')).file.toString());
+                expect(saved.version).to.equal(2);
+                expect(saved.shared.rooms).to.deep.equal({
                     'custom.vorhanden': { name: 'Vorhanden', custom: true, hidden: true },
                     'custom.werkstatt': { name: 'Werkstatt', custom: true },
                 });
+
+                // Ein Endgerät startet mit einer Kopie der Ausgangsbasis und hat danach eigene Anpassungen
+                const phone = await connect(port, 'testgeraet-0001');
+                expect(phone.model.client).to.include({ id: 'testgeraet-0001', name: 'Testgerät' });
+                expect(phone.model.rooms.map(r => r.name)).to.include('Werkstatt');
+                const changed = nextModel(phone.ws);
+                phone.ws.send(JSON.stringify({ t: 'edit', edit: { kind: 'deleteRoom', id: 'custom.werkstatt' } }));
+                expect((await changed).rooms.map(r => r.name)).to.not.include('Werkstatt');
+
+                // Zurücksetzen: dieses Gerät wieder ohne Anpassungen
+                const reset = nextModel(phone.ws);
+                phone.ws.send(JSON.stringify({ t: 'client', request: { action: 'reset' } }));
+                expect((await reset).rooms.map(r => r.name)).to.not.include('Vorhanden');
+                phone.ws.close();
+
+                saved = JSON.parse((await harness.objects.readFile('smartvis.0', 'overrides.json')).file.toString());
+                expect(saved.shared.rooms).to.have.keys('custom.vorhanden', 'custom.werkstatt');
+                expect(saved.clients['testgeraet-0001'].name).to.equal('Testgerät');
+                expect(saved.clients['testgeraet-0001'].overrides.rooms).to.deep.equal({});
             });
         });
 

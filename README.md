@@ -20,6 +20,8 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   - Alle Ansichten anpassbar: Bereiche bzw. Karten auf Startseite, Energie, Beschattung, Raumansicht (gilt für alle Räume) und „Mehr“ per Ziehen oder ↑ ↓ anordnen und aus-/einblenden; je Ansicht zurücksetzbar
   - Räume umbenennen, ausblenden, sortieren, selbst anlegen und wieder löschen
   - Favoriten oben auf der Startseite (auch per ☆ in der Detailansicht)
+  - **Je Endgerät:** Jedes Handy, Tablet bzw. jeder Browser hat eigene Anpassungen (erkannt an einer im Browser gespeicherten Kennung). Neue Geräte starten mit den gemeinsamen Anpassungen aus der Zeit vor 0.2.0
+  - Unter **Mehr → Anpassungen**: Gerät umbenennen, Anpassungen eines anderen Geräts übernehmen, **dieses Gerät** oder **alle Geräte** auf den Ausgangszustand (automatische Erkennung) zurücksetzen, alte Geräte entfernen
   - Gespeichert im ioBroker-Dateispeicher (`smartvis.0/overrides.json`, Teil von Backups); Anpassungen hängen an stabilen Objekt-IDs und überleben Neu-Erkennungen
   - Im Admin abschaltbar („Bearbeiten-Modus erlauben“) – solange es keinen Login gibt, kann sonst jeder im Netz Anpassungen speichern
 - **Detailansicht** je Gerät (Bottom-Sheet auf dem Handy, Dialog am Desktop; öffnet per ⋯-Knopf, langem Drücken oder Tap auf Geräte ohne Schaltfunktion; Zurück-Taste schließt):
@@ -127,6 +129,12 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.2.0 (2026-11-11)
+
+- (Exc3pt10n) Anpassungen je Endgerät: Namen, Räume, Favoriten, ausgeblendete Geräte und die Anordnung gelten jetzt je Handy/Tablet/Browser
+- (Exc3pt10n) Mehr → Anpassungen: Gerät umbenennen, Anpassungen eines anderen Geräts übernehmen, dieses Gerät oder alle Geräte auf den Ausgangszustand zurücksetzen, alte Geräte entfernen
+- (Exc3pt10n) **Breaking:** neues Format von `overrides.json` (Version 2). Bestehende Anpassungen werden beim Start automatisch übernommen und gelten als Ausgangsbasis für jedes Gerät; eine Rückkehr zu 0.1.x verliert die Anpassungen, die danach gemacht wurden
 
 ### 0.1.1 (2026-11-11)
 
