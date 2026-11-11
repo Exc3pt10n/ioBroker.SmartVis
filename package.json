@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "build": "npm run build:backend && npm run build:www",
+    "prepare": "npm run build",
     "build:backend": "tsc -p tsconfig.build.json",
     "build:www": "vite build",
     "dev:www": "vite",

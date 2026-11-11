@@ -43,6 +43,29 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Neu-Erkennung bei Objektänderungen
 - Responsive Oberfläche: Bottom-Navigation auf dem Handy, Seitenleiste ab Tablet, Hell/Dunkel automatisch
 
+## Installation
+
+SmartVis ist (noch) nicht auf npm veröffentlicht und wird direkt aus GitHub installiert.
+
+**Admin-Oberfläche:** Reiter *Adapter* → GitHub-Symbol („Installieren aus eigener URL“; ggf. Expertenmodus aktivieren) → Reiter *Beliebig* → URL eintragen, installieren, danach eine Instanz anlegen:
+
+```
+https://github.com/Exc3pt10n/ioBroker.SmartVis/tarball/main
+```
+
+**Konsole** auf dem ioBroker-Host:
+
+```bash
+iobroker url https://github.com/Exc3pt10n/ioBroker.SmartVis/tarball/main
+iobroker add smartvis
+```
+
+Statt `main` lässt sich jeder Branch oder Commit angeben, z. B. zum Testen eines Entwicklungsstands. Updates werden genauso installiert; Instanz, Einstellungen und Anpassungen bleiben erhalten.
+
+> Bei der Installation von GitHub baut npm den Adapter selbst (Skript `prepare`): Dafür werden einmalig die Entwicklungswerkzeuge (TypeScript, Vite, React …) heruntergeladen. Das dauert auf einem Raspberry Pi einige Minuten und braucht vorübergehend etwa 300 MB Platz.
+
+Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 20.
+
 ## Konfiguration
 
 | Einstellung | Standard | Beschreibung |
