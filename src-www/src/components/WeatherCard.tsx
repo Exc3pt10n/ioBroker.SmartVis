@@ -3,7 +3,17 @@ import type { SvWeather } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { HistoryPanel, type HistorySeries } from './HistoryPanel';
 import { Sheet } from './Sheet';
-import { compass, condition, fmt, formatLux, formatMinutes, weatherSnapshot, windLabel } from '../weather';
+import { Sparkline } from './Sparkline';
+import {
+    compass,
+    condition,
+    fmt,
+    formatLux,
+    formatMinutes,
+    weatherSnapshot,
+    windLabel,
+    type WeatherSnapshot,
+} from '../weather';
 
 /** Aufgezeichnete Wetterwerte (Station, Lichtsensoren, weitere Außensensoren) */
 function weatherHistorySeries(weather: SvWeather, extra: SvWeather[] = []): HistorySeries[] {
@@ -74,61 +84,68 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
             className={`weather weather--${c.label === 'Sonnig' ? 'sun' : s.raining ? 'rain' : 'neutral'}`}
             aria-label="Aktuelles Wetter"
         >
-            <div className="weather__main">
-                <span
-                    className="weather__icon"
-                    aria-hidden="true"
-                >
-                    {c.icon}
-                </span>
-                <div>
-                    <div className="weather__temp">{s.temperature !== undefined ? `${fmt(s.temperature)}°` : '–'}</div>
-                    <div className="weather__label">
-                        {c.label}
-                        {s.windAlarm && c.label !== 'Stürmisch' ? ' · Sturmwarnung' : ''}
+            <div className="weather__top">
+                <div className="weather__main">
+                    <span
+                        className="weather__icon"
+                        aria-hidden="true"
+                    >
+                        {c.icon}
+                    </span>
+                    <div>
+                        <div className="weather__temp">
+                            {s.temperature !== undefined ? `${fmt(s.temperature)}°` : '–'}
+                        </div>
+                        <div className="weather__label">
+                            {c.label}
+                            {s.windAlarm && c.label !== 'Stürmisch' ? ' · Sturmwarnung' : ''}
+                        </div>
                     </div>
                 </div>
-            </div>
-            {details.length > 0 && (
-                <dl className="weather__details">
-                    {details.map(d => (
-                        <div key={d.label}>
-                            <dt>{d.label}</dt>
-                            <dd>{d.value}</dd>
-                        </div>
-                    ))}
-                </dl>
-            )}
-            {s.light.length > 0 && (
-                <div
-                    className="weather__light"
-                    aria-label="Helligkeit je Himmelsrichtung"
-                >
-                    <span className="weather__light-title">☀️ Helligkeit</span>
-                    <dl>
-                        {s.light.map(l => (
-                            <div
-                                key={l.name}
-                                title={l.average !== undefined ? `Mittelwert ${formatLux(l.average)}` : undefined}
-                            >
-                                <dt>{l.name}</dt>
-                                <dd>{l.online ? formatLux(l.lux) : 'nicht erreichbar'}</dd>
+                {details.length > 0 && (
+                    <dl className="weather__details">
+                        {details.map(d => (
+                            <div key={d.label}>
+                                <dt>{d.label}</dt>
+                                <dd>{d.value}</dd>
                             </div>
                         ))}
                     </dl>
+                )}
+            </div>
+            {(weather.temperature?.history || s.light.length > 0) && (
+                <div className="weather__panels">
+                    {weather.temperature?.history && (
+                        <Sparkline
+                            state={weather.temperature}
+                            label="Temperatur"
+                            onOpen={() => setShowHistory(true)}
+                        />
+                    )}
+                    {s.light.length > 0 && <LightBars light={s.light} />}
                 </div>
             )}
-            {(extra || []).map(x => {
-                const xs = weatherSnapshot(x, states);
-                return (
-                    <p
-                        key={x.id}
-                        className="weather__extra"
-                    >
-                        {x.name}: {fmt(xs.temperature)}°{xs.humidity !== undefined ? ` · ${fmt(xs.humidity, 0)} %` : ''}
-                    </p>
-                );
-            })}
+            {(extra || []).length > 0 && (
+                <ul
+                    className="weather__sensors"
+                    aria-label="Weitere Außensensoren"
+                >
+                    {(extra || []).map(x => {
+                        const xs = weatherSnapshot(x, states);
+                        return (
+                            <li key={x.id}>
+                                <span className="weather__sensor-name">{x.name}</span>
+                                <span className="weather__sensor-values">
+                                    <span title="Temperatur">🌡️ {fmt(xs.temperature)}°</span>
+                                    {xs.humidity !== undefined && (
+                                        <span title="Luftfeuchte">💧 {fmt(xs.humidity, 0)} %</span>
+                                    )}
+                                </span>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
             {historySeries.length > 0 && (
                 <button
                     type="button"
@@ -158,5 +175,49 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
                 </p>
             )}
         </section>
+    );
+}
+
+/**
+ * Helligkeit je Himmelsrichtung als Balken – relativ zum hellsten Sensor,
+ * damit man sofort sieht, wo die Sonne gerade steht.
+ */
+function LightBars({ light }: { light: WeatherSnapshot['light'] }): React.JSX.Element {
+    const max = Math.max(0, ...light.map(l => (l.online ? (l.lux ?? 0) : 0)));
+    return (
+        <div
+            className="weather__light"
+            aria-label="Helligkeit je Himmelsrichtung"
+        >
+            <span className="weather__light-title">☀️ Helligkeit</span>
+            <dl>
+                {light.map(l => {
+                    const share = l.online && max > 0 ? Math.max(0, (l.lux ?? 0) / max) : 0;
+                    return (
+                        <div
+                            key={l.name}
+                            className="lightbar"
+                            title={l.average !== undefined ? `Mittelwert ${formatLux(l.average)}` : undefined}
+                        >
+                            <dt>{l.name}</dt>
+                            <dd>
+                                <span
+                                    className="lightbar__track"
+                                    aria-hidden="true"
+                                >
+                                    <span
+                                        className="lightbar__fill"
+                                        style={{ width: `${Math.round(share * 100)}%` }}
+                                    />
+                                </span>
+                                <span className="lightbar__value">
+                                    {l.online ? formatLux(l.lux) : 'nicht erreichbar'}
+                                </span>
+                            </dd>
+                        </div>
+                    );
+                })}
+            </dl>
+        </div>
     );
 }

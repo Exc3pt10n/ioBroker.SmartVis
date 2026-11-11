@@ -8,6 +8,9 @@ import { SortableGrid } from '../components/SortableGrid';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
+import { EnergyFlow } from '../components/EnergyFlow';
+import { ForecastCard } from '../components/ForecastCard';
+import { DASHBOARD_QUERY, useMediaQuery } from '../media';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 const OPENING_TYPES = ['window', 'windowTilt', 'door'];
@@ -15,6 +18,7 @@ const OPENING_TYPES = ['window', 'windowTilt', 'door'];
 export function HomeView({ onNavigate }: { onNavigate: (path: string) => void }): React.JSX.Element {
     const { model, states } = useConnection();
     const { editing } = useEditing();
+    const dashboard = useMediaQuery(DASHBOARD_QUERY);
     if (!model) {
         return <p className="empty">Lade Geräte …</p>;
     }
@@ -51,195 +55,264 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const holiday = model.shutterControl.some(sc => sc.holiday && states[sc.holiday.value.id]?.val === true);
     const charging = model.wallboxes.map(w => wallboxSnapshot(w, states)).filter(w => w.status === 'charging');
 
+    // Kennzahlen: auf dem Handy als wischbare Reihe, auf dem Desktop als Kacheln
+    const fmtKwh = (v: number | undefined): string =>
+        v === undefined ? '–' : `${v.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh`;
+    const toEnergy = (): void => onNavigate('energy');
+    const toShutters = (): void => onNavigate('shutters');
+    const kpis: Kpi[] = [
+        energy?.pv !== undefined && {
+            key: 'pv',
+            icon: '☀️',
+            value: formatPower(energy.pv),
+            label: 'PV jetzt',
+            onClick: toEnergy,
+        },
+        energy?.soc !== undefined && {
+            key: 'soc',
+            icon: '🔋',
+            value: `${Math.round(energy.soc)} %`,
+            label: 'Batterie',
+            onClick: toEnergy,
+        },
+        energy?.home !== undefined && {
+            key: 'home',
+            icon: '🏠',
+            value: formatPower(energy.home),
+            label: 'Verbrauch',
+            onClick: toEnergy,
+        },
+        ...charging.map((w, i) => ({
+            key: `car${i}`,
+            icon: '🚗',
+            value: formatPower(w.power),
+            label: 'Wallbox lädt',
+            onClick: toEnergy,
+        })),
+        forecastToday !== undefined && {
+            key: 'forecast',
+            icon: '🔮',
+            value: fmtKwh(forecastToday),
+            label: 'Prognose heute',
+            onClick: toEnergy,
+        },
+        forecastTomorrow !== undefined && {
+            key: 'forecast2',
+            icon: '🔮',
+            value: fmtKwh(forecastTomorrow),
+            label: 'Prognose morgen',
+            onClick: toEnergy,
+        },
+        {
+            key: 'lights',
+            icon: '💡',
+            value: String(lightsOn.length),
+            label: lightsOn.length === 1 ? 'Licht an' : 'Lichter an',
+        },
+        { key: 'open', icon: '🪟', value: String(open.length), label: 'offen' },
+        playing.length > 0 && { key: 'playing', icon: '🎵', value: String(playing.length), label: 'spielt' },
+        sunProtected > 0 && {
+            key: 'sun',
+            icon: '🕶️',
+            value: String(sunProtected),
+            label: 'im Sonnenschutz',
+            onClick: toShutters,
+        },
+        !!shutterAlarm && {
+            key: 'alarm',
+            icon: autoStateInfo(shutterAlarm)?.icon || '⚠️',
+            value: autoStateInfo(shutterAlarm)?.label || shutterAlarm,
+            label: 'Rollläden',
+            onClick: toShutters,
+            warn: true,
+        },
+        holiday && { key: 'holiday', icon: '🏖️', value: 'aktiv', label: 'Urlaubszeiten', onClick: toShutters },
+        problems.length > 0 && {
+            key: 'problems',
+            icon: '⚠️',
+            value: String(problems.length),
+            label: problems.length === 1 ? 'Störung' : 'Störungen',
+            warn: true,
+        },
+    ].filter((k): k is Kpi => !!k);
+    const main = model.energy[0];
+
     return (
         <>
             <div className="titlebar titlebar--split">
                 <h1 className="title">Zuhause</h1>
                 <EditButton />
             </div>
-            <EditBanner text="Favoriten mit ← → sortieren, Kachel antippen zum Anpassen" />
-            {model.weather[0] && (
-                <WeatherCard
-                    weather={model.weather[0]}
-                    extra={model.weather.slice(1)}
-                />
-            )}
-            {(favs.length > 0 || editing) && (
-                <section>
-                    <h2 className="subtitle">⭐ Favoriten</h2>
-                    {favs.length ? (
-                        <SortableGrid
-                            items={favs}
-                            getId={d => d.id}
-                            kind="favoriteOrder"
-                            render={(d, ids) => (
-                                <DeviceTile
-                                    key={d.id}
-                                    device={d}
-                                    showRoom={roomName(d.roomId)}
-                                    reorder={{ ids, kind: 'favoriteOrder' }}
-                                />
-                            )}
+            <EditBanner text="Favoriten am Griff ⠿ ziehen oder mit ← → sortieren, Kachel antippen zum Anpassen" />
+            <div className={`home${dashboard ? ' home--dashboard' : ''}`}>
+                <div className="home__weather">
+                    {model.weather[0] && (
+                        <WeatherCard
+                            weather={model.weather[0]}
+                            extra={model.weather.slice(1)}
                         />
-                    ) : (
-                        <p className="hint hint--static">
-                            Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
-                        </p>
                     )}
-                </section>
-            )}
-            <div className="chips">
-                <span className="chip">💡 {lightsOn.length} Lichter an</span>
-                <span className="chip">🪟 {open.length} offen</span>
-                {energy?.pv !== undefined && (
-                    <button
-                        type="button"
-                        className="chip"
-                        onClick={() => onNavigate('energy')}
-                    >
-                        ☀️ {formatPower(energy.pv)}
-                        {energy.soc !== undefined ? ` · 🔋 ${Math.round(energy.soc)} %` : ''}
-                    </button>
+                </div>
+                {dashboard && (
+                    <div className="home__energy-col">
+                        {dashboard && energy && (
+                            <section className="card home__energy">
+                                <div className="card__head">
+                                    <h2 className="subtitle">⚡ Energie</h2>
+                                    <button
+                                        type="button"
+                                        className="linkbtn"
+                                        onClick={toEnergy}
+                                    >
+                                        Details ›
+                                    </button>
+                                </div>
+                                <EnergyFlow flow={energy} />
+                            </section>
+                        )}
+                        {dashboard &&
+                            model.pvForecast.map(p => (
+                                <ForecastCard
+                                    key={p.id}
+                                    pv={p}
+                                    actualPvW={energy?.pv}
+                                    producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
+                                />
+                            ))}
+                    </div>
                 )}
-                {charging.map((w, i) => (
-                    <button
-                        key={i}
-                        type="button"
-                        className="chip"
-                        onClick={() => onNavigate('energy')}
+                <div className="home__kpis">
+                    <div
+                        className="kpis"
+                        role="list"
+                        aria-label="Kennzahlen"
                     >
-                        🚗 lädt {formatPower(w.power)}
-                    </button>
-                ))}
-                {forecastTomorrow !== undefined && (
-                    <button
-                        type="button"
-                        className="chip"
-                        onClick={() => onNavigate('energy')}
-                    >
-                        🔮 PV heute{' '}
-                        {forecastToday !== undefined
-                            ? `${forecastToday.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh`
-                            : '–'}{' '}
-                        · morgen {forecastTomorrow.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh
-                    </button>
-                )}
-                {sunProtected > 0 && (
-                    <button
-                        type="button"
-                        className="chip"
-                        onClick={() => onNavigate('shutters')}
-                    >
-                        🕶️ {sunProtected} im Sonnenschutz
-                    </button>
-                )}
-                {shutterAlarm && (
-                    <button
-                        type="button"
-                        className="chip chip--warn"
-                        onClick={() => onNavigate('shutters')}
-                    >
-                        {autoStateInfo(shutterAlarm)?.icon} {autoStateInfo(shutterAlarm)?.label}
-                    </button>
-                )}
-                {holiday && (
-                    <button
-                        type="button"
-                        className="chip"
-                        onClick={() => onNavigate('shutters')}
-                    >
-                        🏖️ Urlaubszeiten aktiv
-                    </button>
-                )}
-                {problems.length > 0 && <span className="chip chip--warn">⚠️ {problems.length} Störungen</span>}
-            </div>
-
-            {withoutRoom > 0 && !hintHidden && (
-                <div className="hint-row">
-                    <button
-                        type="button"
-                        className="hint"
-                        onClick={() => onNavigate('rooms/_none')}
-                    >
-                        {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
-                    </button>
-                    {model.editable && (
+                        {kpis.map(k => (
+                            <KpiTile
+                                key={k.key}
+                                kpi={k}
+                            />
+                        ))}
+                    </div>
+                    {withoutRoom > 0 && !hintHidden && (
+                        <div className="hint-row">
+                            <button
+                                type="button"
+                                className="hint"
+                                onClick={() => onNavigate('rooms/_none')}
+                            >
+                                {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
+                            </button>
+                            {model.editable && (
+                                <button
+                                    type="button"
+                                    className="iconbtn hint-row__close"
+                                    aria-label="Hinweis ausblenden"
+                                    title="Hinweis ausblenden"
+                                    onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: true } })}
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+                    )}
+                    {withoutRoom > 0 && hintHidden && editing && (
                         <button
                             type="button"
-                            className="iconbtn hint-row__close"
-                            aria-label="Hinweis ausblenden"
-                            title="Hinweis ausblenden"
-                            onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: true } })}
+                            className="linkbtn"
+                            onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: null } })}
                         >
-                            ✕
+                            Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
                         </button>
                     )}
                 </div>
-            )}
-            {withoutRoom > 0 && hintHidden && editing && (
-                <button
-                    type="button"
-                    className="linkbtn"
-                    onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: null } })}
-                >
-                    Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
-                </button>
-            )}
-
-            {playing.length > 0 && (
-                <Section
-                    title="🎵 Läuft gerade"
-                    devices={playing}
-                    roomName={roomName}
-                />
-            )}
-
-            {lightsOn.length > 0 && (
-                <section>
-                    <h2 className="subtitle">Eingeschaltete Lichter</h2>
-                    {groupByRoom(lightsOn, model.rooms).map(g => (
-                        <div
-                            key={g.roomId ?? '_none'}
-                            className="roomgroup"
-                        >
-                            <button
-                                type="button"
-                                className="roomgroup__title"
-                                onClick={() => onNavigate(`rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`)}
-                            >
-                                {g.name}
-                                <span className="group__count">{g.devices.length}</span>
-                                <span aria-hidden="true">›</span>
-                            </button>
-                            <div className="grid">
-                                {g.devices.map(d => (
-                                    <DeviceTile
-                                        key={d.id}
-                                        device={d}
+                <div className="home__main">
+                    <div className="home__favs">
+                        {(favs.length > 0 || editing) && (
+                            <section>
+                                <h2 className="subtitle">⭐ Favoriten</h2>
+                                {favs.length ? (
+                                    <SortableGrid
+                                        items={favs}
+                                        getId={d => d.id}
+                                        kind="favoriteOrder"
+                                        render={(d, ids) => (
+                                            <DeviceTile
+                                                key={d.id}
+                                                device={d}
+                                                showRoom={roomName(d.roomId)}
+                                                reorder={{ ids, kind: 'favoriteOrder' }}
+                                            />
+                                        )}
                                     />
+                                ) : (
+                                    <p className="hint hint--static">
+                                        Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
+                                    </p>
+                                )}
+                            </section>
+                        )}
+                    </div>
+                    <div className="home__status">
+                        {playing.length > 0 && (
+                            <Section
+                                title="🎵 Läuft gerade"
+                                devices={playing}
+                                roomName={roomName}
+                            />
+                        )}
+
+                        {lightsOn.length > 0 && (
+                            <section>
+                                <h2 className="subtitle">Eingeschaltete Lichter</h2>
+                                {groupByRoom(lightsOn, model.rooms).map(g => (
+                                    <div
+                                        key={g.roomId ?? '_none'}
+                                        className="roomgroup"
+                                    >
+                                        <button
+                                            type="button"
+                                            className="roomgroup__title"
+                                            onClick={() =>
+                                                onNavigate(`rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`)
+                                            }
+                                        >
+                                            {g.name}
+                                            <span className="group__count">{g.devices.length}</span>
+                                            <span aria-hidden="true">›</span>
+                                        </button>
+                                        <div className="grid">
+                                            {g.devices.map(d => (
+                                                <DeviceTile
+                                                    key={d.id}
+                                                    device={d}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
-                            </div>
-                        </div>
-                    ))}
-                </section>
-            )}
-            {open.length > 0 && (
-                <Section
-                    title="Offene Fenster & Türen"
-                    devices={open}
-                    roomName={roomName}
-                />
-            )}
-            {problems.length > 0 && (
-                <Section
-                    title="Störungen"
-                    devices={problems}
-                    roomName={roomName}
-                />
-            )}
-            {lightsOn.length + open.length + problems.length === 0 && (
-                <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>
-            )}
+                            </section>
+                        )}
+                        {open.length > 0 && (
+                            <Section
+                                title="Offene Fenster & Türen"
+                                devices={open}
+                                roomName={roomName}
+                            />
+                        )}
+                        {problems.length > 0 && (
+                            <Section
+                                title="Störungen"
+                                devices={problems}
+                                roomName={roomName}
+                            />
+                        )}
+                        {lightsOn.length + open.length + problems.length === 0 && (
+                            <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>
+                        )}
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
@@ -266,5 +339,45 @@ function Section({
                 ))}
             </div>
         </section>
+    );
+}
+
+interface Kpi {
+    key: string;
+    icon: string;
+    value: string;
+    label: string;
+    onClick?: () => void;
+    warn?: boolean;
+}
+
+function KpiTile({ kpi }: { kpi: Kpi }): React.JSX.Element {
+    const content = (
+        <>
+            <span
+                className="kpi__icon"
+                aria-hidden="true"
+            >
+                {kpi.icon}
+            </span>
+            <span className="kpi__value">{kpi.value}</span>
+            <span className="kpi__label">{kpi.label}</span>
+        </>
+    );
+    const className = `kpi${kpi.warn ? ' kpi--warn' : ''}`;
+    return (
+        <div role="listitem">
+            {kpi.onClick ? (
+                <button
+                    type="button"
+                    className={className}
+                    onClick={kpi.onClick}
+                >
+                    {content}
+                </button>
+            ) : (
+                <div className={className}>{content}</div>
+            )}
+        </div>
     );
 }
