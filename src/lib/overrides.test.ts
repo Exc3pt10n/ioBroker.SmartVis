@@ -27,6 +27,7 @@ const model: SvModel = {
     pvForecast: [],
     weather: [],
     shutterControl: [],
+    scenes: [],
     generatedAt: 0,
     editable: false,
 };

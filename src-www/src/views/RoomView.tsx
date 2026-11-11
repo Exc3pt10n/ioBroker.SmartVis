@@ -1,9 +1,11 @@
 import { DeviceTile } from '../components/DeviceTile';
+import { ScenePanel } from '../components/ScenePanel';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { Icon } from '../components/Icon';
 import { useConnection } from '../connection';
 import { groupByType } from '../device';
 import { useEditing, visibleDevices } from '../editing';
+import { scenesForRoom } from '../scenes';
 
 export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => void }): React.JSX.Element {
     const { model } = useConnection();
@@ -15,6 +17,14 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
     const room = model.rooms.find(r => r.id === roomId);
     const devices = visibleDevices(model, editing).filter(d => (isNone ? !d.roomId : d.roomId === roomId));
     const groups = groupByType(devices);
+    // Szenen: Lampen des Raums unabhängig von ausgeblendeten Kacheln
+    const sceneGroups =
+        editing || isNone
+            ? []
+            : scenesForRoom(
+                  model,
+                  model.devices.filter(d => d.roomId === roomId),
+              );
 
     return (
         <>
@@ -60,6 +70,7 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
                                     />
                                 ))}
                             </div>
+                            {group.key === 'light' && sceneGroups.length > 0 && <ScenePanel groups={sceneGroups} />}
                         </section>
                     );
                 })

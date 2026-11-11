@@ -1,10 +1,11 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
-import type { RoomSource, SvDevice, SvModel, SvRoom, SvStateRef } from '../shared/protocol';
+import type { RoomSource, SvDevice, SvModel, SvRoom, SvSceneGroup, SvStateRef } from '../shared/protocol';
 import { attachHistory } from './history';
 import { getName } from './names';
 import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
+import { hueSceneGroups } from './profiles/hueScenes';
 import { DEFAULT_ROOM_NAMES, guessRoom, normalize, slug, stripRoomFromName } from './rooms';
 
 export { getName };
@@ -263,6 +264,18 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     devices.sort((a, b) => a.name.localeCompare(b.name, lang));
     const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
 
+    // Hue-Szenen: Lampen-Kanäle auf erkannte Geräte abbilden (Geräte-ID = Kanal-ID, ggf. mit "#n")
+    const scenes: SvSceneGroup[] = [];
+    if (!isIgnored('hue')) {
+        const devicesOf = (channel: string): string[] =>
+            devices.filter(d => d.id === channel || d.id.startsWith(`${channel}#`)).map(d => d.id);
+        for (const group of hueSceneGroups(filtered, lang, hue.stale)) {
+            const { lightChannels, ...rest } = group;
+            scenes.push({ ...rest, devices: [...new Set([group.id, ...lightChannels].flatMap(devicesOf))] });
+            group.scenes.forEach(s => writableIds.add(s.state.id));
+        }
+    }
+
     const model: SvModel = {
         rooms: roomList,
         devices,
@@ -271,6 +284,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         pvForecast: profiles.pvForecast,
         weather: profiles.weather,
         shutterControl: profiles.shutterControl,
+        scenes,
         generatedAt: Date.now(),
         editable: false,
     };

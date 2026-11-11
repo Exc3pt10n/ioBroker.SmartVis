@@ -17,7 +17,19 @@ function weatherHistorySeries(weather: SvWeather, extra: SvWeather[] = []): Hist
                 ? { key: `l-${l.name}`, label: `Helligkeit ${l.name}`, ref: l.current, zeroBased: true }
                 : undefined,
         ),
-        ...extra.map(x => (x.temperature ? { key: `x-${x.id}`, label: x.name, ref: x.temperature } : undefined)),
+        ...extra.flatMap((x, i) => {
+            // Lange Gerätenamen ("Temperatur- und Feuchtigkeitssensor") sprengen die Auswahl
+            const name = x.name.length <= 16 ? x.name : extra.length > 1 ? `Außensensor ${i + 1}` : 'Außensensor';
+            return [
+                x.temperature && { key: `x-${x.id}`, label: `Temperatur ${name}`, ref: x.temperature },
+                x.humidity && {
+                    key: `xh-${x.id}`,
+                    label: `Luftfeuchte ${name}`,
+                    ref: x.humidity,
+                    zeroBased: true,
+                },
+            ];
+        }),
     ];
     return candidates.filter((c): c is HistorySeries => !!c && !!c.ref.history);
 }

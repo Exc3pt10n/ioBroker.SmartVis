@@ -1916,3 +1916,38 @@ section + .chips {
     background: var(--surface-2);
     box-shadow: none;
 }
+
+/* ===== Szenen (Hue) ===== */
+.scenes__groups {
+    margin-bottom: 10px;
+}
+
+.scenes__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+    gap: 8px;
+}
+
+.scene {
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.scene:active,
+.scene--fired {
+    background: var(--active-soft);
+}
+
+.sheet .scenes .subtitle {
+    margin-top: 16px;
+}

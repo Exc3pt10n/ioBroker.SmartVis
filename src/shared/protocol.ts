@@ -334,6 +334,23 @@ export type SvEdit =
     | { kind: 'deleteRoom'; id: string }
     | { kind: 'resetDevice'; id: string };
 
+/** Szene einer Hue-Gruppe (Knopf-State, wird mit true ausgelöst) */
+export interface SvScene {
+    name: string;
+    state: SvStateRef;
+}
+
+/** Hue-Raum oder -Zone mit ihren Szenen */
+export interface SvSceneGroup {
+    /** Kanal-ID der Gruppe (z. B. "hue.0.Esszimmer") */
+    id: string;
+    name: string;
+    kind: 'room' | 'zone';
+    /** Geräte-IDs der Lampen dieser Gruppe (inkl. der Gruppe selbst, falls als Kachel erkannt) */
+    devices: string[];
+    scenes: SvScene[];
+}
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
@@ -344,6 +361,8 @@ export interface SvModel {
     /** Lokale Wetterstationen; die erste wird auf der Startseite angezeigt */
     weather: SvWeather[];
     shutterControl: SvShutterControl[];
+    /** Hue-Szenen je Raum/Zone */
+    scenes: SvSceneGroup[];
     /** Zeitpunkt der letzten Erkennung (ms) */
     generatedAt: number;
     /** Darf die App Anpassungen speichern? */
