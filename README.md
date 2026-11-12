@@ -138,6 +138,17 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.5.0 (2026-11-12)
+
+- (Exc3pt10n) Energie: Statuszeile über dem Energiefluss – Überschuss oder Netzbezug, Autarkie jetzt, Batterie voll/leer in …
+- (Exc3pt10n) Energie: Antippen eines Kreises im Energiefluss öffnet den passenden Verlauf (PV/Haus → Leistung, Netz, Batterie, Auto → Überschuss)
+- (Exc3pt10n) Verlauf: PV und Verbrauch (bzw. Bezug und Einspeisung) zusammen in einem Diagramm mit Legende und gemeinsamer Ablesung; Ansichten als Umschaltleiste (Leistung · Netz · Batterie · Überschuss); Einheit an der y-Achse; Hinweis auf die Datenquelle entfernt
+- (Exc3pt10n) PV-Prognose: tatsächliche Erzeugung von heute als Linie über der (gestrichelten) Prognose; „noch 0 kWh“ entfällt, wenn nichts mehr erwartet wird
+- (Exc3pt10n) Wallbox: Ladeeinstellungen in einem eigenen Fenster (auf dem Handy Bezeichnung über der Eingabe, technischer Hinweis zum Aufklappen); geschätzte Ladeleistung als „geschätzt“ gekennzeichnet
+- (Exc3pt10n) Energiezähler: Autarkie und Eigenverbrauch groß mit Vergleich zur Vorperiode, Mengen paarweise (Netz bezogen/eingespeist, Batterie geladen/entladen)
+- (Exc3pt10n) Energie auf dem Desktop: ausgeglichene Spalten, Verlauf über die volle Breite; einheitliche Kartenköpfe
+- (Exc3pt10n) Startseite: Energiefluss-Karte mit Statuszeile; auf dem Handy lassen sich Kennzahlen und Wetter gemeinsam anordnen
+
 ### 0.4.0 (2026-11-12)
 
 - (Exc3pt10n) Startseite auf dem Handy: Kennzahlen zuerst, Antippen springt zur passenden Liste (Lichter, Klima, offen, spielt, Störungen); das Wetter ist eine kompakte Zeile und klappt beim Antippen auf; keine einzelne Kennzahl mehr allein in der letzten Zeile

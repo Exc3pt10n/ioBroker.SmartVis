@@ -1,15 +1,15 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
 import { groupByRoom, isActive, isCoveredGroup, isPlaying, warnings } from '../device';
-import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
+import { formatPower, kwh, num, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
 import { SortableGrid } from '../components/SortableGrid';
-import { CustomSections } from '../components/CustomSections';
+import { CustomSections, type SectionDef } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
-import { EnergyFlow } from '../components/EnergyFlow';
+import { EnergyFlow, FlowStatus } from '../components/EnergyFlow';
 import { ForecastCard } from '../components/ForecastCard';
 import { switchLights } from '../lightActions';
 import { DASHBOARD_QUERY, useMediaQuery } from '../media';
@@ -193,6 +193,80 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const placeholder = (text: string): React.ReactNode =>
         editing ? <p className="csec__placeholder">{text}</p> : null;
 
+    // Kennzahlen, Wetter usw. – auf dem Handy eine gemeinsam sortierbare Liste,
+    // auf dem Desktop Kennzahlen als Leiste oben und die Karten in der linken Spalte
+    const kpiSections: SectionDef[] = [
+        {
+            key: 'kpis',
+            label: 'Kennzahlen',
+            node: (
+                <div
+                    className="kpis"
+                    role="list"
+                    aria-label="Kennzahlen"
+                >
+                    {kpis.map(k => (
+                        <KpiTile
+                            key={k.key}
+                            kpi={k}
+                        />
+                    ))}
+                </div>
+            ),
+        },
+    ];
+    const overviewSections: SectionDef[] = [
+        {
+            key: 'weather',
+            label: 'Wetter',
+            node: model.weather[0] ? (
+                <WeatherCard
+                    weather={model.weather[0]}
+                    extra={model.weather.slice(1)}
+                    compact={phone}
+                />
+            ) : null,
+        },
+        {
+            key: 'energy',
+            label: 'Energiefluss',
+            note: 'nur Desktop',
+            node:
+                dashboard && energy ? (
+                    <section className="card home__energy">
+                        <div className="card__head">
+                            <h2 className="subtitle">⚡ Energie</h2>
+                            <button
+                                type="button"
+                                className="linkbtn"
+                                onClick={toEnergy}
+                            >
+                                Details ›
+                            </button>
+                        </div>
+                        <FlowStatus
+                            flow={energy}
+                            remainingMin={num(model.energy[0]?.battery?.remaining, states)}
+                        />
+                        <EnergyFlow flow={energy} />
+                    </section>
+                ) : null,
+        },
+        ...model.pvForecast.map(p => ({
+            key: `forecast-${p.id}`,
+            label: 'PV-Prognose',
+            note: 'nur Desktop',
+            node: dashboard ? (
+                <ForecastCard
+                    pv={p}
+                    actualPvW={energy?.pv}
+                    producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
+                    actualRef={main?.flows.pv}
+                />
+            ) : null,
+        })),
+    ];
+
     return (
         <>
             <div className="titlebar titlebar--split">
@@ -205,78 +279,16 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                     <CustomSections
                         view="home.overview"
                         className="csecs csecs--stack"
-                        sections={[
-                            {
-                                key: 'weather',
-                                label: 'Wetter',
-                                node: model.weather[0] ? (
-                                    <WeatherCard
-                                        weather={model.weather[0]}
-                                        extra={model.weather.slice(1)}
-                                        compact={phone}
-                                    />
-                                ) : null,
-                            },
-                            {
-                                key: 'energy',
-                                label: 'Energiefluss',
-                                note: 'nur Desktop',
-                                node:
-                                    dashboard && energy ? (
-                                        <section className="card home__energy">
-                                            <div className="card__head">
-                                                <h2 className="subtitle">⚡ Energie</h2>
-                                                <button
-                                                    type="button"
-                                                    className="linkbtn"
-                                                    onClick={toEnergy}
-                                                >
-                                                    Details ›
-                                                </button>
-                                            </div>
-                                            <EnergyFlow flow={energy} />
-                                        </section>
-                                    ) : null,
-                            },
-                            ...model.pvForecast.map(p => ({
-                                key: `forecast-${p.id}`,
-                                label: 'PV-Prognose',
-                                note: 'nur Desktop',
-                                node: dashboard ? (
-                                    <ForecastCard
-                                        pv={p}
-                                        actualPvW={energy?.pv}
-                                        producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
-                                    />
-                                ) : null,
-                            })),
-                        ]}
+                        sections={dashboard ? overviewSections : [...kpiSections, ...overviewSections]}
                     />
                 </div>
                 <div className="home__kpis">
-                    <CustomSections
-                        view="home.top"
-                        sections={[
-                            {
-                                key: 'kpis',
-                                label: 'Kennzahlen',
-                                node: (
-                                    <div
-                                        className="kpis"
-                                        role="list"
-                                        aria-label="Kennzahlen"
-                                    >
-                                        {kpis.map(k => (
-                                            <KpiTile
-                                                key={k.key}
-                                                kpi={k}
-                                            />
-                                        ))}
-                                    </div>
-                                ),
-                            },
-                        ]}
-                    />
+                    {dashboard && (
+                        <CustomSections
+                            view="home.top"
+                            sections={kpiSections}
+                        />
+                    )}
                     {withoutRoom > 0 && !hintHidden && (
                         <div className="hint-row">
                             <button

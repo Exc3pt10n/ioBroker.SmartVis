@@ -13,6 +13,8 @@ export interface SectionDef {
     node: React.ReactNode;
     /** Zusatz im Bearbeiten-Modus, z. B. "nur Desktop" */
     note?: string;
+    /** Bei mehreren Spalten über die volle Breite (z. B. Diagramme); teilt die Spalten an dieser Stelle */
+    wide?: boolean;
 }
 
 /** Reihenfolge anwenden: gespeicherte Schlüssel zuerst, neue Bereiche an ihrer Standardposition danach */
@@ -70,29 +72,55 @@ export function CustomSections({
             return null;
         }
         if (columns > 1) {
-            const cols = Array.from({ length: Math.min(columns, visible.length) }, (_, c) =>
-                visible.filter((_, i) => i % columns === c),
-            );
+            // Abschnitte zwischen breiten Bereichen werden zeilenweise auf die Spalten verteilt
+            const blocks: { wide?: SectionDef; items: SectionDef[] }[] = [];
+            for (const sec of visible) {
+                if (sec.wide) {
+                    blocks.push({ wide: sec, items: [] });
+                } else if (blocks.length && !blocks[blocks.length - 1].wide) {
+                    blocks[blocks.length - 1].items.push(sec);
+                } else {
+                    blocks.push({ items: [sec] });
+                }
+            }
             return (
-                <div
-                    className={`${className} csecs--split`}
-                    style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(0, 1fr))` }}
-                >
-                    {cols.map((col, c) => (
-                        <div
-                            key={c}
-                            className="csecs__col"
-                        >
-                            {col.map(s => (
-                                <div
-                                    key={s.key}
-                                    className="csec"
-                                >
-                                    {s.node}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
+                <div className={`${className} csecs--blocks`}>
+                    {blocks.map((block, b) =>
+                        block.wide ? (
+                            <div
+                                key={block.wide.key}
+                                className="csec csec--wide"
+                            >
+                                {block.wide.node}
+                            </div>
+                        ) : (
+                            <div
+                                key={`cols-${b}`}
+                                className="csecs--split"
+                                style={{
+                                    gridTemplateColumns: `repeat(${Math.min(columns, block.items.length)}, minmax(0, 1fr))`,
+                                }}
+                            >
+                                {Array.from({ length: Math.min(columns, block.items.length) }, (_, c) => (
+                                    <div
+                                        key={c}
+                                        className="csecs__col"
+                                    >
+                                        {block.items
+                                            .filter((_, i) => i % columns === c)
+                                            .map(sec => (
+                                                <div
+                                                    key={sec.key}
+                                                    className="csec"
+                                                >
+                                                    {sec.node}
+                                                </div>
+                                            ))}
+                                    </div>
+                                ))}
+                            </div>
+                        ),
+                    )}
                 </div>
             );
         }

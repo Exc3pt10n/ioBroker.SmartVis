@@ -36,6 +36,8 @@ export function WallboxCard({ wallbox }: { wallbox: SvWallbox }): React.JSX.Elem
                     >
                         {s.estimated ? '≈ ' : ''}
                         {formatPower(s.power)}
+                        {/* Ohne Energiezähler nur geschätzt – sichtbar sagen statt nur per "≈" */}
+                        {s.estimated && <span className="wallbox__estimated">geschätzt</span>}
                     </div>
                 )}
             </div>

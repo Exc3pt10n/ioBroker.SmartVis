@@ -42,7 +42,82 @@ function Line({ node, power, direction }: { node: Node; power: number; direction
     );
 }
 
-export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element {
+/** Kurzfassung der Lage: Überschuss, Bezug oder ausgeglichen – mit Autarkie jetzt und Batterie */
+export function flowSummary(
+    flow: FlowSnapshot,
+    remainingMin?: number,
+): { tone: 'surplus' | 'import' | 'neutral'; text: string; details: string[] } {
+    const gi = flow.gridImport ?? 0;
+    const ge = flow.gridExport ?? 0;
+    const charge = flow.batteryCharge ?? 0;
+    const discharge = flow.batteryDischarge ?? 0;
+    const consumption = (flow.home ?? 0) + (flow.car ?? 0);
+    let tone: 'surplus' | 'import' | 'neutral' = 'neutral';
+    let text: string;
+    if (gi >= 50) {
+        tone = 'import';
+        text = `⚡ Netzbezug ${formatPower(gi)}`;
+    } else if (ge >= 50) {
+        tone = 'surplus';
+        text = `☀️ Überschuss ${formatPower(ge)} wird eingespeist`;
+    } else if (charge >= 50 && (flow.pv ?? 0) >= 50) {
+        tone = 'surplus';
+        text = `☀️ Überschuss lädt die Batterie`;
+    } else if ((flow.pv ?? 0) >= 50) {
+        text = '☀️ Solarstrom deckt den Verbrauch';
+    } else if (discharge >= 50) {
+        text = '🔋 Batterie versorgt das Haus';
+    } else {
+        text = '⚖️ Ausgeglichen';
+    }
+    const details: string[] = [];
+    if (consumption >= THRESHOLD_W) {
+        details.push(`Autarkie jetzt ${Math.round((1 - Math.min(gi, consumption) / consumption) * 100)} %`);
+    }
+    if (charge >= THRESHOLD_W || discharge >= THRESHOLD_W) {
+        const charging = charge >= discharge;
+        const time =
+            remainingMin && remainingMin > 0
+                ? ` · ${charging ? 'voll' : 'leer'} in ca. ${
+                      remainingMin >= 60
+                          ? `${Math.floor(remainingMin / 60)} h ${Math.round(remainingMin % 60)} min`
+                          : `${Math.round(remainingMin)} min`
+                  }`
+                : '';
+        details.push(`🔋 ${charging ? 'lädt' : 'entlädt'}${time}`);
+    }
+    return { tone, text, details };
+}
+
+export function FlowStatus({ flow, remainingMin }: { flow: FlowSnapshot; remainingMin?: number }): React.JSX.Element {
+    const { tone, text, details } = flowSummary(flow, remainingMin);
+    return (
+        <div
+            className={`flowstatus flowstatus--${tone}`}
+            role="status"
+        >
+            <span className="flowstatus__main">{text}</span>
+            {details.length > 0 && <span className="flowstatus__details">{details.join(' · ')}</span>}
+        </div>
+    );
+}
+
+const NODE_TITLES: Record<string, string> = {
+    pv: 'PV-Verlauf anzeigen',
+    grid: 'Netz-Verlauf anzeigen',
+    home: 'Verbrauchs-Verlauf anzeigen',
+    battery: 'Batterie-Verlauf anzeigen',
+    car: 'Wallbox-Verlauf anzeigen',
+};
+
+export function EnergyFlow({
+    flow,
+    onSelect,
+}: {
+    flow: FlowSnapshot;
+    /** Antippen eines Kreises (z. B. passenden Verlauf zeigen) */
+    onSelect?: (node: 'pv' | 'grid' | 'home' | 'battery' | 'car') => void;
+}): React.JSX.Element {
     const gridIn = (flow.gridImport ?? 0) >= (flow.gridExport ?? 0);
     const gridPower = gridIn ? (flow.gridImport ?? 0) : (flow.gridExport ?? 0);
     const batOut = (flow.batteryDischarge ?? 0) >= (flow.batteryCharge ?? 0);
@@ -53,7 +128,7 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
     const values: Record<string, { value: string; sub?: string }> = {
         car: {
             value: `${flow.carEstimated ? '≈ ' : ''}${formatPower(flow.car)}`,
-            sub: (flow.car ?? 0) >= THRESHOLD_W ? 'lädt' : undefined,
+            sub: (flow.car ?? 0) >= THRESHOLD_W ? (flow.carEstimated ? 'lädt · geschätzt' : 'lädt') : undefined,
         },
         pv: { value: formatPower(flow.pv) },
         grid: {
@@ -120,8 +195,23 @@ export function EnergyFlow({ flow }: { flow: FlowSnapshot }): React.JSX.Element 
                 {nodes.map(n => (
                     <g
                         key={n.key}
-                        className={`flow__node flow__node--${n.key}`}
+                        className={`flow__node flow__node--${n.key}${onSelect ? ' flow__node--link' : ''}`}
+                        {...(onSelect
+                            ? {
+                                  role: 'button',
+                                  tabIndex: 0,
+                                  'aria-label': `${n.label} ${values[n.key].value}: ${NODE_TITLES[n.key]}`,
+                                  onClick: () => onSelect(n.key as 'pv'),
+                                  onKeyDown: (e: React.KeyboardEvent) => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                          e.preventDefault();
+                                          onSelect(n.key as 'pv');
+                                      }
+                                  },
+                              }
+                            : {})}
                     >
+                        {onSelect && <title>{NODE_TITLES[n.key]}</title>}
                         <circle
                             cx={n.x}
                             cy={n.y}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { SvPvForecast, SvStateRef } from '../../../src/shared/protocol';
-import { useConnection } from '../connection';
+import { connection, useConnection } from '../connection';
 import { kwh, num, watts } from '../energy';
 import { ForecastChart, type Point } from './ForecastChart';
 
@@ -36,16 +36,56 @@ function sameDay(t: number, ref: Date): boolean {
     return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth() && d.getDate() === ref.getDate();
 }
 
+/** Tatsächliche PV-Leistung von heute aus dem Verlauf (alle 5 Minuten neu) */
+function useActualToday(ref: SvStateRef | undefined): Point[] {
+    const [points, setPoints] = useState<Point[]>([]);
+    const id = ref?.history?.id;
+    const unit = (ref?.history?.unit || ref?.unit || 'W').trim();
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+        const f = unit === 'kW' ? 1000 : unit === 'MW' ? 1_000_000 : 1;
+        let cancelled = false;
+        const load = (): void => {
+            connection.history(id, '24h').then(
+                raw => {
+                    if (cancelled) {
+                        return;
+                    }
+                    const midnight = new Date();
+                    midnight.setHours(0, 0, 0, 0);
+                    setPoints(
+                        raw.filter(([t]) => t >= midnight.getTime()).map(([t, v]) => ({ t, w: Math.max(0, v * f) })),
+                    );
+                },
+                () => undefined,
+            );
+        };
+        load();
+        const timer = setInterval(load, 5 * 60_000);
+        return () => {
+            cancelled = true;
+            clearInterval(timer);
+        };
+    }, [id, unit]);
+    return points;
+}
+
 export function ForecastCard({
     pv,
     actualPvW,
     producedTodayKwh,
+    actualRef,
 }: {
     pv: SvPvForecast;
     actualPvW?: number;
     producedTodayKwh?: number;
+    /** PV-Leistung mit Verlauf: tatsächliche Erzeugung als Linie in der Prognose */
+    actualRef?: SvStateRef;
 }): React.JSX.Element {
     const { states } = useConnection();
+    const actual = useActualToday(actualRef);
     const [day, setDay] = useState<'today' | 'tomorrow'>('today');
     const s = pv.summary;
     const raw = pv.curve ? states[pv.curve.id]?.val : undefined;
@@ -74,7 +114,9 @@ export function ForecastCard({
                 <div className="stat">
                     <span className="stat__value">{fmtKwh(todayKwh)}</span>
                     <span className="stat__label">
-                        Heute erwartet{remainingKwh !== undefined ? ` · noch ${fmtKwh(remainingKwh)}` : ''}
+                        Heute erwartet
+                        {/* "noch 0 kWh" neben einer verfehlten Prognose verwirrt – nur zeigen, wenn noch etwas kommt */}
+                        {remainingKwh !== undefined && remainingKwh >= 0.05 ? ` · noch ${fmtKwh(remainingKwh)}` : ''}
                     </span>
                 </div>
                 <div className="stat">
@@ -92,7 +134,9 @@ export function ForecastCard({
                     aria-label="Erzeugt im Vergleich zur Prognose"
                 >
                     <div className="progress__text">
-                        Erzeugt: {fmtKwh(producedTodayKwh)} von {fmtKwh(todayKwh)} ({Math.round(progress * 100)} %)
+                        {progress >= 1
+                            ? `Erzeugt: ${fmtKwh(producedTodayKwh)} – Prognose erreicht`
+                            : `Erzeugt: ${fmtKwh(producedTodayKwh)} von ${fmtKwh(todayKwh)} erwartet (${Math.round(progress * 100)} %)`}
                     </div>
                     <div className="progress__track">
                         <div
@@ -147,6 +191,7 @@ export function ForecastCard({
                 points={points}
                 now={day === 'today' ? now : undefined}
                 actualW={day === 'today' ? actualPvW : undefined}
+                actual={day === 'today' ? actual : undefined}
                 label={`PV-Prognose ${day === 'today' ? 'heute' : 'morgen'} im Tagesverlauf`}
             />
             {updated !== undefined && (
