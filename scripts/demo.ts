@@ -575,7 +575,9 @@ function demoHistory(id: string, range: string): [number, number][] {
         points.push([t, Math.round(v * 100) / 100]);
     }
     // Wie sql mit "nur Änderungen aufzeichnen": gleiche Folgewerte (z. B. PV nachts 0) entfallen
-    return points.filter((p, i) => i === 0 || p[1] !== points[i - 1][1]);
+    const changes = points.filter((p, i) => i === 0 || p[1] !== points[i - 1][1]);
+    // PV-Überschuss der Wallbox wird erst seit 3 Stunden aufgezeichnet (frisch eingeschaltet)
+    return id.endsWith('statistics.surplus') ? changes.filter(p => p[0] > now - 3 * 3600_000) : changes;
 }
 
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });

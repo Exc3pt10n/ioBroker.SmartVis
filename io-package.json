@@ -4,17 +4,17 @@
         "version": "0.2.2",
         "news": {
             "0.2.2": {
-                "en": "History charts: gaps without logged values (\"log changes only\") now keep the last value instead of drawing a sloped line that was never measured",
-                "de": "Verläufe: Lücken ohne gespeicherte Werte (Aufzeichnung „nur Änderungen“) halten jetzt den letzten Wert, statt eine nie gemessene schräge Linie zu zeichnen",
-                "ru": "Графики истории: в промежутках без сохранённых значений («только изменения») теперь сохраняется последнее значение вместо наклонной линии, которая никогда не измерялась",
-                "pt": "Históricos: intervalos sem valores registados (\"apenas alterações\") mantêm agora o último valor em vez de desenhar uma linha inclinada nunca medida",
-                "nl": "Historie: gaten zonder opgeslagen waarden (\"alleen wijzigingen\") houden nu de laatste waarde vast in plaats van een nooit gemeten schuine lijn te tekenen",
-                "fr": "Historiques : les intervalles sans valeurs enregistrées (« uniquement les changements ») conservent désormais la dernière valeur au lieu de tracer une pente jamais mesurée",
-                "it": "Storico: gli intervalli senza valori registrati (\"solo modifiche\") mantengono ora l'ultimo valore invece di disegnare una linea inclinata mai misurata",
-                "es": "Históricos: los intervalos sin valores registrados (\"solo cambios\") mantienen ahora el último valor en lugar de dibujar una línea inclinada nunca medida",
-                "pl": "Historia: luki bez zapisanych wartości („tylko zmiany”) zachowują teraz ostatnią wartość zamiast rysować nigdy niezmierzoną ukośną linię",
-                "uk": "Історія: проміжки без збережених значень («лише зміни») тепер зберігають останнє значення замість похилої лінії, яку ніколи не вимірювали",
-                "zh-cn": "历史曲线：没有记录值的间隔（“仅记录变化”）现在保持最后一个值，而不是绘制从未测量过的斜线"
+                "en": "History charts: gaps without logged values (\"log changes only\") keep the last value instead of a sloped line that was never measured; the average (Ø) is now time-weighted; the time axis always shows the full selected period",
+                "de": "Verläufe: Lücken ohne gespeicherte Werte (Aufzeichnung „nur Änderungen“) halten den letzten Wert statt einer nie gemessenen schrägen Linie; der Mittelwert (Ø) ist jetzt zeitgewichtet; die Zeitachse zeigt immer den vollen gewählten Zeitraum",
+                "ru": "Графики истории: в промежутках без сохранённых значений («только изменения») сохраняется последнее значение вместо никогда не измеренной наклонной линии; среднее (Ø) теперь взвешено по времени; ось времени всегда показывает весь выбранный период",
+                "pt": "Históricos: intervalos sem valores registados (\"apenas alterações\") mantêm o último valor em vez de uma linha inclinada nunca medida; a média (Ø) é agora ponderada no tempo; o eixo temporal mostra sempre o período completo selecionado",
+                "nl": "Historie: gaten zonder opgeslagen waarden (\"alleen wijzigingen\") houden de laatste waarde vast in plaats van een nooit gemeten schuine lijn; het gemiddelde (Ø) is nu tijdgewogen; de tijdas toont altijd de volledige gekozen periode",
+                "fr": "Historiques : les intervalles sans valeurs enregistrées (« uniquement les changements ») conservent la dernière valeur au lieu d'une pente jamais mesurée ; la moyenne (Ø) est désormais pondérée dans le temps ; l'axe du temps affiche toujours toute la période choisie",
+                "it": "Storico: gli intervalli senza valori registrati (\"solo modifiche\") mantengono l'ultimo valore invece di una linea inclinata mai misurata; la media (Ø) è ora ponderata nel tempo; l'asse temporale mostra sempre l'intero periodo selezionato",
+                "es": "Históricos: los intervalos sin valores registrados (\"solo cambios\") mantienen el último valor en lugar de una línea inclinada nunca medida; la media (Ø) ahora está ponderada en el tiempo; el eje temporal muestra siempre todo el periodo elegido",
+                "pl": "Historia: luki bez zapisanych wartości („tylko zmiany”) zachowują ostatnią wartość zamiast nigdy niezmierzonej ukośnej linii; średnia (Ø) jest teraz ważona czasem; oś czasu zawsze pokazuje cały wybrany okres",
+                "uk": "Історія: проміжки без збережених значень («лише зміни») зберігають останнє значення замість ніколи не виміряної похилої лінії; середнє (Ø) тепер зважене за часом; вісь часу завжди показує весь вибраний період",
+                "zh-cn": "历史曲线：没有记录值的间隔（“仅记录变化”）保持最后一个值，而不是绘制从未测量过的斜线；平均值（Ø）现在按时间加权；时间轴始终显示所选的完整时间段"
             },
             "0.2.1": {
                 "en": "Q.HOME with additional PV generators (qhome-ess-hyb-g2 from 0.3.0, e.g. a second inverter): PV power, energy flow and PV history now use the total (PvPwTotal); the flow shows the split per generator",
