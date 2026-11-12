@@ -263,6 +263,18 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
+    // Hue-Gruppen: Lampen-Geräte merken (Geräte-ID = Kanal-ID, ggf. mit "#n")
+    for (const device of devices) {
+        const channels = hue.members.get(device.id);
+        if (channels) {
+            const ids = devices
+                .filter(d => d !== device && channels.some(c => d.id === c || d.id.startsWith(`${c}#`)))
+                .map(d => d.id);
+            if (ids.length) {
+                device.groupOf = ids;
+            }
+        }
+    }
     devices.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
     // Namen aus der Rollladen-Automatik für nicht umbenannte Kanäle ("Küche Eckfenster Seite" statt "Rollladen 2")
     for (const sc of profiles.shutterControl) {
@@ -416,8 +428,8 @@ function toDevice(
         } else if (normalize(name) !== normalize(roomName)) {
             name = stripRoomFromName(name, roomName);
         } else if (LIGHT_TYPES.has(control.type)) {
-            // Raumgruppe (z. B. Hue-Raum "Küche") → "Alle Lichter"
-            name = 'Alle Lichter';
+            // Einzelne Lampe, die wie ihr Raum heißt (z. B. Hue-Lampe "Wohnzimmer") – Raumgruppen sind oben erledigt
+            name = 'Licht';
         } else if (ROOM_NAMED_TYPES[control.type]) {
             // Gerät heißt wie der Raum → Gerätetyp als Name
             name = ROOM_NAMED_TYPES[control.type];

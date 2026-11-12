@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SvHistoryRange } from '../../../src/shared/protocol';
+import { READ_STEP_MS, valueAt } from '../../../src/shared/series';
 
 const H = 170;
 const PAD = { top: 12, right: 12, bottom: 24, left: 44 };
@@ -129,18 +130,18 @@ export function HistoryChart({
         );
     }
     const { x, y, line, area, yTicks, xTicks, t0, t1 } = geometry;
-    const hovered = hover !== null ? points[hover] : undefined;
+    // Ablesen genau an der Stelle des Zeigers/Fingers: Uhrzeit dort und der Wert, der dann galt
+    // (letzter Messwert davor) – auch mitten in Lücken der Aufzeichnung ("nur Änderungen")
+    const step = READ_STEP_MS[range] ?? 15 * 60_000;
+    const clampT = (t: number): number => Math.min(t1, Math.max(t0, t));
+    const hoverValue = hover !== null ? valueAt(points, hover) : undefined;
+    const hovered: [number, number] | undefined =
+        hover !== null && hoverValue !== undefined ? [hover, hoverValue] : undefined;
 
     const pick = (clientX: number): void => {
         const rect = wrap.current!.getBoundingClientRect();
         const t = t0 + ((clientX - rect.left - PAD.left) / (width - PAD.left - PAD.right)) * (t1 - t0);
-        let best = 0;
-        points.forEach((p, i) => {
-            if (Math.abs(p[0] - t) < Math.abs(points[best][0] - t)) {
-                best = i;
-            }
-        });
-        setHover(best);
+        setHover(clampT(Math.round(t / step) * step));
     };
 
     return (
@@ -156,13 +157,16 @@ export function HistoryChart({
                 tabIndex={0}
                 onPointerMove={e => pick(e.clientX)}
                 onPointerDown={e => pick(e.clientX)}
-                onPointerLeave={() => setHover(null)}
+                // Touch: Wert nach dem Loslassen stehen lassen (zum Ablesen); Maus: beim Verlassen ausblenden
+                onPointerLeave={e => e.pointerType !== 'touch' && setHover(null)}
+                // Langes Drücken (iOS/Android): kein Kontextmenü/Kopieren statt Ablesen
+                onContextMenu={e => e.preventDefault()}
                 onBlur={() => setHover(null)}
                 onKeyDown={e => {
                     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
                         e.preventDefault();
-                        const d = e.key === 'ArrowRight' ? 1 : -1;
-                        setHover(h => Math.min(points.length - 1, Math.max(0, (h ?? points.length - 1) + d)));
+                        const d = e.key === 'ArrowRight' ? step : -step;
+                        setHover(h => clampT((h ?? t1) + d));
                     }
                 }}
             >

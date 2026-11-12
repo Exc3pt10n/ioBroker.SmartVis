@@ -1,3 +1,4 @@
+import { ROOM_ICON_CHOICES, autoRoomIcon } from '../rooms';
 import { useState } from 'react';
 import type { SvDevice, SvEdit, SvRoom } from '../../../src/shared/protocol';
 
@@ -217,6 +218,37 @@ export function EditRoomSheet({ room, onClose }: { room: SvRoom; onClose: () => 
                     checked={!!current.hidden}
                     onChange={v => connection.edit({ kind: 'room', id: current.id, patch: { hidden: v } })}
                 />
+            </div>
+            <div className="detail__controls icon-picker">
+                <span className="setting__text">Symbol</span>
+                <div
+                    className="icon-picker__grid"
+                    role="radiogroup"
+                    aria-label="Symbol des Raums"
+                >
+                    <button
+                        type="button"
+                        role="radio"
+                        aria-checked={!current.icon}
+                        className={`icon-picker__auto${!current.icon ? ' is-selected' : ''}`}
+                        onClick={() => connection.edit({ kind: 'room', id: current.id, patch: { icon: null } })}
+                    >
+                        {autoRoomIcon(current.name)} Automatisch
+                    </button>
+                    {ROOM_ICON_CHOICES.map(icon => (
+                        <button
+                            key={icon}
+                            type="button"
+                            role="radio"
+                            aria-checked={current.icon === icon}
+                            aria-label={`Symbol ${icon}`}
+                            className={current.icon === icon ? 'is-selected' : ''}
+                            onClick={() => connection.edit({ kind: 'room', id: current.id, patch: { icon } })}
+                        >
+                            {icon}
+                        </button>
+                    ))}
+                </div>
             </div>
             {current.source === 'custom' && (
                 <button

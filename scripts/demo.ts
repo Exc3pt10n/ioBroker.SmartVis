@@ -629,6 +629,14 @@ const server = new SmartVisServer(
                 states[id] = { val, ack: true, ts: Date.now() };
                 server.queueState(id, states[id]);
                 simulateShutterControl(id, val);
+                // Hue-Raumgruppe schaltet wie die Bridge ihre Lampen mit
+                const groupLamps: Record<string, string[]> = { 'hue.0.Küche': ['hue.0.Spots', 'hue.0.Pendelleuchte'] };
+                const m = /^(hue\.0\.[^.]+)\.(on|level)$/.exec(id);
+                for (const lamp of (m && groupLamps[m[1]]) || []) {
+                    const lid = `${lamp}.${m![2]}`;
+                    states[lid] = { val, ack: true, ts: Date.now() };
+                    server.queueState(lid, states[lid]);
+                }
             }, 300);
             return Promise.resolve();
         },

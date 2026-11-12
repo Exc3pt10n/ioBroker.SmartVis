@@ -68,6 +68,11 @@ describe('hue rooms', () => {
         expect(byId['hue.0.Küche'].roomId).to.equal('enum.rooms.kitchen');
     });
 
+    it('knows the lamps of a room group (counted once on the home page)', () => {
+        expect(byId['hue.0.Küche'].groupOf).to.have.members(['hue.0.Spot_1', 'hue.0.Spot_2']);
+        expect(byId['hue.0.Spot_1'].groupOf).to.equal(undefined);
+    });
+
     it('skips entertainment areas', () => {
         expect(byId['hue.0.TV']).to.equal(undefined);
     });
