@@ -138,7 +138,10 @@ export function ForecastChart({
                 tabIndex={0}
                 onPointerMove={e => pick(e.clientX)}
                 onPointerDown={e => pick(e.clientX)}
-                onPointerLeave={() => setHover(null)}
+                // Touch: Wert nach dem Loslassen stehen lassen (zum Ablesen); Maus: beim Verlassen ausblenden
+                onPointerLeave={e => e.pointerType !== 'touch' && setHover(null)}
+                // Langes Drücken (iOS/Android): kein Kontextmenü/Kopieren statt Ablesen
+                onContextMenu={e => e.preventDefault()}
                 onBlur={() => setHover(null)}
                 onKeyDown={e => {
                     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {

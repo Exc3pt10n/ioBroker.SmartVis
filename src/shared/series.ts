@@ -38,3 +38,22 @@ export function timeWeightedAverage(points: Point[], end?: number): number | und
     }
     return sum / span;
 }
+
+/** Wert zum Zeitpunkt t: der letzte Punkt davor gilt weiter; vor dem ersten Punkt undefined */
+export function valueAt(points: Point[], t: number): number | undefined {
+    let value: number | undefined;
+    for (const p of points) {
+        if (p[0] > t) {
+            break;
+        }
+        value = p[1];
+    }
+    return value;
+}
+
+/** Raster für das Ablesen im Diagramm (entspricht der Auflösung der Abfrage) */
+export const READ_STEP_MS: Record<string, number> = {
+    '6h': 5 * 60_000,
+    '24h': 15 * 60_000,
+    '7d': 3600_000,
+};

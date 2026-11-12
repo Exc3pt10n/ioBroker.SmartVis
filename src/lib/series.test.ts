@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { clipToRange, timeWeightedAverage, type Point } from '../shared/series';
+import { clipToRange, timeWeightedAverage, valueAt, type Point } from '../shared/series';
 
 const h = 3600_000;
 
@@ -42,5 +42,17 @@ describe('Zeitreihen', () => {
             ),
         ).to.deep.equal([[0, 2]]);
         expect(clipToRange([[-h, 1]], 0, h)).to.deep.equal([[0, 1]]);
+    });
+
+    it('liest den geltenden Wert zu jedem Zeitpunkt ab (auch mitten in einer Lücke)', () => {
+        const points: Point[] = [
+            [0, 1],
+            [2 * h, 0],
+            [10 * h, 3],
+        ];
+        expect(valueAt(points, -1)).to.equal(undefined);
+        expect(valueAt(points, 0)).to.equal(1);
+        expect(valueAt(points, 5 * h)).to.equal(0);
+        expect(valueAt(points, 11 * h)).to.equal(3);
     });
 });
