@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useCardColumns } from '../media';
 import type { SvStateRef } from '../../../src/shared/protocol';
-import { EnergyFlow } from '../components/EnergyFlow';
+import { EnergyFlow, FlowStatus } from '../components/EnergyFlow';
 import { EnergyTotals } from '../components/EnergyTotals';
 import { ForecastCard } from '../components/ForecastCard';
 import { HistoryPanel, type HistorySeries } from '../components/HistoryPanel';
@@ -13,6 +14,7 @@ import { kwh, num, snapshot } from '../energy';
 export function EnergyView(): React.JSX.Element {
     const { model, states } = useConnection();
     const columns = useCardColumns();
+    const [focus, setFocus] = useState<{ key: string; n: number }>();
     if (!model) {
         return <p className="empty">Lade …</p>;
     }
@@ -28,30 +30,85 @@ export function EnergyView(): React.JSX.Element {
     // Verläufe: Leistungsflüsse, Ladezustand und PV-Überschuss der Wallbox (sofern aufgezeichnet)
     const main = model.energy[0];
     const pvColor = 'var(--chart-pv)';
-    const energyHistory = (
-        [
-            main?.flows.pv && { key: 'pv', label: 'PV', ref: main.flows.pv, color: pvColor, zeroBased: true },
-            main?.flows.home && { key: 'home', label: 'Verbrauch', ref: main.flows.home, zeroBased: true },
-            main?.flows.gridImport && { key: 'gi', label: 'Netzbezug', ref: main.flows.gridImport, zeroBased: true },
-            main?.flows.gridExport && { key: 'ge', label: 'Einspeisung', ref: main.flows.gridExport, zeroBased: true },
-            main?.flows.batteryCharge && {
-                key: 'bc',
-                label: 'Batterie laden',
-                ref: main.flows.batteryCharge,
-                zeroBased: true,
-            },
-            main?.flows.batteryDischarge && {
-                key: 'bd',
-                label: 'Batterie entladen',
-                ref: main.flows.batteryDischarge,
-                zeroBased: true,
-            },
-            main?.battery?.soc && { key: 'soc', label: 'Ladezustand', ref: main.battery.soc, zeroBased: true },
-            ...model.wallboxes.map(w =>
-                w.surplus ? { key: `s-${w.id}`, label: 'PV-Überschuss', ref: w.surplus, color: pvColor } : undefined,
-            ),
-        ] as (HistorySeries | undefined | false)[]
-    ).filter((x): x is HistorySeries => !!x && !!x.ref.history);
+    // Ansichten: Leistung (PV + Verbrauch zusammen), Netz (Bezug + Einspeisung), Batterie, PV-Überschuss
+    const f = main?.flows;
+    const has = (ref: SvStateRef | undefined): ref is SvStateRef => !!ref?.history;
+    const homeColor = 'var(--chart-series)';
+    const candidates: (HistorySeries | undefined | false)[] = [
+        has(f?.pv)
+            ? {
+                  key: 'power',
+                  label: 'Leistung',
+                  lineLabel: 'PV',
+                  ref: f.pv,
+                  color: pvColor,
+                  zeroBased: true,
+                  extra: has(f?.home) ? [{ label: 'Verbrauch', ref: f.home, color: homeColor }] : [],
+              }
+            : has(f?.home) && { key: 'power', label: 'Verbrauch', ref: f.home, color: homeColor, zeroBased: true },
+        has(f?.gridImport)
+            ? {
+                  key: 'grid',
+                  label: 'Netz',
+                  lineLabel: 'Bezug',
+                  ref: f.gridImport,
+                  color: 'var(--chart-grid-import)',
+                  zeroBased: true,
+                  extra: has(f?.gridExport)
+                      ? [{ label: 'Einspeisung', ref: f.gridExport, color: 'var(--chart-grid-export)' }]
+                      : [],
+              }
+            : has(f?.gridExport) && {
+                  key: 'grid',
+                  label: 'Netz',
+                  ref: f.gridExport,
+                  color: 'var(--chart-grid-export)',
+                  zeroBased: true,
+              },
+        has(main?.battery?.soc)
+            ? {
+                  key: 'battery',
+                  label: 'Batterie',
+                  ref: main.battery.soc,
+                  color: 'var(--chart-battery)',
+                  zeroBased: true,
+              }
+            : has(f?.batteryCharge) && {
+                  key: 'battery',
+                  label: 'Batterie',
+                  lineLabel: 'Laden',
+                  ref: f.batteryCharge,
+                  color: 'var(--chart-battery)',
+                  zeroBased: true,
+                  extra: has(f?.batteryDischarge)
+                      ? [{ label: 'Entladen', ref: f.batteryDischarge, color: 'var(--chart-grid-import)' }]
+                      : [],
+              },
+        ...model.wallboxes.map(w =>
+            has(w.surplus)
+                ? {
+                      key: `s-${w.id}`,
+                      label: model.wallboxes.length > 1 ? `Überschuss ${w.name}` : 'Überschuss',
+                      ref: w.surplus,
+                      color: pvColor,
+                  }
+                : undefined,
+        ),
+    ];
+    const energyHistory = candidates.filter((x): x is HistorySeries => !!x);
+    // Antippen im Energiefluss → passende Ansicht im Verlauf
+    const surplusKey = energyHistory.find(h => h.key.startsWith('s-'))?.key;
+    const showHistory = (node: 'pv' | 'grid' | 'home' | 'battery' | 'car'): void => {
+        const key =
+            node === 'grid'
+                ? 'grid'
+                : node === 'battery'
+                  ? 'battery'
+                  : node === 'car' && surplusKey
+                    ? surplusKey
+                    : 'power';
+        setFocus({ key, n: Date.now() });
+    };
 
     const multi = model.energy.length > 1;
     const sections: SectionDef[] = [
@@ -68,20 +125,18 @@ export function EnergyView(): React.JSX.Element {
                     label: `Energiefluss${suffix}`,
                     node: (
                         <section className="card energy__flow">
-                            {multi && <h2 className="subtitle">{system.name}</h2>}
+                            <h2 className="subtitle">⚡ {multi ? system.name : 'Energiefluss'}</h2>
                             {offline && (
                                 <div className="banner banner--offline">{system.name}: keine Verbindung zum Gerät</div>
                             )}
-                            <EnergyFlow flow={flow} />
-                            {remaining ? (
-                                <p className="energy__note">
-                                    Batterie{' '}
-                                    {(flow.batteryCharge ?? 0) > (flow.batteryDischarge ?? 0) ? 'voll' : 'leer'} in ca.{' '}
-                                    {remaining >= 60
-                                        ? `${Math.floor(remaining / 60)} h ${remaining % 60} min`
-                                        : `${remaining} min`}
-                                </p>
-                            ) : null}
+                            <FlowStatus
+                                flow={flow}
+                                remainingMin={remaining}
+                            />
+                            <EnergyFlow
+                                flow={flow}
+                                onSelect={energyHistory.length ? showHistory : undefined}
+                            />
                         </section>
                     ),
                 },
@@ -105,7 +160,15 @@ export function EnergyView(): React.JSX.Element {
         {
             key: 'history',
             label: 'Verlauf',
-            node: energyHistory.length > 0 ? <HistoryPanel series={energyHistory} /> : null,
+            // Zeitreihen profitieren von Breite: auf dem Desktop über beide Spalten
+            wide: true,
+            node:
+                energyHistory.length > 0 ? (
+                    <HistoryPanel
+                        series={energyHistory}
+                        focus={focus}
+                    />
+                ) : null,
         },
         ...model.pvForecast.map(pv => ({
             key: `forecast-${pv.id}`,
@@ -115,11 +178,12 @@ export function EnergyView(): React.JSX.Element {
                     pv={pv}
                     actualPvW={main ? snapshot(main, states).pv : undefined}
                     producedTodayKwh={main?.today?.pv ? kwh(main.today.pv, states) : undefined}
+                    actualRef={main?.flows.pv}
                 />
             ),
         })),
     ];
-    // Standard: Fluss, Wallbox, Zähler, Verlauf, Prognose
+    // Standard: Fluss, Wallbox, Zähler, Prognose (zwei ausgeglichene Spalten), Verlauf über die volle Breite
     const rank = (k: string): number =>
         k.startsWith('flow-')
             ? 0
@@ -128,8 +192,8 @@ export function EnergyView(): React.JSX.Element {
               : k.startsWith('totals-')
                 ? 2
                 : k === 'history'
-                  ? 3
-                  : 4;
+                  ? 4
+                  : 3;
     sections.sort((a, b) => rank(a.key) - rank(b.key));
 
     return (

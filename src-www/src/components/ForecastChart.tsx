@@ -7,8 +7,9 @@ export interface Point {
     w: number;
 }
 
-const H = 180;
-const PAD = { top: 12, right: 12, bottom: 24, left: 40 };
+const H = 192;
+/* oben Platz für die Einheit der y-Achse */
+const PAD = { top: 24, right: 12, bottom: 24, left: 40 };
 
 function formatKw(w: number): string {
     return `${(w / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1, minimumFractionDigits: 1 })} kW`;
@@ -26,19 +27,35 @@ function niceMax(maxW: number): { max: number; step: number } {
     return { max: Math.ceil(kw / step) * step * 1000, step: step * 1000 };
 }
 
+/** Ist-Wert zur Zeit t: letzter Messwert davor (höchstens 30 min alt) */
+function actualAt(actual: Point[], t: number): number | undefined {
+    let found: Point | undefined;
+    for (const p of actual) {
+        if (p.t > t) {
+            break;
+        }
+        found = p;
+    }
+    return found && t - found.t <= 30 * 60_000 ? found.w : undefined;
+}
+
 /**
- * Prognose-Verlauf eines Tages: eine Serie (Linie 2px + 10%-Fläche), optional der aktuelle
- * Istwert als Punkt und eine "jetzt"-Linie. Hover/Tastatur: Fadenkreuz mit Tooltip.
+ * Prognose-Verlauf eines Tages (Fläche + Linie, gestrichelt, sobald Ist-Werte dazukommen),
+ * optional die tatsächliche Erzeugung als durchgezogene Linie, der aktuelle Istwert als Punkt
+ * und eine "jetzt"-Linie. Hover/Tastatur: Fadenkreuz mit Tooltip.
  */
 export function ForecastChart({
     points,
     now,
     actualW,
+    actual = [],
     label,
 }: {
     points: Point[];
     now?: number;
     actualW?: number;
+    /** Tatsächliche Erzeugung (aus dem Verlauf), aufsteigend sortiert */
+    actual?: Point[] | undefined;
     label: string;
 }): React.JSX.Element {
     const wrap = useRef<HTMLDivElement>(null);
@@ -86,7 +103,8 @@ export function ForecastChart({
 
     const t0 = data[0].t;
     const t1 = data[data.length - 1].t;
-    const { max, step } = niceMax(Math.max(...data.map(p => p.w), actualW ?? 0));
+    const shownActual = actual.filter(p => p.t >= t0 && p.t <= t1);
+    const { max, step } = niceMax(Math.max(...data.map(p => p.w), ...shownActual.map(p => p.w), actualW ?? 0));
     const iw = width - PAD.left - PAD.right;
     const ih = H - PAD.top - PAD.bottom;
     const x = (t: number): number => PAD.left + ((t - t0) / (t1 - t0)) * iw;
@@ -94,6 +112,8 @@ export function ForecastChart({
 
     const line = data.map((p, i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p.w).toFixed(1)}`).join('');
     const area = `${line}L${x(t1).toFixed(1)},${y(0)}L${x(t0).toFixed(1)},${y(0)}Z`;
+    const actualLine = shownActual.map((p, i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p.w).toFixed(1)}`).join('');
+    const withActual = shownActual.length > 1;
 
     const yTicks: number[] = [];
     for (let v = 0; v <= max + 1; v += step) {
@@ -112,6 +132,8 @@ export function ForecastChart({
 
     const showNow = now !== undefined && now >= t0 && now <= t1;
     const hovered = hover !== null ? data[hover] : undefined;
+    const hoveredActual =
+        hovered && withActual && (now === undefined || hovered.t <= now) ? actualAt(shownActual, hovered.t) : undefined;
 
     const pick = (clientX: number): void => {
         const rect = wrap.current!.getBoundingClientRect();
@@ -170,6 +192,14 @@ export function ForecastChart({
                         </text>
                     </g>
                 ))}
+                <text
+                    x={PAD.left - 6}
+                    y={12}
+                    className="fchart__axis fchart__unit"
+                    textAnchor="end"
+                >
+                    kW
+                </text>
                 {xTicks.map(t => (
                     <text
                         key={t}
@@ -187,8 +217,14 @@ export function ForecastChart({
                 />
                 <path
                     d={line}
-                    className="fchart__line"
+                    className={`fchart__line${withActual ? ' fchart__line--forecast' : ''}`}
                 />
+                {withActual && (
+                    <path
+                        d={actualLine}
+                        className="fchart__actual-line"
+                    />
+                )}
                 {showNow && (
                     <g>
                         <line
@@ -241,20 +277,38 @@ export function ForecastChart({
                     style={{ left: Math.min(Math.max(x(hovered.t), 60), width - 60) }}
                     role="status"
                 >
-                    <span className="fchart__tip-time">{hhmm(hovered.t)}</span> {formatKw(hovered.w)}
+                    <span className="fchart__tip-time">{hhmm(hovered.t)}</span>{' '}
+                    {withActual ? (
+                        <>
+                            <span className="fchart__tip-row">Prognose {formatKw(hovered.w)}</span>
+                            {hoveredActual !== undefined && (
+                                <span className="fchart__tip-row">Ist {formatKw(hoveredActual)}</span>
+                            )}
+                        </>
+                    ) : (
+                        formatKw(hovered.w)
+                    )}
                 </div>
             )}
-            {actualW !== undefined && showNow && (
+            {((actualW !== undefined && showNow) || withActual) && (
                 <div
                     className="fchart__legend"
                     aria-hidden="true"
                 >
                     <span>
-                        <i className="fchart__key fchart__key--line" /> Prognose
+                        <i className={`fchart__key fchart__key--line${withActual ? ' fchart__key--dashed' : ''}`} />{' '}
+                        Prognose
                     </span>
-                    <span>
-                        <i className="fchart__key fchart__key--dot" /> Ist jetzt: {formatKw(actualW)}
-                    </span>
+                    {withActual && (
+                        <span>
+                            <i className="fchart__key fchart__key--line fchart__key--actual" /> Erzeugt
+                        </span>
+                    )}
+                    {actualW !== undefined && showNow && (
+                        <span>
+                            <i className="fchart__key fchart__key--dot" /> Ist jetzt: {formatKw(actualW)}
+                        </span>
+                    )}
                 </div>
             )}
             <details className="fchart__table">

@@ -123,24 +123,43 @@ export function EnergyTotals({
     const value = (ref: SvStateRef | undefined): number | undefined => num(ref, states);
     const t = period.totals;
     const subtitle = period.periodKey ? periodText(states[period.periodKey.id]?.val) : undefined;
-    const stats: [string, string, boolean][] = [
-        ['PV-Erzeugung', fmtEnergy(value(t.pv)), !!t.pv],
-        ['Verbrauch', fmtEnergy(value(t.home)), !!t.home],
-        ['Netzbezug', fmtEnergy(value(t.gridImport)), !!t.gridImport],
-        ['Einspeisung', fmtEnergy(value(t.gridExport)), !!t.gridExport],
-        ['Batterie geladen', fmtEnergy(value(t.batteryCharge)), !!t.batteryCharge],
-        ['Batterie entladen', fmtEnergy(value(t.batteryDischarge)), !!t.batteryDischarge],
-        ['Autarkie', fmtPercent(value(t.autarky)), !!t.autarky],
-        ['Eigenverbrauch', fmtPercent(value(t.selfConsumption)), !!t.selfConsumption],
+    // Vorperiode (z. B. gestern) zum Vergleich der Quoten
+    const prev = inGroup[index + 1];
+    const prevValue = (pick: (tt: typeof t) => SvStateRef | undefined): number | undefined =>
+        prev ? value(pick(prev.totals)) : undefined;
+    const quotas = [
+        { label: 'Autarkie', ref: t.autarky, prev: prevValue(x => x.autarky) },
+        { label: 'Eigenverbrauch', ref: t.selfConsumption, prev: prevValue(x => x.selfConsumption) },
+    ].filter(q => q.ref);
+    // Mengen paarweise: was zusammengehört, steht in einer Zeile
+    const pair = (a?: SvStateRef, aLabel?: string, b?: SvStateRef, bLabel?: string): string[] =>
+        [a && `${fmtEnergy(value(a))} ${aLabel}`, b && `${fmtEnergy(value(b))} ${bLabel}`].filter(
+            (x): x is string => !!x,
+        );
+    type AmountRow = { icon: string; label: string; text: string | string[] };
+    const rowCandidates: (AmountRow | undefined | false)[] = [
+        t.pv && { icon: '☀️', label: 'PV-Erzeugung', text: fmtEnergy(value(t.pv)) },
+        t.home && { icon: '🏠', label: 'Verbrauch', text: fmtEnergy(value(t.home)) },
+        (t.gridImport || t.gridExport) && {
+            icon: '🔌',
+            label: 'Netz',
+            text: pair(t.gridImport, 'bezogen', t.gridExport, 'eingespeist'),
+        },
+        (t.batteryCharge || t.batteryDischarge) && {
+            icon: '🔋',
+            label: 'Batterie',
+            text: pair(t.batteryCharge, 'geladen', t.batteryDischarge, 'entladen'),
+        },
     ];
+    const rows = rowCandidates.filter((r): r is AmountRow => !!r);
 
     return (
         <div className="card totals">
             <div className="totals__head">
-                <h2 className="subtitle">
-                    {period.label}
-                    {subtitle && subtitle !== period.label && <span className="totals__period"> · {subtitle}</span>}
-                </h2>
+                <div>
+                    <h2 className="subtitle">📊 {period.label}</h2>
+                    {subtitle && subtitle !== period.label && <span className="totals__period">{subtitle}</span>}
+                </div>
                 {inGroup.length > 1 && (
                     <span className="totals__nav">
                         <button
@@ -219,19 +238,61 @@ export function EnergyTotals({
                     ))}
                 </div>
             )}
-            <div className="stats">
-                {stats
-                    .filter(([, , available]) => available)
-                    .map(([label, text]) => (
+            {quotas.length > 0 && (
+                <div className="quotas">
+                    {quotas.map(q => {
+                        const v = value(q.ref);
+                        const diff = v !== undefined && q.prev !== undefined ? Math.round(v - q.prev) : undefined;
+                        return (
+                            <div
+                                key={q.label}
+                                className="quota"
+                            >
+                                <span className="quota__value">{fmtPercent(v)}</span>
+                                <span className="quota__label">{q.label}</span>
+                                {diff !== undefined && prev && (
+                                    <span
+                                        className={`quota__diff${diff > 0 ? ' quota__diff--up' : diff < 0 ? ' quota__diff--down' : ''}`}
+                                    >
+                                        {diff > 0 ? '▲' : diff < 0 ? '▼' : '='} {diff > 0 ? '+' : ''}
+                                        {diff} Pkt. ggü.{' '}
+                                        {/^(Gestern|Vorgestern)$/.test(prev.label)
+                                            ? prev.label.toLowerCase()
+                                            : prev.label}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+            {rows.length > 0 && (
+                <dl className="amounts">
+                    {rows.map(r => (
                         <div
-                            key={label}
-                            className="stat"
+                            key={r.label}
+                            className="amounts__row"
                         >
-                            <span className="stat__value">{text}</span>
-                            <span className="stat__label">{label}</span>
+                            <dt>
+                                <span aria-hidden="true">{r.icon}</span> {r.label}
+                            </dt>
+                            <dd>
+                                {Array.isArray(r.text)
+                                    ? r.text.map((part, i) => (
+                                          <span
+                                              key={part}
+                                              className="amounts__part"
+                                          >
+                                              {i > 0 && <span className="amounts__sep"> · </span>}
+                                              {part}
+                                          </span>
+                                      ))
+                                    : r.text}
+                            </dd>
                         </div>
                     ))}
-            </div>
+                </dl>
+            )}
         </div>
     );
 }

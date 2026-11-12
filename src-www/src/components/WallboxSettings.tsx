@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { SvWallbox, SvWallboxSetting } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
+import { Sheet } from './Sheet';
 import { Toggle } from './Toggle';
 
 /** Anzeige-Wert aus dem State (z. B. mA → A) */
@@ -121,9 +122,13 @@ function SelectSetting({ setting }: { setting: SvWallboxSetting }): React.JSX.El
     );
 }
 
-/** Einstellungen der Ladeautomatik, gruppiert und einklappbar */
+/**
+ * Einstellungen der Ladeautomatik: selten gebraucht, deshalb auf der Karte nur eine Zeile;
+ * die Einstellungen selbst öffnen sich in einem eigenen Fenster (gruppiert).
+ */
 export function WallboxSettings({ wallbox }: { wallbox: SvWallbox }): React.JSX.Element | null {
     const { states } = useConnection();
+    const [open, setOpen] = useState(false);
     const settings = wallbox.settings || [];
     if (!settings.length) {
         return null;
@@ -133,47 +138,74 @@ export function WallboxSettings({ wallbox }: { wallbox: SvWallbox }): React.JSX.
     const groups = [...new Set(settings.map(s => s.group))];
 
     return (
-        <details className="wb-settings">
-            <summary>Einstellungen ({settings.length})</summary>
-            {groups.map(group => {
-                const list = settings.filter(s => s.group === group);
-                const needsSoC = list.some(s => s.needsVehicleSoC);
-                return (
-                    <section
-                        key={group}
-                        className="wb-settings__group"
-                    >
-                        <h3 className="subtitle">{group}</h3>
-                        {needsSoC && !hasVehicleSoC && (
-                            <p className="detail__note">
-                                Wirkt erst, wenn im kecontact-Adapter ein Datenpunkt für den Ladezustand des Fahrzeugs
-                                eingetragen ist (automatic.stateVehicleSoC).
-                            </p>
-                        )}
-                        {list.map(s =>
-                            s.kind === 'switch' ? (
-                                <Toggle
-                                    key={s.key}
-                                    state={s.state}
-                                    label={s.label}
-                                    hint={s.hint}
-                                    compact
-                                />
-                            ) : s.kind === 'select' ? (
-                                <SelectSetting
-                                    key={s.key}
-                                    setting={s}
-                                />
-                            ) : (
-                                <NumberSetting
-                                    key={s.key}
-                                    setting={s}
-                                />
-                            ),
-                        )}
-                    </section>
-                );
-            })}
-        </details>
+        <>
+            <button
+                type="button"
+                className="wb-settings__open"
+                onClick={() => setOpen(true)}
+            >
+                <span>⚙️ Ladeeinstellungen</span>
+                <span
+                    className="wb-settings__more"
+                    aria-hidden="true"
+                >
+                    ›
+                </span>
+            </button>
+            {open && (
+                <Sheet
+                    title="Ladeeinstellungen"
+                    subtitle={wallbox.name}
+                    onClose={() => setOpen(false)}
+                >
+                    <div className="wb-settings">
+                        {groups.map(group => {
+                            const list = settings.filter(s => s.group === group);
+                            const needsSoC = list.some(s => s.needsVehicleSoC);
+                            return (
+                                <section
+                                    key={group}
+                                    className="wb-settings__group"
+                                >
+                                    <h3 className="subtitle">{group}</h3>
+                                    {needsSoC && !hasVehicleSoC && (
+                                        <div className="detail__note">
+                                            Wirkt erst, wenn der Ladezustand des Fahrzeugs bekannt ist.{' '}
+                                            <details className="wb-settings__why">
+                                                <summary>Mehr erfahren</summary>
+                                                Im kecontact-Adapter muss dafür ein Datenpunkt mit dem Ladezustand des
+                                                Fahrzeugs eingetragen sein (Einstellung „automatic.stateVehicleSoC“), z.
+                                                B. aus dem Adapter des Autoherstellers.
+                                            </details>
+                                        </div>
+                                    )}
+                                    {list.map(s =>
+                                        s.kind === 'switch' ? (
+                                            <Toggle
+                                                key={s.key}
+                                                state={s.state}
+                                                label={s.label}
+                                                hint={s.hint}
+                                                compact
+                                            />
+                                        ) : s.kind === 'select' ? (
+                                            <SelectSetting
+                                                key={s.key}
+                                                setting={s}
+                                            />
+                                        ) : (
+                                            <NumberSetting
+                                                key={s.key}
+                                                setting={s}
+                                            />
+                                        ),
+                                    )}
+                                </section>
+                            );
+                        })}
+                    </div>
+                </Sheet>
+            )}
+        </>
     );
 }
