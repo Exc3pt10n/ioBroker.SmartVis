@@ -63,6 +63,9 @@ function nextModel(ws) {
 
 // Startet den Adapter in einer echten js-controller-Testinstanz
 tests.integration(path.join(__dirname, '..'), {
+    // Stabile js-controller-Version statt der nächtlichen Entwicklungsversion ("dev"):
+    // entspricht den echten Installationen und bricht nicht bei fehlerhaften Nightly-Builds
+    controllerVersion: 'latest',
     defineAdditionalTests({ suite }) {
         suite('Erkennung mit echten Objekten', getHarness => {
             it('liest Geräte, Kanäle, Aufzählungen und Instanz-Konfigurationen aus der Datenbank', async function () {

@@ -2,6 +2,8 @@
 
 # ioBroker.smartvis
 
+[![Test](https://github.com/Exc3pt10n/ioBroker.SmartVis/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Exc3pt10n/ioBroker.SmartVis/actions/workflows/test.yml)
+
 Selbstkonfigurierende, **mobile-first** Visualisierung für ioBroker.
 SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anlegen von Widgets als installierbare Web-App (PWA) an – auf dem Smartphone wie im Browser.
 
