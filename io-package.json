@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.3.0",
+        "version": "0.3.1",
         "news": {
+            "0.3.1": {
+                "en": "Home page: \"All off\" button next to each room under \"Lights on\"; going back from a room returns to where you were (room list or home page) at the same scroll position",
+                "de": "Startseite: Schaltfläche „Alle aus“ neben jedem Raum unter „Eingeschaltete Lichter“; Zurück aus einem Raum führt dorthin, woher man kam (Raumliste oder Startseite), an dieselbe Scroll-Position",
+                "ru": "Главная страница: кнопка «Выключить все» рядом с каждой комнатой в разделе «Включённый свет»; возврат из комнаты ведёт туда, откуда вы пришли (список комнат или главная), на ту же позицию прокрутки",
+                "pt": "Página inicial: botão \"Desligar tudo\" junto a cada divisão em \"Luzes acesas\"; voltar de uma divisão regressa ao ponto de origem (lista de divisões ou página inicial) na mesma posição de deslocamento",
+                "nl": "Startpagina: knop \"Alles uit\" naast elke kamer onder \"Lampen aan\"; terug vanuit een kamer gaat naar waar je vandaan kwam (kamerlijst of startpagina) op dezelfde scrollpositie",
+                "fr": "Accueil : bouton « Tout éteindre » à côté de chaque pièce sous « Lumières allumées » ; le retour depuis une pièce ramène là où l'on était (liste des pièces ou accueil) à la même position de défilement",
+                "it": "Pagina iniziale: pulsante \"Spegni tutto\" accanto a ogni stanza in \"Luci accese\"; tornando indietro da una stanza si torna dove si era (elenco stanze o pagina iniziale) nella stessa posizione di scorrimento",
+                "es": "Inicio: botón \"Apagar todo\" junto a cada habitación en \"Luces encendidas\"; volver desde una habitación regresa al lugar de origen (lista de habitaciones o inicio) en la misma posición de desplazamiento",
+                "pl": "Strona główna: przycisk „Wyłącz wszystko” obok każdego pokoju w sekcji „Włączone światła”; powrót z pokoju prowadzi tam, skąd przyszedłeś (lista pokojów lub strona główna), w tę samą pozycję przewijania",
+                "uk": "Головна сторінка: кнопка «Вимкнути все» біля кожної кімнати в розділі «Увімкнене світло»; повернення з кімнати веде туди, звідки ви прийшли (список кімнат або головна), на ту саму позицію прокручування",
+                "zh-cn": "首页：在“已开启的灯”下每个房间旁新增“全部关闭”按钮；从房间返回时回到原来的位置（房间列表或首页），并保持原滚动位置"
+            },
             "0.3.0": {
                 "en": "Room overview redesigned: live status per room (temperature, humidity, lights on, open windows, heating/cooling, music, blinds, problems), room icons (automatic or selectable), highlighted cards, two columns on the phone and a quick \"lights off\" button; Light count fixed: Hue room groups (\"All lights\") are no longer counted in addition to their lamps (home page, room list); single Hue lamps named like their room are now called \"Light\" instead of \"All lights\"; charts on touch devices: long press no longer selects/copies, swipe sideways to read values, the value stays after lifting the finger and always matches the position (also in recording gaps)",
                 "de": "Raumübersicht überarbeitet: Live-Status je Raum (Temperatur, Luftfeuchte, eingeschaltete Lichter, offene Fenster, Heizen/Kühlen, Musik, Rollläden, Probleme), Raumsymbole (automatisch oder wählbar), hervorgehobene Karten, zwei Spalten auf dem Handy und Schnellaktion „Licht aus“; Lichter richtig gezählt: Hue-Raumgruppen („Alle Lichter“) zählen nicht mehr zusätzlich zu ihren Lampen (Startseite, Raumliste); einzelne Hue-Lampen, die wie ihr Raum heißen, heißen jetzt „Licht“ statt „Alle Lichter“; Diagramme auf Touch-Geräten: langes Drücken markiert/kopiert nicht mehr, seitlich wischen zum Ablesen, der Wert bleibt nach dem Loslassen stehen und gilt immer genau an der Fingerposition (auch in Aufzeichnungslücken)",

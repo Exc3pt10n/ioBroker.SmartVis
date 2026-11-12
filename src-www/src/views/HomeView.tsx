@@ -11,6 +11,7 @@ import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
 import { EnergyFlow } from '../components/EnergyFlow';
 import { ForecastCard } from '../components/ForecastCard';
+import { lightsOff } from '../rooms';
 import { DASHBOARD_QUERY, useMediaQuery } from '../media';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
@@ -342,19 +343,34 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                                 key={g.roomId ?? '_none'}
                                                 className="roomgroup"
                                             >
-                                                <button
-                                                    type="button"
-                                                    className="roomgroup__title"
-                                                    onClick={() =>
-                                                        onNavigate(
-                                                            `rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`,
-                                                        )
-                                                    }
-                                                >
-                                                    {g.name}
-                                                    <span className="group__count">{g.devices.length}</span>
-                                                    <span aria-hidden="true">›</span>
-                                                </button>
+                                                <div className="roomgroup__head">
+                                                    <button
+                                                        type="button"
+                                                        className="roomgroup__title"
+                                                        onClick={() =>
+                                                            onNavigate(
+                                                                `rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`,
+                                                            )
+                                                        }
+                                                    >
+                                                        {g.name}
+                                                        <span className="group__count">{g.devices.length}</span>
+                                                        <span aria-hidden="true">›</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="roomgroup__off"
+                                                        aria-label={`${g.name}: alle Lichter ausschalten`}
+                                                        title="Alle Lichter ausschalten"
+                                                        onClick={() =>
+                                                            lightsOff(g.devices, (id, val) =>
+                                                                connection.setState(id, val),
+                                                            )
+                                                        }
+                                                    >
+                                                        💡 Alle aus
+                                                    </button>
+                                                </div>
                                                 <div className="grid">
                                                     {g.devices.map(d => (
                                                         <DeviceTile

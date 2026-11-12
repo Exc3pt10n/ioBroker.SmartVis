@@ -1743,6 +1743,31 @@ section + .chips {
     margin-top: 14px;
 }
 
+.roomgroup__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.roomgroup__head .roomgroup__title {
+    margin-bottom: 0;
+}
+
+.roomgroup__off {
+    flex: none;
+    min-height: 32px;
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
 .roomgroup__title {
     display: inline-flex;
     align-items: center;

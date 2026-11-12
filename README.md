@@ -138,6 +138,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.3.1 (2026-11-12)
+
+- (Exc3pt10n) Startseite: Schaltfläche „💡 Alle aus“ neben jedem Raum unter „Eingeschaltete Lichter“
+- (Exc3pt10n) Zurück aus einem Raum führt dorthin, woher man kam (Raumliste oder Startseite), und an dieselbe Scroll-Position statt ganz nach oben; Räume öffnen immer oben
+
 ### 0.3.0 (2026-11-12)
 
 - (Exc3pt10n) Raumübersicht überarbeitet: Live-Status je Raum – Temperatur und Luftfeuchte sowie Kennzeichen für eingeschaltete Lichter, offene Fenster/Türen, Heizen/Kühlen, laufende Musik, (teilweise) geschlossene Rollläden und Probleme
