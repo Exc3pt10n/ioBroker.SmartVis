@@ -1255,7 +1255,8 @@ button.chip {
 /* Diagramme: langes Drücken liest Werte ab, statt Text zu markieren oder das Kopieren-Menü zu öffnen */
 .fchart svg,
 .fchart__tip,
-.spark {
+.spark,
+.flow {
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;

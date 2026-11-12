@@ -142,7 +142,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 
 - (Exc3pt10n) Lichter richtig gezählt: Hue-Raumgruppen („Alle Lichter“) und Zonen zählen auf der Startseite (Kennzahl, „Eingeschaltete Lichter“) und in der Raumliste nicht mehr zusätzlich zu ihren Lampen; die Gruppen-Kachel im Raum bleibt zum Schalten erhalten
 - (Exc3pt10n) Einzelne Hue-Lampen, die wie ihr Raum heißen, heißen jetzt „Licht“ statt fälschlich „Alle Lichter“
-- (Exc3pt10n) Verläufe auf dem iPhone/Touch: langes Drücken markiert bzw. kopiert das Diagramm nicht mehr; seitlich wischen zum Ablesen, der Wert bleibt nach dem Loslassen stehen
+- (Exc3pt10n) Diagramme auf dem iPhone/Touch (Verläufe, PV-Prognose, Temperaturkurve, Energiefluss): langes Drücken markiert bzw. kopiert nichts mehr; in Verläufen und PV-Prognose seitlich wischen zum Ablesen, der Wert bleibt nach dem Loslassen stehen
 - (Exc3pt10n) Verläufe: Ablesen genau an der Zeiger-/Fingerposition – Uhrzeit dort und der Wert, der dann galt (bisher sprang der Punkt in Aufzeichnungslücken zum nächsten Messwert)
 
 ### 0.2.3 (2026-11-12)
