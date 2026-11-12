@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.2.1",
+        "version": "0.2.2",
         "news": {
+            "0.2.2": {
+                "en": "History charts: gaps without logged values (\"log changes only\") now keep the last value instead of drawing a sloped line that was never measured",
+                "de": "Verläufe: Lücken ohne gespeicherte Werte (Aufzeichnung „nur Änderungen“) halten jetzt den letzten Wert, statt eine nie gemessene schräge Linie zu zeichnen",
+                "ru": "Графики истории: в промежутках без сохранённых значений («только изменения») теперь сохраняется последнее значение вместо наклонной линии, которая никогда не измерялась",
+                "pt": "Históricos: intervalos sem valores registados (\"apenas alterações\") mantêm agora o último valor em vez de desenhar uma linha inclinada nunca medida",
+                "nl": "Historie: gaten zonder opgeslagen waarden (\"alleen wijzigingen\") houden nu de laatste waarde vast in plaats van een nooit gemeten schuine lijn te tekenen",
+                "fr": "Historiques : les intervalles sans valeurs enregistrées (« uniquement les changements ») conservent désormais la dernière valeur au lieu de tracer une pente jamais mesurée",
+                "it": "Storico: gli intervalli senza valori registrati (\"solo modifiche\") mantengono ora l'ultimo valore invece di disegnare una linea inclinata mai misurata",
+                "es": "Históricos: los intervalos sin valores registrados (\"solo cambios\") mantienen ahora el último valor en lugar de dibujar una línea inclinada nunca medida",
+                "pl": "Historia: luki bez zapisanych wartości („tylko zmiany”) zachowują teraz ostatnią wartość zamiast rysować nigdy niezmierzoną ukośną linię",
+                "uk": "Історія: проміжки без збережених значень («лише зміни») тепер зберігають останнє значення замість похилої лінії, яку ніколи не вимірювали",
+                "zh-cn": "历史曲线：没有记录值的间隔（“仅记录变化”）现在保持最后一个值，而不是绘制从未测量过的斜线"
+            },
             "0.2.1": {
                 "en": "Q.HOME with additional PV generators (qhome-ess-hyb-g2 from 0.3.0, e.g. a second inverter): PV power, energy flow and PV history now use the total (PvPwTotal); the flow shows the split per generator",
                 "de": "Q.HOME mit zusätzlichen PV-Erzeugern (qhome-ess-hyb-g2 ab 0.3.0, z. B. zweiter Wechselrichter): PV-Leistung, Energiefluss und PV-Verlauf nutzen jetzt die Gesamtleistung (PvPwTotal); der Energiefluss zeigt die Aufteilung je Erzeuger",
