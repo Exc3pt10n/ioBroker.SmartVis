@@ -142,6 +142,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 
 - (Exc3pt10n) Startseite: Schaltfläche „💡 Alle aus“ neben jedem Raum unter „Eingeschaltete Lichter“
 - (Exc3pt10n) Zurück aus einem Raum führt dorthin, woher man kam (Raumliste oder Startseite), und an dieselbe Scroll-Position statt ganz nach oben; Räume öffnen immer oben
+- (Exc3pt10n) Licht-Szenen im Raum sind ausklappbar und standardmäßig eingeklappt (bleiben während der Sitzung offen, wenn man sie aufgeklappt hat)
 
 ### 0.3.0 (2026-11-12)
 

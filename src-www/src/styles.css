@@ -2103,6 +2103,53 @@ section + .chips {
     background: var(--active-soft);
 }
 
+.scenes__summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 14px 0 0;
+    list-style: none;
+    cursor: pointer;
+}
+
+.scenes__summary::-webkit-details-marker {
+    display: none;
+}
+
+.scenes__summary .subtitle {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    margin: 0;
+}
+
+/* Pfeil rechts: zeigt nach unten, wenn eingeklappt; dreht sich beim Aufklappen */
+.scenes__summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    margin: 0 6px 4px 8px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.scenes--collapsible[open] > .scenes__summary::after {
+    margin-bottom: -4px;
+    transform: rotate(-135deg);
+}
+
+.scenes__summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.scenes__body {
+    padding-top: 6px;
+}
+
 .sheet .scenes .subtitle {
     margin-top: 16px;
 }

@@ -65,7 +65,13 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
                   {
                       key: 'scenes',
                       label: 'Szenen',
-                      node: sceneGroups.length > 0 ? <ScenePanel groups={sceneGroups} /> : null,
+                      node:
+                          sceneGroups.length > 0 ? (
+                              <ScenePanel
+                                  groups={sceneGroups}
+                                  collapsible
+                              />
+                          ) : null,
                   },
               ]
             : []),
