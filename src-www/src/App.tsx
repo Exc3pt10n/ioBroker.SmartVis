@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from './components/Icon';
+import { Toast } from './components/Toast';
 import { useConnection } from './connection';
 import { DetailContext } from './detail';
 import { EditContext } from './editing';
@@ -13,15 +14,65 @@ import { RoomsView } from './views/RoomsView';
 import { ShutterView } from './views/ShutterView';
 
 /** Einfaches Hash-Routing: #/home, #/rooms, #/rooms/<id>, #/more */
+function readRoute(): string[] {
+    return window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+}
+
+/** Scroll-Position je Seite, damit "Zurück" (und Tab-Wechsel) dort weitermacht, wo man war */
+const scrollPositions = new Map<string, number>();
+
 function useRoute(): [string[], (path: string) => void] {
-    const read = (): string[] => window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-    const [route, setRoute] = useState(read);
+    const [route, setRoute] = useState(readRoute);
     useEffect(() => {
-        const onChange = (): void => setRoute(read());
+        // Wiederherstellen übernehmen wir selbst (der Browser kennt die Höhe der neuen Seite noch nicht)
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        const onChange = (): void =>
+            setRoute(prev => {
+                const next = readRoute();
+                return next.join('/') === prev.join('/') ? prev : next;
+            });
         window.addEventListener('hashchange', onChange);
-        return () => window.removeEventListener('hashchange', onChange);
+        window.addEventListener('popstate', onChange);
+        return () => {
+            window.removeEventListener('hashchange', onChange);
+            window.removeEventListener('popstate', onChange);
+        };
     }, []);
-    return [route, path => (window.location.hash = `/${path}`)];
+    const navigate = (path: string): void => {
+        if (path === readRoute().join('/')) {
+            return;
+        }
+        // Eintrag als "in der App navigiert" markieren: Zurück kann dann history.back() nutzen
+        history.pushState({ sv: true }, '', `#/${path}`);
+        setRoute(readRoute());
+    };
+    return [route, navigate];
+}
+
+/**
+ * Scroll-Position je Seite merken und beim Wiederkommen herstellen.
+ * Raum-Seiten (Unterseiten) öffnen immer oben.
+ */
+function useScrollMemory(route: string[]): void {
+    const key = route.join('/') || 'home';
+    const current = useRef(key);
+    useEffect(() => {
+        const onScroll = (): void => {
+            scrollPositions.set(current.current, window.scrollY);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+    useLayoutEffect(() => {
+        if (current.current === key) {
+            return;
+        }
+        current.current = key;
+        window.scrollTo(0, route.length > 1 ? 0 : (scrollPositions.get(key) ?? 0));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [key]);
 }
 
 const TABS = [
@@ -34,6 +85,7 @@ const TABS = [
 
 export function App(): React.JSX.Element {
     const [route, navigate] = useRoute();
+    useScrollMemory(route);
     const { status, model } = useConnection();
     const tabs = TABS.filter(
         t =>
@@ -51,7 +103,10 @@ export function App(): React.JSX.Element {
         view = (
             <RoomView
                 roomId={decodeURIComponent(param)}
-                onBack={() => navigate('rooms')}
+                onBack={() =>
+                    // Zurück dorthin, woher man kam (Raumliste oder Startseite); sonst zur Raumliste
+                    (history.state as { sv?: boolean } | null)?.sv ? history.back() : navigate('rooms')
+                }
             />
         );
     } else if (tab === 'rooms') {
@@ -97,6 +152,7 @@ export function App(): React.JSX.Element {
                         )}
                         {view}
                     </main>
+                    <Toast />
                     {detailId &&
                         (editing && model?.editable ? (
                             <EditDeviceSheet

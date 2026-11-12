@@ -5,7 +5,8 @@ import { DragHandle, SortableGrid, useSortable } from '../components/SortableGri
 import { connection, useConnection } from '../connection';
 import { moved, useEditing, visibleDevices, visibleRooms } from '../editing';
 import { CreateRoomSheet, EditRoomSheet } from './EditSheets';
-import { lightsOff, roomIcon, roomStatus, type RoomStatus } from '../rooms';
+import { roomIcon, roomStatus, type RoomStatus } from '../rooms';
+import { switchLights } from '../lightActions';
 
 export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }): React.JSX.Element {
     const { model, states } = useConnection();
@@ -204,7 +205,7 @@ function RoomCard({
                     className="room__off"
                     aria-label={`${room.name}: alle Lichter ausschalten`}
                     title="Alle Lichter ausschalten"
-                    onClick={() => lightsOff(status.lights, (id, val) => connection.setState(id, val))}
+                    onClick={() => switchLights(status.lights, false, connection.getSnapshot().states, room.name)}
                 >
                     💡 aus
                 </button>

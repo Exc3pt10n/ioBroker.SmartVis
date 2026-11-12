@@ -54,3 +54,9 @@ export function useMotion(): { setting: MotionSetting; systemReduced: boolean } 
     );
     return { setting, systemReduced };
 }
+
+/** Sollen Bewegungen (z. B. weiches Scrollen) gerade laufen? */
+export function motionAllowed(): boolean {
+    const setting = getMotion();
+    return setting === 'on' || (setting === 'system' && !window.matchMedia(REDUCE).matches);
+}

@@ -198,10 +198,12 @@ export function ForecastChart({
                             y2={y(0)}
                             className="fchart__now"
                         />
+                        {/* Am rechten Rand links neben die Linie, sonst wird "jetzt" abgeschnitten */}
                         <text
-                            x={x(now) + 4}
+                            x={x(now) + (x(now) > width - PAD.right - 34 ? -4 : 4)}
                             y={PAD.top + 10}
                             className="fchart__axis"
+                            textAnchor={x(now) > width - PAD.right - 34 ? 'end' : 'start'}
                         >
                             jetzt
                         </text>

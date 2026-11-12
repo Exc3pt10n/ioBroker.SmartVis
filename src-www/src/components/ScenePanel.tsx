@@ -2,9 +2,23 @@ import { useState } from 'react';
 import type { SvSceneGroup } from '../../../src/shared/protocol';
 import { connection } from '../connection';
 
-/** Hue-Szenen auslösen; bei mehreren Gruppen (Raum, Zone …) zuerst die Gruppe wählen */
-export function ScenePanel({ groups }: { groups: SvSceneGroup[] }): React.JSX.Element | null {
+/** Aufgeklappte Szenen-Bereiche (für diese Sitzung, damit sie beim Zurückkommen offen bleiben) */
+const expanded = new Set<string>();
+
+/**
+ * Hue-Szenen auslösen; bei mehreren Gruppen (Raum, Zone …) zuerst die Gruppe wählen.
+ * collapsible: als ausklappbarer Bereich, anfangs eingeklappt (Raumansicht).
+ */
+export function ScenePanel({
+    groups,
+    collapsible = false,
+}: {
+    groups: SvSceneGroup[];
+    collapsible?: boolean;
+}): React.JSX.Element | null {
     const [groupId, setGroupId] = useState(groups[0]?.id);
+    const memoryKey = groups.map(g => g.id).join('|');
+    const [open, setOpen] = useState(() => expanded.has(memoryKey));
     const [fired, setFired] = useState<string | undefined>();
     const group = groups.find(g => g.id === groupId) || groups[0];
     if (!group) {
@@ -16,12 +30,10 @@ export function ScenePanel({ groups }: { groups: SvSceneGroup[] }): React.JSX.El
         window.setTimeout(() => setFired(current => (current === id ? undefined : current)), 2000);
     };
 
-    return (
-        <section
-            className="scenes"
-            aria-label="Szenen"
-        >
-            <h2 className="subtitle">🎨 Szenen{groups.length === 1 ? ` · ${group.name}` : ''}</h2>
+    const title = `🎨 Szenen${groups.length === 1 ? ` · ${group.name}` : ''}`;
+    const sceneCount = groups.reduce((n, g) => n + g.scenes.length, 0);
+    const content = (
+        <>
             {groups.length > 1 && (
                 <div
                     className="chips chips--small scenes__groups"
@@ -55,6 +67,42 @@ export function ScenePanel({ groups }: { groups: SvSceneGroup[] }): React.JSX.El
                     </button>
                 ))}
             </div>
+        </>
+    );
+
+    if (collapsible) {
+        return (
+            <details
+                className="scenes scenes--collapsible"
+                open={open}
+                onToggle={e => {
+                    const isOpen = e.currentTarget.open;
+                    setOpen(isOpen);
+                    if (isOpen) {
+                        expanded.add(memoryKey);
+                    } else {
+                        expanded.delete(memoryKey);
+                    }
+                }}
+            >
+                <summary className="scenes__summary">
+                    <h2 className="subtitle">
+                        {title}
+                        <span className="group__count">{sceneCount}</span>
+                    </h2>
+                </summary>
+                {open && <div className="scenes__body">{content}</div>}
+            </details>
+        );
+    }
+
+    return (
+        <section
+            className="scenes"
+            aria-label="Szenen"
+        >
+            <h2 className="subtitle">{title}</h2>
+            {content}
         </section>
     );
 }

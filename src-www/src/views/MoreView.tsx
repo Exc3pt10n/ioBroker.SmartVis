@@ -14,39 +14,45 @@ export function MoreView(): React.JSX.Element {
         byAdapter.set(d.adapter, (byAdapter.get(d.adapter) || 0) + 1);
     }
 
-    const connectionCard = (
+    // Diagnose-Infos: kurz zusammengefasst, Einzelheiten zum Aufklappen
+    const deviceCount = model?.devices.length ?? 0;
+    const statusText = status === 'online' ? 'verbunden' : status === 'connecting' ? 'verbinde …' : 'getrennt';
+    const infoCard = (
         <section className="card">
-            <h2 className="subtitle">Verbindung</h2>
-            <dl className="facts">
-                <dt>Status</dt>
-                <dd>{status}</dd>
-                <dt>Adapter-Version</dt>
-                <dd>{version || '–'}</dd>
-                <dt>Letzte Erkennung</dt>
-                <dd>{model ? new Date(model.generatedAt).toLocaleString('de-DE') : '–'}</dd>
-                {lastError && (
-                    <>
-                        <dt>Letzter Fehler</dt>
-                        <dd>{lastError}</dd>
-                    </>
-                )}
-            </dl>
-        </section>
-    );
-    const adapterCard = (
-        <section className="card">
-            <h2 className="subtitle">Erkannte Geräte je Adapter</h2>
-            <dl className="facts">
-                {[...byAdapter.entries()].map(([adapter, count]) => (
-                    <div
-                        key={adapter}
-                        className="facts__row"
-                    >
-                        <dt>{adapter}</dt>
-                        <dd>{count}</dd>
-                    </div>
-                ))}
-            </dl>
+            <h2 className="subtitle">Info</h2>
+            <p className="info__summary">
+                {status === 'online' ? '🟢' : '🟠'} {statusText} · Version {version || '–'} · {deviceCount}{' '}
+                {deviceCount === 1 ? 'Gerät' : 'Geräte'}
+            </p>
+            <details className="info__details">
+                <summary>Details</summary>
+                <dl className="facts">
+                    <dt>Status</dt>
+                    <dd>{status}</dd>
+                    <dt>Adapter-Version</dt>
+                    <dd>{version || '–'}</dd>
+                    <dt>Letzte Erkennung</dt>
+                    <dd>{model ? new Date(model.generatedAt).toLocaleString('de-DE') : '–'}</dd>
+                    {lastError && (
+                        <>
+                            <dt>Letzter Fehler</dt>
+                            <dd>{lastError}</dd>
+                        </>
+                    )}
+                </dl>
+                <h3 className="info__subtitle">Erkannte Geräte je Adapter</h3>
+                <dl className="facts">
+                    {[...byAdapter.entries()].map(([adapter, count]) => (
+                        <div
+                            key={adapter}
+                            className="facts__row"
+                        >
+                            <dt>{adapter}</dt>
+                            <dd>{count}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </details>
         </section>
     );
 
@@ -84,8 +90,7 @@ export function MoreView(): React.JSX.Element {
                                 />
                             ) : null,
                     },
-                    { key: 'connection', label: 'Verbindung', node: connectionCard },
-                    { key: 'adapters', label: 'Erkannte Geräte je Adapter', node: adapterCard },
+                    { key: 'connection', label: 'Info', node: infoCard },
                 ]}
             />
         </>

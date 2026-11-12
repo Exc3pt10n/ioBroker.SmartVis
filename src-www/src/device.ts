@@ -91,7 +91,11 @@ export function isActive(device: SvDevice, states: Record<string, SvStateValue |
     if (typeof val === 'boolean') {
         return val;
     }
-    if (typeof val === 'number' && ['dimmer', 'blind', 'window', 'windowTilt', 'door'].includes(device.type)) {
+    // Rollladen: 100 % = offen (Normalzustand) – hervorgehoben wird nur ein (teilweise) geschlossener
+    if (typeof val === 'number' && device.type === 'blind') {
+        return val < 95;
+    }
+    if (typeof val === 'number' && ['dimmer', 'window', 'windowTilt', 'door'].includes(device.type)) {
         return val > 0;
     }
     return false;

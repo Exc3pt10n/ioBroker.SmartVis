@@ -366,9 +366,9 @@ button {
 /* Schnellaktion: alle Lichter des Raums aus */
 .room__off {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    min-height: 32px;
+    top: 8px;
+    right: 8px;
+    min-height: 36px;
     padding: 4px 10px;
     border: 0;
     border-radius: 999px;
@@ -779,6 +779,97 @@ button.chip {
     color: var(--warn);
 }
 
+/* Kompakt (Handy): eine Zeile, Details zum Aufklappen */
+.weather--compact {
+    padding: 0;
+}
+
+.weather__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: var(--radius);
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.weather__bar:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.weather__bar-icon {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.weather__bar-temp {
+    font-size: 26px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.weather__bar-text {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+}
+
+.weather__bar-label {
+    font-weight: 600;
+}
+
+.weather__bar-extra {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.weather--compact .weather__warn {
+    margin: 0 16px 12px;
+}
+
+.weather__more {
+    padding: 0 16px 16px;
+}
+
+.weather__more .weather__details {
+    margin-top: 4px;
+}
+
+/* Pfeil für Auf-/Zuklappen (nach unten; aufgeklappt nach oben) */
+.chevron {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin: 0 6px 4px 4px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+[aria-expanded='true'] > .chevron,
+details[open] > summary > .chevron {
+    margin-bottom: -4px;
+    transform: rotate(-135deg);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 /* ===== Beschattung ===== */
 .shutters {
     display: grid;
@@ -871,9 +962,55 @@ button.chip {
 
 .area__head {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    align-items: center;
     gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    margin: -4px 0 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+.area__head:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.area__heading {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.area__title .subtitle {
+    display: block;
+}
+
+.area__title {
+    flex: 1;
+    min-width: 0;
+}
+
+.area__title .subtitle {
+    margin: 0;
+}
+
+.area__summary {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.shutter__off {
+    color: var(--warn);
+}
+
+.shutter-list__flags {
+    min-height: 44px;
+    margin-top: 4px;
 }
 
 .area__times {
@@ -913,13 +1050,16 @@ button.chip {
 .shutter__meta {
     font-size: 13px;
     color: var(--text-muted);
-    margin: 2px 0 6px;
+    margin: 2px 0 0;
+}
+
+.shutter__main .chips {
+    margin-top: 6px;
 }
 
 .shutter__drive {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .shutter__drive .iconbtn {
@@ -962,12 +1102,12 @@ button.chip {
 
 .tile__more {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border: 0;
     border-radius: 50%;
     background: none;
@@ -1107,6 +1247,32 @@ button.chip {
     border-radius: var(--radius);
     background: var(--surface);
     box-shadow: var(--shadow);
+}
+
+.info__summary {
+    margin: 0;
+    font-size: 15px;
+}
+
+.info__details {
+    margin-top: 8px;
+}
+
+.info__details summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.info__subtitle {
+    margin: 16px 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .detail__more summary {
@@ -1482,6 +1648,58 @@ button.chip {
     flex: 1;
 }
 
+.titlebar__text {
+    min-width: 0;
+}
+
+.titlebar__text .title:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.titlebar__status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    margin: 2px 0 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Kleine Aktionsschaltfläche ("Alle aus") neben Überschriften */
+.pillbtn,
+.roomgroup__off {
+    flex: none;
+    min-height: 36px;
+    padding: 4px 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.group__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.group__head {
+    margin: 24px 0 10px;
+}
+
+.group__head .subtitle {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
 .editbtn {
     flex: none;
     min-height: 40px;
@@ -1493,6 +1711,23 @@ button.chip {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+}
+
+.editbtn--icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--text-muted);
+}
+
+.editbtn--icon:hover,
+.editbtn--icon:focus-visible {
+    background: var(--surface);
+    color: var(--text);
 }
 
 .editbtn--active {
@@ -1741,6 +1976,18 @@ section + .chips {
 
 .roomgroup + .roomgroup {
     margin-top: 14px;
+}
+
+.roomgroup__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.roomgroup__head .roomgroup__title {
+    margin-bottom: 0;
 }
 
 .roomgroup__title {
@@ -2078,6 +2325,53 @@ section + .chips {
     background: var(--active-soft);
 }
 
+.scenes__summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 14px 0 0;
+    list-style: none;
+    cursor: pointer;
+}
+
+.scenes__summary::-webkit-details-marker {
+    display: none;
+}
+
+.scenes__summary .subtitle {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    margin: 0;
+}
+
+/* Pfeil rechts: zeigt nach unten, wenn eingeklappt; dreht sich beim Aufklappen */
+.scenes__summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    margin: 0 6px 4px 8px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.scenes--collapsible[open] > .scenes__summary::after {
+    margin-bottom: -4px;
+    transform: rotate(-135deg);
+}
+
+.scenes__summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.scenes__body {
+    padding-top: 6px;
+}
+
 .sheet .scenes .subtitle {
     margin-top: 16px;
 }
@@ -2120,8 +2414,36 @@ section + .chips {
     font-weight: 400;
 }
 
-.totals__groups {
-    margin-bottom: 12px;
+.totals__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.totals__head .subtitle {
+    margin: 0;
+}
+
+.totals__nav {
+    display: flex;
+    flex: none;
+    gap: 6px;
+}
+
+.iconbtn--small {
+    width: 40px;
+    height: 40px;
+    background: var(--surface-2);
+    box-shadow: none;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.iconbtn:disabled {
+    opacity: 0.35;
+    cursor: default;
 }
 
 .totals .segmented {
@@ -2132,6 +2454,13 @@ section + .chips {
 .totals .segmented button {
     flex: 1;
     min-width: 0;
+    padding: 0 4px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.totals__more {
+    margin: -4px 0 12px;
 }
 
 /* ===== Desktop: gesamte Breite nutzen ===== */
@@ -2367,6 +2696,21 @@ button.kpi:hover {
     color: var(--warn);
 }
 
+/* Handy: feste drei Spalten; eine angebrochene letzte Zeile wird aufgefüllt (keine einzelne Kachel) */
+@media (min-width: 360px) and (max-width: 899px) {
+    .kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .kpis > :last-child:nth-child(3n + 1) {
+        grid-column: 1 / -1;
+    }
+
+    .kpis > :last-child:nth-child(3n + 2) {
+        grid-column: span 2;
+    }
+}
+
 @media (min-width: 900px) {
     .kpis {
         display: grid;
@@ -2403,12 +2747,26 @@ button.kpi:hover {
     flex-direction: column;
 }
 
+/* Handy/Tablet: Kennzahlen zuerst, dann das (kompakte) Wetter, dann die Statuslisten */
 .home__overview {
-    order: 1;
+    order: 2;
 }
 
 .home__kpis {
-    order: 2;
+    order: 1;
+}
+
+.home__kpis .kpis {
+    margin-top: 0;
+}
+
+.home:not(.home--dashboard) .home__overview .csecs--stack {
+    margin-top: 16px;
+}
+
+/* Sprungziele der Kennzahlen */
+.home__sections section[id] {
+    scroll-margin-top: 16px;
 }
 
 .home__main {
@@ -2919,4 +3277,67 @@ button.kpi:hover {
 .icon-picker__grid .is-selected {
     border-color: var(--accent);
     background: var(--accent-soft);
+}
+
+/* ===== Rückmeldung (Toast) ===== */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom));
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    padding: 8px 8px 8px 16px;
+    border-radius: 14px;
+    background: var(--text);
+    color: var(--bg);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
+    font-size: 14px;
+    transform: translateX(-50%);
+    animation: toast-in 0.2s ease-out;
+}
+
+.toast__text {
+    padding: 6px 0;
+}
+
+.toast__undo {
+    min-height: 36px;
+    padding: 4px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg) 18%, transparent);
+    color: var(--bg);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+    }
+}
+
+@media (min-width: 900px) {
+    .toast {
+        bottom: 24px;
+        left: calc(50% + 110px);
+    }
+}
+
+/* Desktop: Aktionen ("Alle aus") direkt neben der Überschrift statt am weit entfernten rechten Rand */
+@media (min-width: 900px) {
+    .roomgroup__head,
+    .group__head {
+        justify-content: flex-start;
+        gap: 16px;
+    }
+
+    .group__head .subtitle {
+        flex: none;
+    }
 }

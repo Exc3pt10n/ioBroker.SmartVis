@@ -11,6 +11,8 @@ const GROUP_LABELS: Record<string, string> = {
     year: 'Jahr',
     total: 'Gesamt',
 };
+/** Direkt wählbare Zeiträume; seltenere (Quartal, Halbjahr) stehen unter "Mehr" */
+const MAIN_GROUPS = ['day', 'week', 'month', 'year', 'total'];
 const STORAGE_KEY = 'smartvis.energyPeriod';
 const MONTHS = [
     'Januar',
@@ -102,12 +104,18 @@ export function EnergyTotals({
           ? [{ key: 'day', group: 'day', label: 'Heute', totals: system.today }]
           : [];
     const [selected, setSelected] = useState(loadPeriod);
+    const [showMore, setShowMore] = useState(false);
     const period = periods.find(p => p.key === selected) || periods[0];
     if (!period) {
         return null;
     }
     const groups = [...new Set(periods.map(p => p.group))];
+    // Je Zeitraum: aktueller zuerst, dann die Vorperioden (z. B. Heute, Gestern)
     const inGroup = periods.filter(p => p.group === period.group);
+    const index = inGroup.indexOf(period);
+    const groupLabel = (g: string): string => periods.find(p => p.group === g)?.groupLabel || GROUP_LABELS[g] || g;
+    const mainGroups = groups.filter(g => MAIN_GROUPS.includes(g) || !GROUP_LABELS[g]);
+    const moreGroups = groups.filter(g => !mainGroups.includes(g));
     const select = (key: string): void => {
         setSelected(key);
         savePeriod(key);
@@ -128,46 +136,85 @@ export function EnergyTotals({
 
     return (
         <div className="card totals">
-            <h2 className="subtitle">
-                {period.label}
-                {subtitle && subtitle !== period.label && <span className="totals__period"> · {subtitle}</span>}
-            </h2>
+            <div className="totals__head">
+                <h2 className="subtitle">
+                    {period.label}
+                    {subtitle && subtitle !== period.label && <span className="totals__period"> · {subtitle}</span>}
+                </h2>
+                {inGroup.length > 1 && (
+                    <span className="totals__nav">
+                        <button
+                            type="button"
+                            className="iconbtn iconbtn--small"
+                            aria-label="Vorheriger Zeitraum"
+                            disabled={index >= inGroup.length - 1}
+                            onClick={() => select(inGroup[index + 1].key)}
+                        >
+                            ‹
+                        </button>
+                        <button
+                            type="button"
+                            className="iconbtn iconbtn--small"
+                            aria-label="Nächster Zeitraum"
+                            disabled={index <= 0}
+                            onClick={() => select(inGroup[index - 1].key)}
+                        >
+                            ›
+                        </button>
+                    </span>
+                )}
+            </div>
             {groups.length > 1 && (
                 <div
-                    className="chips chips--small totals__groups"
+                    className="segmented totals__groups"
                     role="tablist"
                     aria-label="Zeitraum"
                 >
-                    {groups.map(g => (
+                    {mainGroups.map(g => (
                         <button
                             key={g}
                             type="button"
                             role="tab"
                             aria-selected={g === period.group}
-                            className={`flag${g === period.group ? ' flag--on' : ''}`}
-                            onClick={() => select(periods.find(p => p.group === g)!.key)}
+                            className={g === period.group ? 'segmented--active' : ''}
+                            onClick={() => {
+                                setShowMore(false);
+                                select(periods.find(p => p.group === g)!.key);
+                            }}
                         >
-                            {periods.find(p => p.group === g)?.groupLabel || GROUP_LABELS[g] || g}
+                            {groupLabel(g)}
                         </button>
                     ))}
+                    {moreGroups.length > 0 && (
+                        <button
+                            type="button"
+                            aria-expanded={showMore}
+                            className={moreGroups.includes(period.group) ? 'segmented--active' : ''}
+                            onClick={() => setShowMore(!showMore)}
+                        >
+                            {moreGroups.includes(period.group) ? groupLabel(period.group) : 'Mehr'}
+                        </button>
+                    )}
                 </div>
             )}
-            {inGroup.length > 1 && (
+            {showMore && (
                 <div
-                    className="segmented totals__segmented"
-                    role="tablist"
-                    aria-label="Aktuell oder vorheriger Zeitraum"
+                    className="chips chips--small totals__more"
+                    role="group"
+                    aria-label="Weitere Zeiträume"
                 >
-                    {inGroup.map(p => (
+                    {moreGroups.map(g => (
                         <button
-                            key={p.key}
+                            key={g}
                             type="button"
-                            role="tab"
-                            aria-selected={p.key === period.key}
-                            className={p.key === period.key ? 'segmented--active' : ''}
-                            onClick={() => select(p.key)}
+                            aria-pressed={g === period.group}
+                            className={`flag${g === period.group ? ' flag--on' : ''}`}
+                            onClick={() => {
+                                setShowMore(false);
+                                select(periods.find(p => p.group === g)!.key);
+                            }}
                         >
-                            {p.label}
+                            {groupLabel(g)}
                         </button>
                     ))}
                 </div>

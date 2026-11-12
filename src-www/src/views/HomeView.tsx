@@ -11,7 +11,9 @@ import { favorites, useEditing, visibleDevices } from '../editing';
 import { WeatherCard } from '../components/WeatherCard';
 import { EnergyFlow } from '../components/EnergyFlow';
 import { ForecastCard } from '../components/ForecastCard';
+import { switchLights } from '../lightActions';
 import { DASHBOARD_QUERY, useMediaQuery } from '../media';
+import { motionAllowed } from '../motion';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 const OPENING_TYPES = ['window', 'windowTilt', 'door'];
@@ -21,6 +23,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const { editing } = useEditing();
     const dashboard = useMediaQuery(DASHBOARD_QUERY);
     const wide = useMediaQuery('(min-width: 1800px)');
+    const phone = useMediaQuery('(max-width: 899px)');
     if (!model) {
         return <p className="empty">Lade Geräte …</p>;
     }
@@ -81,7 +84,14 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
         v === undefined ? '–' : `${v.toLocaleString('de-DE', { maximumFractionDigits: 0 })} kWh`;
     const toEnergy = (): void => onNavigate('energy');
     const toShutters = (): void => onNavigate('shutters');
-    const kpis: Kpi[] = [
+    // Statuskennzahlen springen zur passenden Liste weiter unten
+    const jump =
+        (section: string): (() => void) =>
+        () =>
+            document
+                .getElementById(`home-${section}`)
+                ?.scrollIntoView({ behavior: motionAllowed() ? 'smooth' : 'auto', block: 'start' });
+    const kpiCandidates: (Kpi | false)[] = [
         energy?.pv !== undefined && {
             key: 'pv',
             icon: '☀️',
@@ -129,15 +139,29 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             icon: '💡',
             value: String(lightsOn.length),
             label: lightsOn.length === 1 ? 'Licht an' : 'Lichter an',
+            onClick: lightsOn.length ? jump('lights') : undefined,
         },
         climateOn.length > 0 && {
             key: 'climate',
             icon: climateIcon,
             value: String(climateOn.length),
             label: 'Klima an',
+            onClick: jump('climate'),
         },
-        { key: 'open', icon: '🪟', value: String(open.length), label: 'offen' },
-        playing.length > 0 && { key: 'playing', icon: '🎵', value: String(playing.length), label: 'spielt' },
+        {
+            key: 'open',
+            icon: '🪟',
+            value: String(open.length),
+            label: 'offen',
+            onClick: open.length ? jump('open') : undefined,
+        },
+        playing.length > 0 && {
+            key: 'playing',
+            icon: '🎵',
+            value: String(playing.length),
+            label: 'spielt',
+            onClick: jump('playing'),
+        },
         sunProtected > 0 && {
             key: 'sun',
             icon: '🕶️',
@@ -159,9 +183,11 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             icon: '⚠️',
             value: String(problems.length),
             label: problems.length === 1 ? 'Störung' : 'Störungen',
+            onClick: jump('problems'),
             warn: true,
         },
-    ].filter((k): k is Kpi => !!k);
+    ];
+    const kpis = kpiCandidates.filter((k): k is Kpi => !!k);
     const main = model.energy[0];
     // Bereiche ohne aktuellen Inhalt: im Bearbeiten-Modus mit Hinweis zeigen (zum Anordnen/Ausblenden)
     const placeholder = (text: string): React.ReactNode =>
@@ -187,6 +213,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                     <WeatherCard
                                         weather={model.weather[0]}
                                         extra={model.weather.slice(1)}
+                                        compact={phone}
                                     />
                                 ) : null,
                             },
@@ -323,6 +350,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 label: 'Läuft gerade',
                                 node: playing.length ? (
                                     <Section
+                                        id="home-playing"
                                         title="🎵 Läuft gerade"
                                         devices={playing}
                                         roomName={roomName}
@@ -335,26 +363,37 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 key: 'lights',
                                 label: 'Eingeschaltete Lichter',
                                 node: lightsOn.length ? (
-                                    <section>
+                                    <section id="home-lights">
                                         <h2 className="subtitle">💡 Eingeschaltete Lichter</h2>
                                         {groupByRoom(lightsOn, model.rooms).map(g => (
                                             <div
                                                 key={g.roomId ?? '_none'}
                                                 className="roomgroup"
                                             >
-                                                <button
-                                                    type="button"
-                                                    className="roomgroup__title"
-                                                    onClick={() =>
-                                                        onNavigate(
-                                                            `rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`,
-                                                        )
-                                                    }
-                                                >
-                                                    {g.name}
-                                                    <span className="group__count">{g.devices.length}</span>
-                                                    <span aria-hidden="true">›</span>
-                                                </button>
+                                                <div className="roomgroup__head">
+                                                    <button
+                                                        type="button"
+                                                        className="roomgroup__title"
+                                                        onClick={() =>
+                                                            onNavigate(
+                                                                `rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`,
+                                                            )
+                                                        }
+                                                    >
+                                                        {g.name}
+                                                        <span className="group__count">{g.devices.length}</span>
+                                                        <span aria-hidden="true">›</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="roomgroup__off"
+                                                        aria-label={`${g.name}: alle Lichter ausschalten`}
+                                                        title="Alle Lichter ausschalten"
+                                                        onClick={() => switchLights(g.devices, false, states, g.name)}
+                                                    >
+                                                        💡 Alle aus
+                                                    </button>
+                                                </div>
                                                 <div className="grid">
                                                     {g.devices.map(d => (
                                                         <DeviceTile
@@ -375,6 +414,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 label: 'Klima aktiv',
                                 node: climateOn.length ? (
                                     <Section
+                                        id="home-climate"
                                         title={`${climateIcon} Klima aktiv`}
                                         devices={climateOn}
                                         roomName={roomName}
@@ -388,6 +428,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 label: 'Offene Fenster & Türen',
                                 node: open.length ? (
                                     <Section
+                                        id="home-open"
                                         title="🪟 Offene Fenster & Türen"
                                         devices={open}
                                         roomName={roomName}
@@ -401,6 +442,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                                 label: 'Störungen',
                                 node: problems.length ? (
                                     <Section
+                                        id="home-problems"
                                         title="⚠️ Störungen"
                                         devices={problems}
                                         roomName={roomName}
@@ -421,16 +463,18 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
 }
 
 function Section({
+    id,
     title,
     devices,
     roomName,
 }: {
+    id: string;
     title: string;
     devices: SvDevice[];
     roomName: (id: string | null) => string | undefined;
 }): React.JSX.Element {
     return (
-        <section>
+        <section id={id}>
             <h2 className="subtitle">{title}</h2>
             <div className="grid">
                 {devices.map(d => (
@@ -450,7 +494,7 @@ interface Kpi {
     icon: string;
     value: string;
     label: string;
-    onClick?: () => void;
+    onClick?: (() => void) | undefined;
     warn?: boolean;
 }
 
