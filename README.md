@@ -79,7 +79,7 @@ Statt `main` lässt sich jeder Branch oder Commit angeben, z. B. zum Testen eine
 
 > Bei der Installation von GitHub baut npm den Adapter selbst (Skript `prepare`): Dafür werden einmalig die Entwicklungswerkzeuge (TypeScript, Vite, React …) heruntergeladen. Das dauert auf einem Raspberry Pi einige Minuten und braucht vorübergehend etwa 300 MB Platz.
 
-Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 20.
+Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 22.
 
 ## Konfiguration
 
@@ -129,6 +129,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.2.3 (2026-11-12)
+
+- (Exc3pt10n) **Breaking:** Mindestversion Node.js 22 (Node.js 20 wird seit April 2026 nicht mehr unterstützt)
+- (Exc3pt10n) Automatische Tests (GitHub Actions) verschlankt: keine Doppelläufe mehr, Node.js 22 und 24, Integrationstest einmal
 
 ### 0.2.2 (2026-11-12)
 
