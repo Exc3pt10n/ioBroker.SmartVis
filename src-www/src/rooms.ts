@@ -3,7 +3,7 @@ import { isActive, isCoveredGroup, isPlaying, tapAction, valueState, warnings } 
 
 type States = Record<string, SvStateValue | null>;
 
-const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
+export const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 const OPENING_TYPES = ['window', 'windowTilt', 'door'];
 
 /** Symbol aus dem Raumnamen (Reihenfolge zählt: "Gäste WC" → WC, nicht Gäste) */
@@ -162,17 +162,32 @@ export function roomStatus(devices: SvDevice[], states: States): RoomStatus {
     return status;
 }
 
-/** Alle eingeschalteten Lampen eines Raums ausschalten (Schalter aus, Dimmer auf Minimum) */
-export function lightsOff(lights: SvDevice[], set: (id: string, val: boolean | number) => void): void {
+/** Ist das Gerät eine Lampe (Schalter, Dimmer, Farblicht …)? */
+export function isLight(device: SvDevice): boolean {
+    return LIGHT_TYPES.includes(device.type);
+}
+
+export interface LightChange {
+    id: string;
+    val: boolean | number;
+    /** Wert vorher (für Rückgängig) */
+    prev: SvStateValue['val'] | undefined;
+}
+
+/**
+ * Lampen aus- bzw. einschalten: Schalter auf aus/an, Dimmer auf Minimum/Maximum.
+ * Liefert nur die Lampen, die wirklich umgeschaltet werden müssen (mit Wert davor).
+ */
+export function lightChanges(lights: SvDevice[], on: boolean, states: States): LightChange[] {
+    const changes: LightChange[] = [];
     for (const d of lights) {
         const action = tapAction(d);
-        if (!action) {
+        if (!action || isActive(d, states) === on) {
             continue;
         }
-        if (action.state.type === 'boolean') {
-            set(action.state.id, false);
-        } else {
-            set(action.state.id, action.state.min ?? 0);
-        }
+        const val: boolean | number =
+            action.state.type === 'boolean' ? on : on ? (action.state.max ?? 100) : (action.state.min ?? 0);
+        changes.push({ id: action.state.id, val, prev: states[action.state.id]?.val });
     }
+    return changes;
 }

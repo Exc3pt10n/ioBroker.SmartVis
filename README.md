@@ -138,8 +138,19 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
-### 0.3.1 (2026-11-12)
+### 0.4.0 (2026-11-12)
 
+- (Exc3pt10n) Startseite auf dem Handy: Kennzahlen zuerst, Antippen springt zur passenden Liste (Lichter, Klima, offen, spielt, Störungen); das Wetter ist eine kompakte Zeile und klappt beim Antippen auf; keine einzelne Kennzahl mehr allein in der letzten Zeile
+- (Exc3pt10n) Raumseite: Temperatur und Luftfeuchte unter dem Raumnamen; beim Licht „Alle aus“ bzw. „Alle an“
+- (Exc3pt10n) „Alle aus“ zeigt eine Rückmeldung mit „Rückgängig“ (Startseite, Raumliste, Raumseite)
+- (Exc3pt10n) Kacheln: ausgeschaltete Lichter zeigen „aus“ statt „0 %“; der Gerätetyp (z. B. „· Dimmer“) wird nicht mehr wiederholt
+- (Exc3pt10n) Rollläden sind nur hervorgehoben, wenn sie (teilweise) geschlossen sind; Rollläden, Fenster, Thermostate usw., die wie ihr Raum heißen, heißen jetzt nach ihrem Gerätetyp (z. B. „Rollladen“)
+- (Exc3pt10n) Beschattung: Automatik-Schalter je Rollladen (Auf/Ab/Sonne) eingeklappt, ausgeschaltete Automatiken stehen als Hinweis am Rollladen; Bereiche lassen sich einklappen; Fahrtasten nebeneinander
+- (Exc3pt10n) Energiezähler: eine Zeitraum-Auswahl (Tag, Woche, Monat, Jahr, Gesamt; Quartal/Halbjahr unter „Mehr“), Vorperioden mit ‹ ›
+- (Exc3pt10n) „Bearbeiten“ als dezentes Stift-Symbol; größere Tippflächen (Kachel-Menü, „Alle aus“)
+- (Exc3pt10n) PV-Prognose: „jetzt“ am rechten Rand wird nicht mehr abgeschnitten
+- (Exc3pt10n) Desktop: „Alle aus“ steht direkt neben dem Raum bzw. der Überschrift
+- (Exc3pt10n) Mehr: „Verbindung“ und „Erkannte Geräte“ zu einer Info-Karte mit aufklappbaren Details zusammengefasst
 - (Exc3pt10n) Startseite: Schaltfläche „💡 Alle aus“ neben jedem Raum unter „Eingeschaltete Lichter“
 - (Exc3pt10n) Zurück aus einem Raum führt dorthin, woher man kam (Raumliste oder Startseite), und an dieselbe Scroll-Position statt ganz nach oben; Räume öffnen immer oben
 - (Exc3pt10n) Licht-Szenen im Raum sind ausklappbar und standardmäßig eingeklappt (bleiben während der Sitzung offen, wenn man sie aufgeklappt hat)

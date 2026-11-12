@@ -1,12 +1,13 @@
 import type { SvDevice, SvStateRef, SvStateValue } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
-import { TYPE_LABELS, formatValue, isActive, isPlaying, tapAction, valueState, warnings } from '../device';
+import { formatValue, isActive, isPlaying, tapAction, valueState, warnings } from '../device';
 import { useOpenDetail } from '../detail';
 import { moved, useEditing } from '../editing';
 import { useRef } from 'react';
 import { MoveButtons } from './EditButton';
 import { DragHandle, useSortable } from './SortableGrid';
 import { autoStateInfo, shutterForDevice } from '../shutters';
+import { isLight } from '../rooms';
 import { Icon, iconForType } from './Icon';
 
 /** Medien: Titel beim Abspielen, sonst "pausiert" */
@@ -138,8 +139,11 @@ export function DeviceTile({
                         ? mediaSummary(device, states)
                         : device.type === 'airCondition'
                           ? acSummary(device, states)
-                          : formatValue(value, value ? states[value.id] : undefined)}
-                    {showRoom ? ` · ${showRoom}` : ` · ${TYPE_LABELS[device.type] || device.type}`}
+                          : isLight(device) && !active && states[value?.id ?? '']?.val !== undefined
+                            ? 'aus'
+                            : formatValue(value, value ? states[value.id] : undefined)}
+                    {/* Gerätetyp zeigt schon das Symbol; nur außerhalb des Raums den Raum nennen */}
+                    {showRoom ? ` · ${showRoom}` : ''}
                 </span>
                 {autoInfo && (
                     <span className="tile__auto">

@@ -335,7 +335,18 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
 }
 
 /** Name für Geräte, die genauso heißen wie ihr Raum (z. B. Klimaanlage "Arbeitszimmer") */
-const ROOM_NAMED_TYPES: Record<string, string> = { airCondition: 'Klimaanlage' };
+const ROOM_NAMED_TYPES: Record<string, string> = {
+    airCondition: 'Klimaanlage',
+    blind: 'Rollladen',
+    thermostat: 'Thermostat',
+    window: 'Fenster',
+    windowTilt: 'Fenster',
+    door: 'Tür',
+    socket: 'Steckdose',
+    temperature: 'Temperatur',
+    humidity: 'Klima',
+    motion: 'Bewegungsmelder',
+};
 
 function toDevice(
     id: string,

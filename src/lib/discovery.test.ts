@@ -34,12 +34,16 @@ const objects: Record<string, Obj> = Object.fromEntries([
     folder('hue.0.Spots', 'channel', 'Spots', 'light.color'),
     state('hue.0.Spots.on', 'switch.light', 'boolean', true),
     state('hue.0.Spots.level', 'level.dimmer', 'number', true, { min: 0, max: 100 }),
+    // Rollladen, der wie sein Raum heißt
+    folder('hm-rpc.0.BL1', 'device', 'Küche'),
+    folder('hm-rpc.0.BL1.3', 'channel', 'Küche', 'blind'),
+    state('hm-rpc.0.BL1.3.LEVEL', 'level.blind', 'number', true, { min: 0, max: 100, unit: '%' }),
     [
         'enum.rooms.kitchen',
         {
             _id: 'enum.rooms.kitchen',
             type: 'enum',
-            common: { name: { en: 'Kitchen', de: 'Küche' }, members: ['hue.0.Spots'] },
+            common: { name: { en: 'Kitchen', de: 'Küche' }, members: ['hue.0.Spots', 'hm-rpc.0.BL1.3'] },
             native: {},
         } as unknown as Obj,
     ],
@@ -67,6 +71,11 @@ describe('discovery', () => {
         expect(dimmer.roomSource).to.equal('name');
         expect(dimmer.name).to.equal('Dimmer');
         expect(result.model.rooms.map(r => r.name)).to.include.members(['Küche', 'Wohnzimmer']);
+    });
+
+    it('names a blind that is called like its room "Rollladen"', () => {
+        expect(byId['hm-rpc.0.BL1.3']?.type).to.equal('blind');
+        expect(byId['hm-rpc.0.BL1.3'].name).to.equal('Rollladen');
     });
 
     it('collects state ids and a write whitelist', () => {

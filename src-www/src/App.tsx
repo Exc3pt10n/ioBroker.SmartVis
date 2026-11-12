@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from './components/Icon';
+import { Toast } from './components/Toast';
 import { useConnection } from './connection';
 import { DetailContext } from './detail';
 import { EditContext } from './editing';
@@ -151,6 +152,7 @@ export function App(): React.JSX.Element {
                         )}
                         {view}
                     </main>
+                    <Toast />
                     {detailId &&
                         (editing && model?.editable ? (
                             <EditDeviceSheet

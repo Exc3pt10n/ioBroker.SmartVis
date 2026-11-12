@@ -1,5 +1,6 @@
 import { useConnection } from '../connection';
 import { useEditing } from '../editing';
+import { Icon } from './Icon';
 
 /** Bearbeiten/Fertig-Knopf für Titelzeilen (nur sichtbar, wenn der Adapter es erlaubt) */
 export function EditButton(): React.JSX.Element | null {
@@ -9,13 +10,23 @@ export function EditButton(): React.JSX.Element | null {
         return null;
     }
     return (
+        // Selten gebraucht: im Alltag nur ein dezentes Stift-Symbol, im Bearbeiten-Modus deutlich "Fertig"
         <button
             type="button"
-            className={`editbtn${editing ? ' editbtn--active' : ''}`}
+            className={`editbtn${editing ? ' editbtn--active' : ' editbtn--icon'}`}
             onClick={() => setEditing(!editing)}
             aria-pressed={editing}
+            aria-label={editing ? undefined : 'Bearbeiten'}
+            title={editing ? undefined : 'Anordnen, umbenennen, ausblenden'}
         >
-            {editing ? 'Fertig' : '✎ Bearbeiten'}
+            {editing ? (
+                'Fertig'
+            ) : (
+                <Icon
+                    name="edit"
+                    size={20}
+                />
+            )}
         </button>
     );
 }

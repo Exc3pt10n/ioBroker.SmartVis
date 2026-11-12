@@ -44,8 +44,24 @@ function weatherHistorySeries(weather: SvWeather, extra: SvWeather[] = []): Hist
     return candidates.filter((c): c is HistorySeries => !!c && !!c.ref.history);
 }
 
-export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: SvWeather[] }): React.JSX.Element {
+/** Aufgeklappt (für diese Sitzung gemerkt) */
+let compactOpen = false;
+
+/**
+ * Wetter. compact (Handy): nur eine Zeile (Symbol, Temperatur, Zustand, Luftfeuchte/Wind);
+ * Antippen klappt Details, Temperaturkurve und Helligkeit auf.
+ */
+export function WeatherCard({
+    weather,
+    extra,
+    compact = false,
+}: {
+    weather: SvWeather;
+    extra?: SvWeather[];
+    compact?: boolean;
+}): React.JSX.Element {
     const { states } = useConnection();
+    const [open, setOpen] = useState(compactOpen);
     // Aktuelle Zeit minütlich auffrischen, um veraltete Messwerte zu erkennen
     const [now, setNow] = useState(() => Date.now());
     useEffect(() => {
@@ -79,9 +95,133 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
         });
     }
 
+    const panels = (weather.temperature?.history || s.light.length > 0) && (
+        <div className="weather__panels">
+            {weather.temperature?.history && (
+                <Sparkline
+                    state={weather.temperature}
+                    label="Temperatur"
+                    onOpen={() => setShowHistory(true)}
+                />
+            )}
+            {s.light.length > 0 && <LightBars light={s.light} />}
+        </div>
+    );
+    const sensors = (extra || []).length > 0 && (
+        <ul
+            className="weather__sensors"
+            aria-label="Weitere Außensensoren"
+        >
+            {(extra || []).map(x => {
+                const xs = weatherSnapshot(x, states);
+                return (
+                    <li key={x.id}>
+                        <span className="weather__sensor-name">{x.name}</span>
+                        <span className="weather__sensor-values">
+                            <span title="Temperatur">🌡️ {fmt(xs.temperature)}°</span>
+                            {xs.humidity !== undefined && <span title="Luftfeuchte">💧 {fmt(xs.humidity, 0)} %</span>}
+                        </span>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+    const historyButton = historySeries.length > 0 && (
+        <button
+            type="button"
+            className="weather__history"
+            onClick={() => setShowHistory(true)}
+        >
+            📈 Verlauf ›
+        </button>
+    );
+    const historySheet = showHistory && (
+        <Sheet
+            title="Wetter-Verlauf"
+            subtitle={weather.name}
+            onClose={() => setShowHistory(false)}
+        >
+            <HistoryPanel
+                series={historySeries}
+                title="Verlauf"
+            />
+        </Sheet>
+    );
+    const tone = `weather weather--${c.label === 'Sonnig' ? 'sun' : s.raining ? 'rain' : 'neutral'}`;
+    const warn = (!s.online || stale) && (
+        <p className="weather__warn">
+            {!s.online ? 'Wetterstation nicht erreichbar' : `Letzter Messwert ${updated!.toLocaleString('de-DE')}`}
+        </p>
+    );
+
+    if (compact) {
+        const summary = [
+            weather.humidity && s.humidity !== undefined ? `💧 ${fmt(s.humidity, 0)} %` : undefined,
+            weather.windSpeed && s.windSpeed !== undefined ? `💨 ${fmt(s.windSpeed, 0)} km/h` : undefined,
+        ].filter(Boolean);
+        const toggle = (): void => {
+            compactOpen = !open;
+            setOpen(!open);
+        };
+        return (
+            <section
+                className={`${tone} weather--compact${open ? ' is-open' : ''}`}
+                aria-label="Aktuelles Wetter"
+            >
+                <button
+                    type="button"
+                    className="weather__bar"
+                    aria-expanded={open}
+                    onClick={toggle}
+                >
+                    <span
+                        className="weather__bar-icon"
+                        aria-hidden="true"
+                    >
+                        {c.icon}
+                    </span>
+                    <span className="weather__bar-temp">
+                        {s.temperature !== undefined ? `${fmt(s.temperature)}°` : '–'}
+                    </span>
+                    <span className="weather__bar-text">
+                        <span className="weather__bar-label">
+                            {c.label}
+                            {s.windAlarm && c.label !== 'Stürmisch' ? ' · Sturmwarnung' : ''}
+                        </span>
+                        {summary.length > 0 && <span className="weather__bar-extra">{summary.join(' · ')}</span>}
+                    </span>
+                    <span
+                        className="chevron"
+                        aria-hidden="true"
+                    />
+                    <span className="sr-only">{open ? 'Details ausblenden' : 'Details anzeigen'}</span>
+                </button>
+                {warn}
+                {open && (
+                    <div className="weather__more">
+                        {details.length > 0 && (
+                            <dl className="weather__details">
+                                {details.map(d => (
+                                    <div key={d.label}>
+                                        <dt>{d.label}</dt>
+                                        <dd>{d.value}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        )}
+                        {panels}
+                        {sensors}
+                        {historyButton}
+                    </div>
+                )}
+                {historySheet}
+            </section>
+        );
+    }
+
     return (
         <section
-            className={`weather weather--${c.label === 'Sonnig' ? 'sun' : s.raining ? 'rain' : 'neutral'}`}
+            className={tone}
             aria-label="Aktuelles Wetter"
         >
             <div className="weather__top">
@@ -113,67 +253,11 @@ export function WeatherCard({ weather, extra }: { weather: SvWeather; extra?: Sv
                     </dl>
                 )}
             </div>
-            {(weather.temperature?.history || s.light.length > 0) && (
-                <div className="weather__panels">
-                    {weather.temperature?.history && (
-                        <Sparkline
-                            state={weather.temperature}
-                            label="Temperatur"
-                            onOpen={() => setShowHistory(true)}
-                        />
-                    )}
-                    {s.light.length > 0 && <LightBars light={s.light} />}
-                </div>
-            )}
-            {(extra || []).length > 0 && (
-                <ul
-                    className="weather__sensors"
-                    aria-label="Weitere Außensensoren"
-                >
-                    {(extra || []).map(x => {
-                        const xs = weatherSnapshot(x, states);
-                        return (
-                            <li key={x.id}>
-                                <span className="weather__sensor-name">{x.name}</span>
-                                <span className="weather__sensor-values">
-                                    <span title="Temperatur">🌡️ {fmt(xs.temperature)}°</span>
-                                    {xs.humidity !== undefined && (
-                                        <span title="Luftfeuchte">💧 {fmt(xs.humidity, 0)} %</span>
-                                    )}
-                                </span>
-                            </li>
-                        );
-                    })}
-                </ul>
-            )}
-            {historySeries.length > 0 && (
-                <button
-                    type="button"
-                    className="weather__history"
-                    onClick={() => setShowHistory(true)}
-                >
-                    📈 Verlauf ›
-                </button>
-            )}
-            {showHistory && (
-                <Sheet
-                    title="Wetter-Verlauf"
-                    subtitle={weather.name}
-                    onClose={() => setShowHistory(false)}
-                >
-                    <HistoryPanel
-                        series={historySeries}
-                        title="Verlauf"
-                    />
-                </Sheet>
-            )}
-            {(!s.online || stale) && (
-                <p className="weather__warn">
-                    {!s.online
-                        ? 'Wetterstation nicht erreichbar'
-                        : `Letzter Messwert ${updated!.toLocaleString('de-DE')}`}
-                </p>
-            )}
+            {panels}
+            {sensors}
+            {historyButton}
+            {historySheet}
+            {warn}
         </section>
     );
 }
