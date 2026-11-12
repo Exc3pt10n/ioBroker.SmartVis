@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { discover } from '../src/lib/discovery';
 import { applyEdit, applyOverrides } from '../src/lib/overrides';
+import { historyOptions, holdGaps } from '../src/lib/history';
 import {
     applyClientAction,
     clientInfo,
@@ -573,7 +574,10 @@ function demoHistory(id: string, range: string): [number, number][] {
         }
         points.push([t, Math.round(v * 100) / 100]);
     }
-    return points;
+    // Wie sql mit "nur Änderungen aufzeichnen": gleiche Folgewerte (z. B. PV nachts 0) entfallen
+    const changes = points.filter((p, i) => i === 0 || p[1] !== points[i - 1][1]);
+    // PV-Überschuss der Wallbox wird erst seit 3 Stunden aufgezeichnet (frisch eingeschaltet)
+    return id.endsWith('statistics.surplus') ? changes.filter(p => p[0] > now - 3 * 3600_000) : changes;
 }
 
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
@@ -607,7 +611,8 @@ const server = new SmartVisServer(
                 return Promise.reject(new Error(`Kein Verlauf für ${id}`));
             }
             // kurze Verzögerung wie bei einer echten Datenbankabfrage
-            return new Promise(resolve => setTimeout(() => resolve(demoHistory(id, range)), 250));
+            const { step, end } = historyOptions(range) as { step: number; end: number };
+            return new Promise(resolve => setTimeout(() => resolve(holdGaps(demoHistory(id, range), step, end)), 250));
         },
         edit: (clientId, edit) => {
             store = withOverrides(store, clientId, applyEdit(overridesFor(store, clientId), edit));

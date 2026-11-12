@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { SvHistoryRange, SvStateRef } from '../../../src/shared/protocol';
 import { connection } from '../connection';
 import { HistoryChart, formatNumber } from './HistoryChart';
+import { RANGE_MS, clipToRange, timeWeightedAverage } from '../../../src/shared/series';
 
 export interface HistorySeries {
     key: string;
@@ -18,7 +19,11 @@ const RANGES: { key: SvHistoryRange; label: string }[] = [
     { key: '7d', label: '7 Tage' },
 ];
 
-type Load = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ok'; points: [number, number][] };
+type Load =
+    | { status: 'loading' }
+    | { status: 'error'; message: string }
+    /** end: Zeitpunkt der Abfrage – die Zeitachse zeigt immer den vollen Zeitraum bis dahin */
+    | { status: 'ok'; points: [number, number][]; end: number };
 
 /** Verlauf mit Auswahl der Größe (eine Serie je Diagramm) und des Zeitraums */
 export function HistoryPanel({
@@ -40,7 +45,7 @@ export function HistoryPanel({
         }
         let cancelled = false;
         connection.history(historyId, range).then(
-            points => !cancelled && setLoad({ status: 'ok', points }),
+            points => !cancelled && setLoad({ status: 'ok', points, end: Date.now() }),
             (e: Error) => !cancelled && setLoad({ status: 'error', message: e.message }),
         );
         return () => {
@@ -52,12 +57,15 @@ export function HistoryPanel({
         return null;
     }
     const unit = current.ref.history.unit || current.ref.unit;
-    const values = load.status === 'ok' ? load.points.map(p => p[1]) : [];
+    const start = load.status === 'ok' ? load.end - RANGE_MS[range] : 0;
+    const points = load.status === 'ok' ? clipToRange(load.points, start, load.end) : [];
+    const values = points.map(p => p[1]);
+    // Ø zeitgewichtet: ein Wert zählt so lange, bis der nächste kommt (nicht je Messpunkt)
     const stats = values.length
         ? {
               min: Math.min(...values),
               max: Math.max(...values),
-              avg: values.reduce((a, b) => a + b, 0) / values.length,
+              avg: timeWeightedAverage(points, load.status === 'ok' ? load.end : undefined) ?? 0,
           }
         : undefined;
     const select = (next: Partial<{ key: string; range: SvHistoryRange }>): void => {
@@ -131,7 +139,9 @@ export function HistoryPanel({
                         </p>
                     )}
                     <HistoryChart
-                        points={load.points}
+                        points={points}
+                        start={start}
+                        end={load.end}
                         unit={unit}
                         range={range}
                         label={`${current.label}, Verlauf ${RANGES.find(r => r.key === range)?.label}`}

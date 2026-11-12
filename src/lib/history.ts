@@ -138,3 +138,29 @@ export function toPoints(result: unknown): [number, number][] {
     }
     return points.sort((a, b) => a[0] - b[0]);
 }
+
+/**
+ * Lücken als "unverändert" darstellen: Die History-Adapter speichern meist nur Änderungen
+ * (sql/history: "nur Änderungen aufzeichnen"). Ohne neuen Wert gilt der letzte weiter – statt zwei
+ * weit auseinanderliegende Punkte schräg zu verbinden (was einen nie gemessenen Verlauf vortäuscht),
+ * wird der letzte Wert bis kurz vor den nächsten Punkt bzw. bis zum Ende des Zeitraums gehalten.
+ *
+ * @param points sortierte Punkte [ts, wert]
+ * @param step Abstand der gemittelten Werte (ms)
+ * @param end Ende des Zeitraums (jetzt)
+ */
+export function holdGaps(points: [number, number][], step: number, end: number): [number, number][] {
+    const result: [number, number][] = [];
+    for (const point of points) {
+        const prev = result[result.length - 1];
+        if (prev && point[0] - prev[0] > step * 1.5) {
+            result.push([point[0] - step, prev[1]]);
+        }
+        result.push(point);
+    }
+    const last = result[result.length - 1];
+    if (last && end - last[0] > step * 1.5) {
+        result.push([end, last[1]]);
+    }
+    return result;
+}

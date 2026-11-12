@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { SvStateRef } from '../../../src/shared/protocol';
 import { connection } from '../connection';
 import { formatNumber } from './HistoryChart';
+import { RANGE_MS, clipToRange } from '../../../src/shared/series';
 
 const W = 240;
 const H = 56;
@@ -22,7 +23,7 @@ export function Sparkline({
 }): React.JSX.Element | null {
     const historyId = state.history?.id;
     const unit = state.history?.unit || state.unit;
-    const [points, setPoints] = useState<[number, number][]>([]);
+    const [data, setData] = useState<{ points: [number, number][]; end: number }>({ points: [], end: 0 });
 
     useEffect(() => {
         if (!historyId) {
@@ -34,7 +35,7 @@ export function Sparkline({
             connection.history(historyId, '24h').then(
                 p => {
                     if (!cancelled) {
-                        setPoints(p);
+                        setData({ points: p, end: Date.now() });
                         timer = window.setTimeout(load, REFRESH_MS);
                     }
                 },
@@ -52,19 +53,21 @@ export function Sparkline({
         };
     }, [historyId]);
 
-    if (!historyId || points.length < 2) {
+    // Immer die letzten 24 Stunden bis zur Abfrage
+    const t0 = data.end - RANGE_MS['24h'];
+    const t1 = data.end;
+    const points = clipToRange(data.points, t0, t1);
+    if (!historyId || points.length < 1) {
         return null;
     }
     const values = points.map(p => p[1]);
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const t0 = points[0][0];
-    const t1 = points[points.length - 1][0];
     const span = max - min || 1;
     const x = (t: number): number => ((t - t0) / (t1 - t0 || 1)) * W;
     const y = (v: number): number => 4 + (1 - (v - min) / span) * (H - 8);
     const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
-    const area = `${line}L${W},${H}L0,${H}Z`;
+    const area = `${line}L${x(points[points.length - 1][0]).toFixed(1)},${H}L${x(points[0][0]).toFixed(1)},${H}Z`;
     const minAt = points[values.indexOf(min)];
     const maxAt = points[values.indexOf(max)];
     const summary = `${label}, letzte 24 Stunden: Min. ${formatNumber(min, unit)}, Max. ${formatNumber(max, unit)}`;

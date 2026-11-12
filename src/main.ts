@@ -1,7 +1,7 @@
 import * as utils from '@iobroker/adapter-core';
 import { join } from 'node:path';
 import { discover, type DiscoveryResult } from './lib/discovery';
-import { historyOptions, toPoints } from './lib/history';
+import { historyOptions, holdGaps, toPoints } from './lib/history';
 import {
     applyClientAction,
     clientInfo,
@@ -255,19 +255,16 @@ class SmartVis extends utils.Adapter {
         if (!instance) {
             throw new Error(`Kein Verlauf für ${id}`);
         }
-        const response = (await this.sendToAsync(
-            instance,
-            'getHistory',
-            { id, options: historyOptions(range) },
-            { timeout: 20_000 },
-        )) as { result?: unknown; error?: string } | undefined;
+        const options = historyOptions(range) as { step: number; end: number };
+        const response = (await this.sendToAsync(instance, 'getHistory', { id, options }, { timeout: 20_000 })) as
+            { result?: unknown; error?: string } | undefined;
         if (!response) {
             throw new Error(`${instance} antwortet nicht`);
         }
         if (response.error) {
             throw new Error(String(response.error));
         }
-        return toPoints(response.result);
+        return holdGaps(toPoints(response.result), options.step, options.end);
     }
 
     private async writeState(id: string, val: ioBrokerValue): Promise<void> {

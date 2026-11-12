@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { discover } from './discovery';
-import { historyOptions, toPoints } from './history';
+import { historyOptions, holdGaps, toPoints } from './history';
 
 type Obj = ioBroker.Object;
 const st = (
@@ -126,5 +126,29 @@ describe('history', () => {
             [2000, 1.5],
         ]);
         expect(toPoints(undefined)).to.deep.equal([]);
+    });
+
+    it('hält bei Lücken (nur Änderungen aufgezeichnet) den letzten Wert statt schräg zu verbinden', () => {
+        const m = 60_000;
+        const step = 15 * m;
+        const points: [number, number][] = [
+            [0, 0.15],
+            [15 * m, 0.16],
+            // 20 Stunden ohne Änderung
+            [20 * 60 * m, 0.18],
+            [20 * 60 * m + 15 * m, 0.47],
+        ];
+        const end = 22 * 60 * m;
+        expect(holdGaps(points, step, end)).to.deep.equal([
+            [0, 0.15],
+            [15 * m, 0.16],
+            [20 * 60 * m - step, 0.16],
+            [20 * 60 * m, 0.18],
+            [20 * 60 * m + 15 * m, 0.47],
+            [end, 0.47],
+        ]);
+        // Ohne Lücken unverändert
+        expect(holdGaps(points.slice(0, 2), step, 20 * m)).to.deep.equal(points.slice(0, 2));
+        expect(holdGaps([], step, end)).to.deep.equal([]);
     });
 });

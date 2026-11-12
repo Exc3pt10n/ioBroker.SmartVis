@@ -55,8 +55,13 @@ export function HistoryChart({
     label,
     color = 'var(--chart-series)',
     zeroBased = false,
+    start,
+    end,
 }: {
     points: [number, number][];
+    /** Zeitachse: voller Zeitraum (sonst vom ersten bis zum letzten Punkt) */
+    start?: number;
+    end?: number;
     unit?: string;
     range: SvHistoryRange;
     label: string;
@@ -78,11 +83,11 @@ export function HistoryChart({
     }, []);
 
     const geometry = useMemo(() => {
-        if (points.length < 2) {
+        if (points.length < (start !== undefined ? 1 : 2)) {
             return null;
         }
-        const t0 = points[0][0];
-        const t1 = points[points.length - 1][0];
+        const t0 = start ?? points[0][0];
+        const t1 = Math.max(end ?? points[points.length - 1][0], points[points.length - 1][0]);
         const values = points.map(p => p[1]);
         const { lo, hi, step } = niceScale(Math.min(...values), Math.max(...values), zeroBased);
         const iw = width - PAD.left - PAD.right;
@@ -91,24 +96,27 @@ export function HistoryChart({
         const y = (v: number): number => PAD.top + ih - ((v - lo) / (hi - lo)) * ih;
         const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join('');
         const base = y(Math.max(lo, Math.min(0, hi)));
-        const area = `${line}L${x(t1).toFixed(1)},${base}L${x(t0).toFixed(1)},${base}Z`;
+        // Fläche nur unter der Linie (vor dem ersten Messwert bleibt der Bereich leer)
+        const first = x(points[0][0]).toFixed(1);
+        const lastX = x(points[points.length - 1][0]).toFixed(1);
+        const area = `${line}L${lastX},${base}L${first},${base}Z`;
         const yTicks: number[] = [];
         for (let v = lo; v <= hi + step / 2; v += step) {
             yTicks.push(Math.round(v * 1000) / 1000);
         }
         // x-Achse: volle Stunden (6 h: jede, 24 h: alle 4/6 h) bzw. Mitternacht (7 Tage)
         const xTicks: number[] = [];
-        const start = new Date(t0);
-        start.setMinutes(0, 0, 0);
+        const tickStart = new Date(t0);
+        tickStart.setMinutes(0, 0, 0);
         const every = range === '6h' ? 1 : range === '24h' ? (width < 480 ? 6 : 4) : 24;
-        for (let t = start.getTime() + 3600_000; t < t1; t += 3600_000) {
+        for (let t = tickStart.getTime() + 3600_000; t < t1; t += 3600_000) {
             const h = new Date(t).getHours();
             if (range === '7d' ? h === 12 : h % every === 0) {
                 xTicks.push(t);
             }
         }
         return { x, y, line, area, yTicks, xTicks, t0, t1 };
-    }, [points, width, range, zeroBased]);
+    }, [points, width, range, zeroBased, start, end]);
 
     if (!geometry) {
         return (

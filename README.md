@@ -130,6 +130,12 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.2.2 (2026-11-12)
+
+- (Exc3pt10n) Verläufe: Lücken ohne gespeicherte Werte (Aufzeichnung „nur Änderungen“, z. B. PV nachts) halten den letzten Wert bis zur nächsten Änderung bzw. bis jetzt, statt zwei weit auseinanderliegende Punkte schräg zu verbinden
+- (Exc3pt10n) Verläufe: Mittelwert (Ø) zeitgewichtet – jeder Wert zählt so lange, bis der nächste kommt (bisher je Messpunkt, dadurch z. B. bei PV deutlich zu hoch)
+- (Exc3pt10n) Verläufe: Die Zeitachse zeigt immer den vollen Zeitraum (6 Std./24 Std./7 Tage bis jetzt); liegen erst wenige Stunden Daten vor, werden sie nicht mehr über die ganze Breite gestreckt
+
 ### 0.2.1 (2026-11-11)
 
 - (Exc3pt10n) Q.HOME mit zusätzlichen PV-Erzeugern (qhome-ess-hyb-g2 ab 0.3.0, z. B. zweiter Wechselrichter): PV-Leistung, Energiefluss, Kennzahl „PV jetzt“ und PV-Verlauf nutzen die Gesamtleistung `PvPwTotal`; der Energiefluss zeigt die Aufteilung (Q.HOME / weitere Erzeuger)
