@@ -5,9 +5,11 @@
 Selbstkonfigurierende, **mobile-first** Visualisierung für ioBroker.
 SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anlegen von Widgets als installierbare Web-App (PWA) an – auf dem Smartphone wie im Browser.
 
-> ⚠️ Frühe Entwicklungsphase. Das Konzept steht in [docs/KONZEPT.md](docs/KONZEPT.md).
+> **Status:** Version 0.x – im täglichen Einsatz und vollständig nutzbar. Bis Version 1.0 können sich Einstellungen und das Speicherformat noch ändern; solche Änderungen sind im [Changelog](#changelog) als **Breaking** markiert und werden, wo möglich, automatisch übernommen.
+> Die Erkennung ist bisher vor allem an einer Installation mit Homematic (IP), Philips Hue, QCells Q.HOME, KEBA, Toshiba-Klimageräten und Echo abgestimmt. Bei anderen Systemen können Geräte fehlen oder überzählig sein – sie lassen sich im Bearbeiten-Modus ausblenden; Rückmeldungen und Objektbäume (anonymisiert) als Issue helfen, die Erkennung zu verbessern.
+> Hintergrund und Konzept: [docs/KONZEPT.md](docs/KONZEPT.md).
 
-## Funktionen (aktueller Stand)
+## Funktionen
 
 - Automatische Geräteerkennung über [`@iobroker/type-detector`](https://github.com/ioBroker/ioBroker.type-detector)
 - Räume aus mehreren Quellen, gleichnamige Räume werden zusammengeführt:
@@ -79,7 +81,7 @@ Statt `main` lässt sich jeder Branch oder Commit angeben, z. B. zum Testen eine
 
 > Bei der Installation von GitHub baut npm den Adapter selbst (Skript `prepare`): Dafür werden einmalig die Entwicklungswerkzeuge (TypeScript, Vite, React …) heruntergeladen. Das dauert auf einem Raspberry Pi einige Minuten und braucht vorübergehend etwa 300 MB Platz.
 
-Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 20.
+Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 22.
 
 ## Konfiguration
 
@@ -98,7 +100,8 @@ Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 20.
 npm install
 npm run build        # Backend (build/) + Frontend (www/)
 npm test             # Unit- und Paket-Tests
-npm run lint
+npm run test:integration   # Adapter in einer echten js-controller-Testinstanz
+npm run lint && npm run check
 ```
 
 **Frontend ohne ioBroker entwickeln:**
@@ -115,9 +118,12 @@ src/            Adapter (TypeScript)
   main.ts         Lebenszyklus, Abos, Schreibzugriffe
   lib/discovery   Geräte-/Raumerkennung (reine Funktion, testbar)
   lib/rooms       Raumnamen-Heuristik
-  lib/profiles    Adapter-Profile für Systeme ohne Standard-Rollen (PV, Speicher, Wallbox)
+  lib/profiles    Adapter-Profile für Systeme ohne Standard-Rollen (PV, Wallbox, Wetter, Klima, Szenen …)
+  lib/overrides   Anpassungen aus dem Bearbeiten-Modus; lib/clientOverrides: je Endgerät
+  lib/history     Verläufe aus sql/history/influxdb
+  lib/system      Zustand von ioBroker (Hosts, Instanzen)
   lib/server      HTTP + WebSocket
-  shared/         Protokoll-Typen (von Backend und Frontend genutzt)
+  shared/         Protokoll-Typen und Zeitreihen-Hilfen (von Backend und Frontend genutzt)
 src-www/        Frontend (React + Vite) → baut nach www/
 admin/          jsonConfig für die Admin-Oberfläche
 scripts/demo.ts Demo-Server ohne ioBroker
@@ -129,6 +135,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.2.3 (2026-11-12)
+
+- (Exc3pt10n) **Breaking:** Mindestversion Node.js 22 (Node.js 20 wird seit April 2026 nicht mehr unterstützt)
+- (Exc3pt10n) Automatische Tests (GitHub Actions) verschlankt: keine Doppelläufe mehr, Node.js 22 und 24, Integrationstest einmal
 
 ### 0.2.2 (2026-11-12)
 

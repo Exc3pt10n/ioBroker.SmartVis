@@ -1,6 +1,6 @@
 {
   "name": "iobroker.smartvis",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Selbstkonfigurierende, mobile-first Visualisierung für ioBroker",
   "author": {
     "name": "Exc3pt10n"
@@ -20,7 +20,7 @@
     "url": "https://github.com/Exc3pt10n/ioBroker.smartvis.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "main": "build/main.js",
   "files": [

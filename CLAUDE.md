@@ -13,6 +13,9 @@ Jede Änderung, die gemergt werden soll, zieht die Adapter-Version **einmal pro 
 
 Bei mehreren Änderungen in einem Pull Request gilt die höchste Stufe.
 
+Ausnahme: Reine Änderungen an Entwicklungswerkzeugen ohne Auswirkung auf Nutzer (CI-Workflows,
+Tests, Demo, Lint-Konfiguration, `CLAUDE.md`) brauchen keine neue Version.
+
 Anzupassen sind jeweils:
 
 - `package.json` und `package-lock.json` (Feld `version`, im Lockfile oben und unter `packages[""]`)
@@ -22,6 +25,14 @@ Anzupassen sind jeweils:
 
 Wird ein Pull Request erweitert, bevor er gemergt ist, bleibt es bei dieser einen Erhöhung
 (ggf. von Patch auf Minor anheben). Nach einem Merge beginnt die nächste Änderung mit einer neuen Erhöhung.
+
+## Automatische Tests (GitHub Actions)
+
+`.github/workflows/test.yml` läuft für Pull Requests und Pushes auf `main` (nicht für jeden Branch-Push,
+sonst doppelt): Lint, Typprüfung, Build und Tests auf den unterstützten Node-Versionen (22, 24),
+der Integrationstest einmal auf Node 22. Ältere Läufe desselben Branches werden abgebrochen.
+Wird die Node-Mindestversion geändert: `engines` in `package.json`/`package-lock.json`, README
+(Voraussetzungen) und die Matrix im Workflow gemeinsam anpassen.
 
 ## Prüfen vor dem Push
 
