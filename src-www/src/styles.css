@@ -271,36 +271,117 @@ button {
 
 /* ===== Räume ===== */
 .grid--rooms {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (min-width: 600px) {
     .grid--rooms {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 }
 
 .room {
+    position: relative;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 4px;
-    padding: 18px;
+    min-height: 128px;
+    padding: 14px;
     border: 0;
     border-radius: var(--radius);
     background: var(--surface);
     box-shadow: var(--shadow);
     text-align: left;
     cursor: pointer;
+    transition:
+        background 0.2s,
+        box-shadow 0.2s;
+}
+
+/* Licht an: warmer Ton wie bei aktiven Kacheln */
+.room--lit {
+    background: var(--active-soft);
+}
+
+/* Offenes Fenster oder Störung: farbiger Rand (zusätzlich ⚠️/🪟 im Text) */
+.room--warn {
+    box-shadow:
+        inset 0 0 0 2px color-mix(in srgb, var(--warn) 55%, transparent),
+        var(--shadow);
+}
+
+.room__icon {
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 4px;
 }
 
 .room__name {
     font-weight: 600;
-    font-size: 17px;
+    font-size: 16px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .room__meta {
     font-size: 13px;
     color: var(--text-muted);
+}
+
+.room__climate {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.room__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: auto;
+    padding-top: 4px;
+}
+
+.room__badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.room--lit .room__badge {
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+
+.room__badge--warn {
+    color: var(--warn);
+    font-weight: 600;
+}
+
+/* Schnellaktion: alle Lichter des Raums aus */
+.room__off {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    min-height: 32px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.room--none .room__icon {
+    opacity: 0.6;
 }
 
 /* ===== Sonstiges ===== */
@@ -1572,13 +1653,7 @@ button.chip {
 }
 
 .room-wrap.is-editing .room {
-    padding-right: 144px;
-}
-
-.room-wrap .movebtns {
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
+    padding-bottom: 54px;
 }
 
 section + .chips {
@@ -2087,14 +2162,6 @@ section + .chips {
     cursor: grab;
     touch-action: none;
     user-select: none;
-}
-
-.room-wrap .draghandle {
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    left: auto;
-    right: 96px;
 }
 
 .is-sorting,
@@ -2820,4 +2887,36 @@ button.kpi:hover {
     font-size: 13px;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
+}
+
+/* ===== Symbol-Auswahl (Raum bearbeiten) ===== */
+.icon-picker {
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+.icon-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+    gap: 6px;
+}
+
+.icon-picker__grid button {
+    min-height: 44px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.icon-picker__grid .icon-picker__auto {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.icon-picker__grid .is-selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
 }

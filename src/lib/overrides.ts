@@ -153,6 +153,11 @@ export function applyEdit(current: SvOverrides, edit: SvEdit): SvOverrides {
             if ('order' in p) {
                 entry.order = typeof p.order === 'number' ? p.order : undefined;
             }
+            if ('icon' in p) {
+                // Ein Emoji (ggf. mit Varianten-/Verbindungszeichen) – kein Text, keine Markup-Reste
+                const icon = typeof p.icon === 'string' ? p.icon.trim() : '';
+                entry.icon = icon && icon.length <= 16 && !/[\p{L}\p{N}<>&"']/u.test(icon) ? icon : undefined;
+            }
             break;
         }
         case 'deviceOrder':
@@ -250,12 +255,19 @@ export function applyOverrides(model: SvModel, overrides: SvOverrides, editable:
                   name: o.name || r.name,
                   hidden: o.hidden || undefined,
                   originalName: o.name ? r.name : undefined,
+                  icon: o.icon || undefined,
               }
             : r;
     });
     for (const [id, o] of Object.entries(overrides.rooms)) {
         if (o.custom && o.name && !rooms.some(r => r.id === id)) {
-            rooms.push({ id, name: o.name, source: 'custom', hidden: o.hidden || undefined });
+            rooms.push({
+                id,
+                name: o.name,
+                source: 'custom',
+                hidden: o.hidden || undefined,
+                icon: o.icon || undefined,
+            });
         }
     }
     const roomIds = new Set(rooms.map(r => r.id));

@@ -17,6 +17,8 @@ export interface SvRoom {
     hidden?: boolean;
     /** Name vor einer Umbenennung durch den Nutzer */
     originalName?: string;
+    /** Vom Nutzer gewähltes Symbol (Emoji); ohne: automatisch aus dem Namen */
+    icon?: string;
 }
 
 /** Wo der Verlauf eines Werts aufgezeichnet wird */
@@ -338,6 +340,8 @@ export interface SvDeviceOverride {
 
 export interface SvRoomOverride {
     name?: string;
+    /** Eigenes Symbol (Emoji) statt des automatisch gewählten */
+    icon?: string;
     hidden?: boolean;
     order?: number;
     /** Vom Nutzer angelegter Raum */

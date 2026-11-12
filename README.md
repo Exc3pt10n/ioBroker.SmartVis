@@ -138,8 +138,12 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
-### 0.2.4 (2026-11-12)
+### 0.3.0 (2026-11-12)
 
+- (Exc3pt10n) Raumübersicht überarbeitet: Live-Status je Raum – Temperatur und Luftfeuchte sowie Kennzeichen für eingeschaltete Lichter, offene Fenster/Türen, Heizen/Kühlen, laufende Musik, (teilweise) geschlossene Rollläden und Probleme
+- (Exc3pt10n) Raumsymbole: automatisch aus dem Raumnamen, im Bearbeiten-Modus frei wählbar (wird mit den Anpassungen gespeichert)
+- (Exc3pt10n) Räume mit eingeschaltetem Licht sind hervorgehoben, Räume mit offenem Fenster oder Problem rot umrandet; auf dem iPhone zwei Spalten
+- (Exc3pt10n) Schnellaktion „💡 aus“ auf der Raumkarte schaltet alle Lichter des Raums aus
 - (Exc3pt10n) Lichter richtig gezählt: Hue-Raumgruppen („Alle Lichter“) und Zonen zählen auf der Startseite (Kennzahl, „Eingeschaltete Lichter“) und in der Raumliste nicht mehr zusätzlich zu ihren Lampen; die Gruppen-Kachel im Raum bleibt zum Schalten erhalten
 - (Exc3pt10n) Einzelne Hue-Lampen, die wie ihr Raum heißen, heißen jetzt „Licht“ statt fälschlich „Alle Lichter“
 - (Exc3pt10n) Diagramme auf dem iPhone/Touch (Verläufe, PV-Prognose, Temperaturkurve, Energiefluss): langes Drücken markiert bzw. kopiert nichts mehr; in Verläufen und PV-Prognose seitlich wischen zum Ablesen, der Wert bleibt nach dem Loslassen stehen

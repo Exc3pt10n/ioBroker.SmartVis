@@ -136,6 +136,16 @@ describe('overrides', () => {
         ).to.deep.equal({ views: { energy: { order: ['a'] } } });
     });
 
+    it('stores a room icon (emoji only) and resets it', () => {
+        let o = applyEdit(emptyOverrides(), { kind: 'room', id: 'auto.flur', patch: { icon: '🛋️' } });
+        expect(applyOverrides(model, o, true).rooms.find(r => r.id === 'auto.flur')?.icon).to.equal('🛋️');
+        o = applyEdit(o, { kind: 'room', id: 'auto.flur', patch: { icon: '<b>x</b>' } });
+        expect(o.rooms['auto.flur']).to.equal(undefined);
+        o = applyEdit(o, { kind: 'room', id: 'auto.flur', patch: { icon: '🛁' } });
+        o = applyEdit(o, { kind: 'room', id: 'auto.flur', patch: { icon: null } });
+        expect(applyOverrides(model, o, true).rooms.find(r => r.id === 'auto.flur')?.icon).to.equal(undefined);
+    });
+
     it('parses broken files as empty', () => {
         expect(parseOverrides('{kaputt')).to.deep.equal(emptyOverrides());
         expect(parseOverrides(undefined)).to.deep.equal(emptyOverrides());
