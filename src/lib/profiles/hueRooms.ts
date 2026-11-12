@@ -34,12 +34,17 @@ export interface HueRoomResult {
     roomGroups: Set<string>;
     /** Kanäle einer veralteten Objektstruktur */
     stale: Set<string>;
+    /** Hue-Gruppe (Raum/Zone) → Kanäle ihrer Lampen */
+    members: Map<string, string[]>;
 }
 
 export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: string[]): HueRoomResult {
     const hints = new Map<string, string>();
     const roomGroups = new Set<string>();
     const stale = new Set<string>();
+    const members = new Map<string, string[]>();
+    // Alle Gruppen mit Lampenliste (auch Zonen) – für die Zuordnung Gruppe → Lampen
+    const allGroups = new Map<string, { id: string; lights: string[] }[]>();
     const channelsByLevel = new Map<string, string[]>();
     // Instanz → Ebene → { Lampen nach Hue-ID, Raumgruppen }
     const instances = new Map<string, Map<number, { lights: Map<string, string>; groups: HueGroup[] }>>();
@@ -64,6 +69,12 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
 
         const role = String(obj.common?.role || '');
         const native = (obj.native || {}) as { id?: string | number; name?: string; lights?: (string | number)[] };
+        if (Array.isArray(native.lights) && !HUE_IGNORED_GROUP_ROLES.has(role)) {
+            allGroups.set(`${instance}|${depth}`, [
+                ...(allGroups.get(`${instance}|${depth}`) || []),
+                { id, lights: native.lights.map(String) },
+            ]);
+        }
         if (HUE_ROOM_ROLES.has(role) && Array.isArray(native.lights)) {
             const name = native.name || getName(obj, lang) || parts[parts.length - 1];
             level.groups.push({ id, name, lights: native.lights.map(String) });
@@ -105,6 +116,12 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
         for (const [channel, rooms] of candidates) {
             hints.set(channel, (rooms.find(r => r.known) || rooms[0]).name);
         }
+        for (const group of allGroups.get(`${instance}|${depth}`) || []) {
+            const channels = group.lights.map(l => level.lights.get(l)).filter((c): c is string => !!c);
+            if (channels.length) {
+                members.set(group.id, channels);
+            }
+        }
     }
-    return { hints, roomGroups, stale };
+    return { hints, roomGroups, stale, members };
 }

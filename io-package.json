@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.2.3",
+        "version": "0.2.4",
         "news": {
+            "0.2.4": {
+                "en": "Light count fixed: Hue room groups (\"All lights\") are no longer counted in addition to their lamps (home page, room list); single Hue lamps named like their room are now called \"Light\" instead of \"All lights\"",
+                "de": "Lichter richtig gezählt: Hue-Raumgruppen („Alle Lichter“) zählen nicht mehr zusätzlich zu ihren Lampen (Startseite, Raumliste); einzelne Hue-Lampen, die wie ihr Raum heißen, heißen jetzt „Licht“ statt „Alle Lichter“",
+                "ru": "Исправлен подсчёт света: группы комнат Hue («Весь свет») больше не считаются вдобавок к своим лампам (главная страница, список комнат); отдельные лампы Hue, названные как комната, теперь называются «Свет»",
+                "pt": "Contagem de luzes corrigida: os grupos de divisão Hue (\"Todas as luzes\") já não são contados além das suas lâmpadas (página inicial, lista de divisões); lâmpadas Hue individuais com o nome da divisão chamam-se agora \"Luz\"",
+                "nl": "Lampen correct geteld: Hue-kamergroepen (\"Alle lampen\") tellen niet meer extra mee naast hun lampen (startpagina, kamerlijst); losse Hue-lampen met de naam van hun kamer heten nu \"Licht\"",
+                "fr": "Comptage des lumières corrigé : les groupes de pièces Hue (« Toutes les lumières ») ne sont plus comptés en plus de leurs lampes (accueil, liste des pièces) ; les lampes Hue individuelles portant le nom de leur pièce s'appellent désormais « Lumière »",
+                "it": "Conteggio luci corretto: i gruppi stanza Hue (\"Tutte le luci\") non vengono più contati in aggiunta alle loro lampade (pagina iniziale, elenco stanze); le singole lampade Hue con il nome della stanza ora si chiamano \"Luce\"",
+                "es": "Recuento de luces corregido: los grupos de habitación Hue (\"Todas las luces\") ya no se cuentan además de sus lámparas (inicio, lista de habitaciones); las lámparas Hue individuales con el nombre de su habitación ahora se llaman \"Luz\"",
+                "pl": "Poprawione liczenie świateł: grupy pokojów Hue („Wszystkie światła”) nie są już liczone dodatkowo do swoich lamp (strona główna, lista pokojów); pojedyncze lampy Hue nazwane jak pokój nazywają się teraz „Światło”",
+                "uk": "Виправлено підрахунок світла: групи кімнат Hue («Усе світло») більше не рахуються на додачу до своїх ламп (головна сторінка, список кімнат); окремі лампи Hue з назвою кімнати тепер називаються «Світло»",
+                "zh-cn": "修正灯光计数：Hue 房间组（“所有灯”）不再在其灯具之外重复计数（首页、房间列表）；与房间同名的单个 Hue 灯现在称为“灯”而不是“所有灯”"
+            },
             "0.2.3": {
                 "en": "Requires Node.js 22 or newer (Node.js 20 is no longer supported upstream)",
                 "de": "Benötigt Node.js 22 oder neuer (Node.js 20 wird nicht mehr unterstützt)",

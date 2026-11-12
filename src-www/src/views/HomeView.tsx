@@ -1,6 +1,6 @@
 import type { SvDevice } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
-import { groupByRoom, isActive, isPlaying, warnings } from '../device';
+import { groupByRoom, isActive, isCoveredGroup, isPlaying, warnings } from '../device';
 import { formatPower, kwh, snapshot, wallboxSnapshot } from '../energy';
 import { autoStateInfo } from '../shutters';
 import { DeviceTile } from '../components/DeviceTile';
@@ -38,7 +38,11 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 d.states.find(s => s.name === 'STATE'),
             ),
     );
-    const lightsOn = devices.filter(d => LIGHT_TYPES.includes(d.type) && isActive(d, states));
+    // Gruppen ("Alle Lichter") nicht zusätzlich zu ihren Lampen zählen
+    const visibleIds = new Set(devices.map(d => d.id));
+    const lightsOn = devices.filter(
+        d => LIGHT_TYPES.includes(d.type) && !isCoveredGroup(d, visibleIds) && isActive(d, states),
+    );
     // Eingeschaltete Klimageräte (Ein/Aus = POWER)
     const climateOn = devices.filter(d => d.type === 'airCondition' && isActive(d, states));
     // Symbol nach Betriebsart: alle heizen 🔥, alle kühlen ❄️, sonst neutral 🌡️

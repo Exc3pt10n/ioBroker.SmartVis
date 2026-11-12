@@ -3,7 +3,7 @@ import type { SvRoom } from '../../../src/shared/protocol';
 import { EditBanner, EditButton, MoveButtons } from '../components/EditButton';
 import { DragHandle, SortableGrid, useSortable } from '../components/SortableGrid';
 import { connection, useConnection } from '../connection';
-import { isActive } from '../device';
+import { isActive, isCoveredGroup } from '../device';
 import { moved, useEditing, visibleDevices, visibleRooms } from '../editing';
 import { CreateRoomSheet, EditRoomSheet } from './EditSheets';
 
@@ -35,7 +35,10 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
                 getId={r => r.room.id}
                 kind="roomOrder"
                 render={({ room, devices: list }, order) => {
-                    const active = list.filter(d => !d.hidden && isActive(d, states)).length;
+                    const shown = new Set(list.filter(d => !d.hidden).map(d => d.id));
+                    const active = list.filter(
+                        d => !d.hidden && !isCoveredGroup(d, shown) && isActive(d, states),
+                    ).length;
                     const i = order.indexOf(room.id);
                     return (
                         <RoomCard

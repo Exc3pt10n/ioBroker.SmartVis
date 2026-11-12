@@ -138,6 +138,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.2.4 (2026-11-12)
+
+- (Exc3pt10n) Lichter richtig gezählt: Hue-Raumgruppen („Alle Lichter“) und Zonen zählen auf der Startseite (Kennzahl, „Eingeschaltete Lichter“) und in der Raumliste nicht mehr zusätzlich zu ihren Lampen; die Gruppen-Kachel im Raum bleibt zum Schalten erhalten
+- (Exc3pt10n) Einzelne Hue-Lampen, die wie ihr Raum heißen, heißen jetzt „Licht“ statt fälschlich „Alle Lichter“
+
 ### 0.2.3 (2026-11-12)
 
 - (Exc3pt10n) **Breaking:** Mindestversion Node.js 22 (Node.js 20 wird seit April 2026 nicht mehr unterstützt)

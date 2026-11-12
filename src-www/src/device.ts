@@ -76,6 +76,14 @@ export function valueState(device: SvDevice): SvStateRef | undefined {
     return device.states.find(s => !s.indicator);
 }
 
+/**
+ * Gruppe (z. B. Hue-Raum "Alle Lichter"), deren Lampen selbst angezeigt werden:
+ * zählt nicht zusätzlich als Licht – sonst würde jede eingeschaltete Lampe doppelt gezählt.
+ */
+export function isCoveredGroup(device: SvDevice, visibleIds: Set<string>): boolean {
+    return !!device.groupOf?.some(id => visibleIds.has(id));
+}
+
 /** Ist das Gerät "aktiv" (Licht an, Fenster offen …)? */
 export function isActive(device: SvDevice, states: Record<string, SvStateValue | null>): boolean {
     const ref = switchState(device) || valueState(device);

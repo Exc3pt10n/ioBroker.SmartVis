@@ -62,6 +62,11 @@ export interface SvDevice {
     /** Quell-Adapter, z. B. "hm-rpc", "hue" */
     adapter: string;
     states: SvStateRef[];
+    /**
+     * Gruppe mehrerer Lampen (z. B. Hue-Raum "Alle Lichter"): Geräte-IDs der Lampen.
+     * Wird nicht zusätzlich als Licht gezählt, wenn ihre Lampen selbst angezeigt werden.
+     */
+    groupOf?: string[];
     /** Vom Nutzer ausgeblendet (nur im Bearbeiten-Modus sichtbar) */
     hidden?: boolean;
     favorite?: boolean;
