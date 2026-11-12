@@ -26,11 +26,19 @@ Anzupassen sind jeweils:
 Wird ein Pull Request erweitert, bevor er gemergt ist, bleibt es bei dieser einen Erhöhung
 (ggf. von Patch auf Minor anheben). Nach einem Merge beginnt die nächste Änderung mit einer neuen Erhöhung.
 
+### Versions-Tags
+
+Nach dem Merge auf `main` setzt `.github/workflows/tag-release.yml` automatisch den annotierten Tag
+`vX.Y.Z` (Version aus `package.json`), sofern es ihn noch nicht gibt. Tags also nie selbst pushen –
+insbesondere nicht bei einem Versionssprung auf einem Feature-Branch. Ist dort lokal versehentlich ein
+Tag entstanden, ihn mit `git tag -d vX.Y.Z` wieder löschen.
+
 ## Automatische Tests (GitHub Actions)
 
 `.github/workflows/test.yml` läuft für Pull Requests und Pushes auf `main` (nicht für jeden Branch-Push,
 sonst doppelt): Lint, Typprüfung, Build und Tests auf den unterstützten Node-Versionen (22, 24),
 der Integrationstest einmal auf Node 22. Ältere Läufe desselben Branches werden abgebrochen.
+`.github/workflows/tag-release.yml` setzt nach jedem Push auf `main` den Versions-Tag (siehe oben).
 Wird die Node-Mindestversion geändert: `engines` in `package.json`/`package-lock.json`, README
 (Voraussetzungen) und die Matrix im Workflow gemeinsam anpassen.
 
