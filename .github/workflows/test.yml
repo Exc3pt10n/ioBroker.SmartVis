@@ -1,44 +1,38 @@
+# Zentraler Workflow aus Exc3pt10n/ioBroker-workflows (Vorlage templates/test.yml):
+# Lint, Typprüfung, Build, Tests, Integrations- und Installationstest, npm audit, release-guard
+# und nach einem Merge auf main das Release (Tag, GitHub-Release mit .tgz, Branch "release").
 name: Test
 
-# Pull Requests prüfen; Pushes nur auf main (Branches laufen über ihren Pull Request, sonst doppelt)
 on:
-  push:
-    branches: [main]
-  pull_request:
+    push:
+        branches: [main]
+    pull_request:
+    schedule:
+        # Wöchentlich mit voller Matrix (Linux + Windows, Node 22/24/26)
+        - cron: '23 3 * * 1'
+    workflow_dispatch:
 
-# Neuer Push auf denselben Branch/PR bricht den älteren Lauf ab
+# Neuer Push auf denselben Pull Request bricht den älteren Lauf ab; Läufe auf dem
+# Standard-Branch laufen zu Ende, damit kein Release mittendrin abgebrochen wird
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+    contents: read
 
 jobs:
-  # Lint, Typprüfung, Build und schnelle Tests je unterstützter Node-Version
-  check:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.x, 24.x]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+    adapter:
+        uses: Exc3pt10n/ioBroker-workflows/.github/workflows/adapter.yml@v1
+        # Schreibrecht braucht nur der Release-Job (Tag, GitHub-Release, Branch "release")
+        permissions:
+            contents: write
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run check
-      - run: npm run build
-      - run: npm test
-
-  # Integrationstest (startet eine echte js-controller-Instanz) – einmal genügt
-  integration:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test:integration
+            default-branch: main
+            # TypeScript-Adapter: führt "npm run check" und "npm run build" aus
+            build: true
+            # Fertig gebautes .tgz am GitHub-Release (kein Build beim Nutzer nötig)
+            prebuilt-package: true
+            # Ausgeliefert sind auch die Frontend-Quellen: src-www/ wird per Vite nach www/ gebaut.
+            # Ohne diesen Eintrag verlangt der release-guard bei reinen Frontend-Änderungen keine neue Version.
+            extra-runtime-paths: 'src/ src-www/'

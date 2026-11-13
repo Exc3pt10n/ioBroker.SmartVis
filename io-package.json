@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.7.0",
+        "version": "0.7.1",
         "news": {
+            "0.7.1": {
+                "en": "Releases are built, tested and published automatically: install the latest release from the branch \"release\" or as ready-built package (.tgz) from the GitHub release, without building on the ioBroker host",
+                "de": "Releases werden automatisch gebaut, getestet und veröffentlicht: das neueste Release über den Branch „release“ installieren oder als fertig gebautes Paket (.tgz) vom GitHub-Release, ohne Build auf dem ioBroker-Host",
+                "ru": "Релизы собираются, тестируются и публикуются автоматически: устанавливайте последний релиз из ветки «release» или как готовый пакет (.tgz) из релиза на GitHub, без сборки на хосте ioBroker",
+                "pt": "As versões são compiladas, testadas e publicadas automaticamente: instale a versão mais recente a partir do branch \"release\" ou como pacote pronto (.tgz) da versão no GitHub, sem compilar no anfitrião ioBroker",
+                "nl": "Releases worden automatisch gebouwd, getest en gepubliceerd: installeer de nieuwste release via de branch \"release\" of als kant-en-klaar pakket (.tgz) van de GitHub-release, zonder bouwen op de ioBroker-host",
+                "fr": "Les versions sont construites, testées et publiées automatiquement : installez la dernière version depuis la branche « release » ou comme paquet prêt à l'emploi (.tgz) depuis la version GitHub, sans compilation sur l'hôte ioBroker",
+                "it": "Le release vengono compilate, testate e pubblicate automaticamente: installa l'ultima release dal branch \"release\" o come pacchetto già compilato (.tgz) dalla release su GitHub, senza compilare sull'host ioBroker",
+                "es": "Las versiones se compilan, prueban y publican automáticamente: instale la última versión desde la rama \"release\" o como paquete ya compilado (.tgz) desde la versión de GitHub, sin compilar en el host de ioBroker",
+                "pl": "Wydania są automatycznie budowane, testowane i publikowane: instaluj najnowsze wydanie z gałęzi „release” lub jako gotowy pakiet (.tgz) z wydania na GitHub, bez budowania na hoście ioBroker",
+                "uk": "Релізи автоматично збираються, тестуються та публікуються: встановлюйте останній реліз із гілки «release» або як готовий пакет (.tgz) з релізу на GitHub, без збирання на хості ioBroker",
+                "zh-cn": "版本会自动构建、测试和发布：从“release”分支安装最新版本，或从 GitHub 版本下载已构建好的软件包（.tgz），无需在 ioBroker 主机上构建"
+            },
             "0.7.0": {
                 "en": "New supported adapter hue-v2 (Hue bridge API v2): lights, rooms, zones, scenes and smart scenes (e.g. \"Natural light\"); instances disabled in ioBroker are hidden: SmartVis no longer shows their devices (e.g. the old hue instance while switching to hue-v2)",
                 "de": "Neuer unterstützter Adapter hue-v2 (Hue-Bridge-API v2): Lampen, Räume, Zonen, Szenen und Smart Scenes (z. B. „Natürliches Licht“); in ioBroker deaktivierte Instanzen werden ausgeblendet: SmartVis zeigt ihre Geräte nicht mehr an (z. B. die alte hue-Instanz beim Umstieg auf hue-v2)",
