@@ -120,6 +120,29 @@ describe('overrides', () => {
         expect(applyOverrides(model, o, true).ui).to.deep.equal({});
     });
 
+    it('stores card widths of a view and resets them', () => {
+        let o = applyEdit(emptyOverrides(), {
+            kind: 'view',
+            view: 'home.desk',
+            width: { key: 'weather', width: 'half' },
+        });
+        o = applyEdit(o, { kind: 'view', view: 'home.desk', width: { key: 'lights', width: 'full' } });
+        expect(parseOverrides(JSON.stringify(o)).ui?.views?.['home.desk']?.widths).to.deep.equal({
+            weather: 'half',
+            lights: 'full',
+        });
+        o = applyEdit(o, { kind: 'view', view: 'home.desk', width: { key: 'weather', width: null } });
+        expect(o.ui?.views?.['home.desk']?.widths).to.deep.equal({ lights: 'full' });
+        expect(() =>
+            applyEdit(o, { kind: 'view', view: 'home.desk', width: { key: 'x', width: 'huge' as 'full' } }),
+        ).to.throw();
+        o = applyEdit(o, { kind: 'view', view: 'home.desk', widths: null });
+        expect(o.ui?.views?.['home.desk']).to.equal(undefined);
+        expect(
+            parseOverrides(JSON.stringify({ ui: { views: { a: { widths: { x: 'third', y: 'giant' } } } } })).ui,
+        ).to.deep.equal({ views: { a: { widths: { x: 'third' } } } });
+    });
+
     it('stores the layout of views (order, hidden) and resets it', () => {
         let o = applyEdit(emptyOverrides(), { kind: 'view', view: 'energy', order: ['history', 'flow', 'flow'] });
         o = applyEdit(o, { kind: 'view', view: 'energy', hidden: ['forecast'] });

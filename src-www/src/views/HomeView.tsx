@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { SvDevice } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
 import { groupByRoom, isActive, isCoveredGroup, isPlaying, warnings } from '../device';
@@ -22,7 +23,6 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
     const { model, states } = useConnection();
     const { editing } = useEditing();
     const dashboard = useMediaQuery(DASHBOARD_QUERY);
-    const wide = useMediaQuery('(min-width: 1800px)');
     const phone = useMediaQuery('(max-width: 899px)');
     if (!model) {
         return <p className="empty">Lade Geräte …</p>;
@@ -267,6 +267,168 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
         })),
     ];
 
+    const mainSections: SectionDef[] = [
+        {
+            key: 'favorites',
+            label: 'Favoriten',
+            // Ohne Favoriten nur im Bearbeiten-Modus (mit Hinweis, wie man welche anlegt)
+            node:
+                favs.length || editing ? (
+                    <section>
+                        <h2 className="subtitle">⭐ Favoriten</h2>
+                        {favs.length ? (
+                            <SortableGrid
+                                items={favs}
+                                getId={d => d.id}
+                                kind="favoriteOrder"
+                                render={(d, ids) => (
+                                    <DeviceTile
+                                        key={d.id}
+                                        device={d}
+                                        showRoom={roomName(d.roomId)}
+                                        reorder={{ ids, kind: 'favoriteOrder' }}
+                                    />
+                                )}
+                            />
+                        ) : (
+                            <p className="hint hint--static">
+                                Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
+                            </p>
+                        )}
+                    </section>
+                ) : null,
+        },
+        {
+            key: 'playing',
+            label: 'Läuft gerade',
+            node: playing.length ? (
+                <Section
+                    id="home-playing"
+                    title="🎵 Läuft gerade"
+                    devices={playing}
+                    roomName={roomName}
+                />
+            ) : (
+                placeholder('Erscheint, sobald ein Player abspielt.')
+            ),
+        },
+        {
+            key: 'lights',
+            label: 'Eingeschaltete Lichter',
+            node: lightsOn.length ? (
+                <LightsSection
+                    lights={lightsOn}
+                    compact={dashboard}
+                    onNavigate={onNavigate}
+                />
+            ) : (
+                placeholder('Erscheint, sobald ein Licht an ist.')
+            ),
+        },
+        {
+            key: 'climate',
+            label: 'Klima aktiv',
+            node: climateOn.length ? (
+                <Section
+                    id="home-climate"
+                    title={`${climateIcon} Klima aktiv`}
+                    devices={climateOn}
+                    roomName={roomName}
+                />
+            ) : (
+                placeholder('Erscheint, sobald ein Klimagerät eingeschaltet ist.')
+            ),
+        },
+        {
+            key: 'open',
+            label: 'Offene Fenster & Türen',
+            node: open.length ? (
+                <Section
+                    id="home-open"
+                    title="🪟 Offene Fenster & Türen"
+                    devices={open}
+                    roomName={roomName}
+                />
+            ) : (
+                placeholder('Erscheint, sobald ein Fenster oder eine Tür offen ist.')
+            ),
+        },
+        {
+            key: 'problems',
+            label: 'Störungen',
+            node: problems.length ? (
+                <Section
+                    id="home-problems"
+                    title="⚠️ Störungen"
+                    devices={problems}
+                    roomName={roomName}
+                />
+            ) : (
+                placeholder('Erscheint bei nicht erreichbaren Geräten oder leerer Batterie.')
+            ),
+        },
+    ];
+    // Standardbreiten im Desktop-Raster: Übersichtskarten und kurze Listen je ein Drittel
+    const thirds = new Set(['weather', 'energy', 'playing', 'climate', 'open', 'problems']);
+    const deskOrder = [
+        'weather',
+        'energy',
+        'forecast',
+        'favorites',
+        'playing',
+        'climate',
+        'open',
+        'problems',
+        'lights',
+    ];
+    const deskSections: SectionDef[] = [...overviewSections, ...mainSections]
+        .map(sec => ({
+            ...sec,
+            width: thirds.has(sec.key) || sec.key.startsWith('forecast-') ? ('third' as const) : ('full' as const),
+        }))
+        .sort(
+            (x, y) =>
+                deskOrder.indexOf(x.key.startsWith('forecast-') ? 'forecast' : x.key) -
+                deskOrder.indexOf(y.key.startsWith('forecast-') ? 'forecast' : y.key),
+        );
+    const allQuiet = !editing && lightsOn.length + climateOn.length + open.length + problems.length === 0;
+
+    const hint = (
+        <>
+            {withoutRoom > 0 && !hintHidden && (
+                <div className="hint-row">
+                    <button
+                        type="button"
+                        className="hint"
+                        onClick={() => onNavigate('rooms/_none')}
+                    >
+                        {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
+                    </button>
+                    {model.editable && (
+                        <button
+                            type="button"
+                            className="iconbtn hint-row__close"
+                            aria-label="Hinweis ausblenden"
+                            title="Hinweis ausblenden"
+                            onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: true } })}
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
+            )}
+            {withoutRoom > 0 && hintHidden && editing && (
+                <button
+                    type="button"
+                    className="linkbtn"
+                    onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: null } })}
+                >
+                    Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
+                </button>
+            )}
+        </>
+    );
+
     return (
         <>
             <div className="titlebar titlebar--split">
@@ -274,203 +436,134 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 <EditButton />
             </div>
             <EditBanner text="Bereiche und Favoriten am Griff ⠿ ziehen, Bereiche aus- oder einblenden, Kachel antippen zum Anpassen" />
-            <div className={`home${dashboard ? ' home--dashboard' : ''}`}>
-                <div className="home__overview">
-                    <CustomSections
-                        view="home.overview"
-                        className="csecs csecs--stack"
-                        sections={dashboard ? overviewSections : [...kpiSections, ...overviewSections]}
-                    />
-                </div>
-                <div className="home__kpis">
-                    {dashboard && (
+            {dashboard ? (
+                // Desktop: Kennzahlen als Leiste, darunter ein Raster mit frei wählbarer Breite je Karte
+                <div className="home home--dashboard">
+                    <div className="home__kpis">
                         <CustomSections
                             view="home.top"
                             sections={kpiSections}
                         />
-                    )}
-                    {withoutRoom > 0 && !hintHidden && (
-                        <div className="hint-row">
+                        {hint}
+                    </div>
+                    <CustomSections
+                        view="home.desk"
+                        grid
+                        className="csecs home__desk"
+                        sections={deskSections}
+                    />
+                    {allQuiet && <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>}
+                </div>
+            ) : (
+                <div className="home">
+                    <div className="home__overview">
+                        <CustomSections
+                            view="home.overview"
+                            className="csecs csecs--stack"
+                            sections={[...kpiSections, ...overviewSections]}
+                        />
+                    </div>
+                    <div className="home__kpis">{hint}</div>
+                    <div className="home__main">
+                        <CustomSections
+                            view="home.main"
+                            className="csecs home__sections"
+                            sections={mainSections}
+                        />
+                        {allQuiet && <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>}
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
+
+/** Räume mit vielen Lichtern auf dem Desktop eingeklappt; aufgeklappte merkt sich die Sitzung */
+const COLLAPSE_FROM = 4;
+const expandedRooms = new Set<string>();
+
+/** "Eingeschaltete Lichter" je Raum, mit "Alle aus"; compact (Desktop): kleine Kacheln, große Räume einklappbar */
+function LightsSection({
+    lights,
+    compact,
+    onNavigate,
+}: {
+    lights: SvDevice[];
+    compact: boolean;
+    onNavigate: (path: string) => void;
+}): React.JSX.Element {
+    const { model, states } = useConnection();
+    const [, rerender] = useState(0);
+    return (
+        <section id="home-lights">
+            <h2 className="subtitle">💡 Eingeschaltete Lichter</h2>
+            {groupByRoom(lights, model?.rooms || []).map(g => {
+                const key = g.roomId ?? '_none';
+                const collapsible = compact && g.devices.length >= COLLAPSE_FROM;
+                const open = !collapsible || expandedRooms.has(key);
+                const toggle = (): void => {
+                    if (expandedRooms.has(key)) {
+                        expandedRooms.delete(key);
+                    } else {
+                        expandedRooms.add(key);
+                    }
+                    rerender(n => n + 1);
+                };
+                return (
+                    <div
+                        key={key}
+                        className={`roomgroup${collapsible && !open ? ' roomgroup--collapsed' : ''}`}
+                    >
+                        <div className="roomgroup__head">
                             <button
                                 type="button"
-                                className="hint"
-                                onClick={() => onNavigate('rooms/_none')}
+                                className="roomgroup__title"
+                                onClick={() => onNavigate(`rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`)}
                             >
-                                {withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum – antippen zum Ansehen
+                                {g.name}
+                                <span className="group__count">{g.devices.length}</span>
+                                <span aria-hidden="true">›</span>
                             </button>
-                            {model.editable && (
+                            <button
+                                type="button"
+                                className="roomgroup__off"
+                                aria-label={`${g.name}: alle Lichter ausschalten`}
+                                title="Alle Lichter ausschalten"
+                                onClick={() => switchLights(g.devices, false, states, g.name)}
+                            >
+                                💡 Alle aus
+                            </button>
+                            {collapsible && (
                                 <button
                                     type="button"
-                                    className="iconbtn hint-row__close"
-                                    aria-label="Hinweis ausblenden"
-                                    title="Hinweis ausblenden"
-                                    onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: true } })}
+                                    className="roomgroup__toggle"
+                                    aria-expanded={open}
+                                    onClick={toggle}
                                 >
-                                    ✕
+                                    {open ? 'Einklappen' : `${g.devices.length} anzeigen`}
+                                    <span
+                                        className="chevron"
+                                        aria-hidden="true"
+                                    />
                                 </button>
                             )}
                         </div>
-                    )}
-                    {withoutRoom > 0 && hintHidden && editing && (
-                        <button
-                            type="button"
-                            className="linkbtn"
-                            onClick={() => connection.edit({ kind: 'ui', patch: { hideNoRoomHint: null } })}
-                        >
-                            Hinweis „{withoutRoom} {withoutRoom === 1 ? 'Gerät' : 'Geräte'} ohne Raum“ wieder anzeigen
-                        </button>
-                    )}
-                </div>
-                <div className="home__main">
-                    <CustomSections
-                        view="home.main"
-                        columns={dashboard && wide ? 2 : 1}
-                        className="csecs home__sections"
-                        sections={[
-                            {
-                                key: 'favorites',
-                                label: 'Favoriten',
-                                // Ohne Favoriten nur im Bearbeiten-Modus (mit Hinweis, wie man welche anlegt)
-                                node:
-                                    favs.length || editing ? (
-                                        <section>
-                                            <h2 className="subtitle">⭐ Favoriten</h2>
-                                            {favs.length ? (
-                                                <SortableGrid
-                                                    items={favs}
-                                                    getId={d => d.id}
-                                                    kind="favoriteOrder"
-                                                    render={(d, ids) => (
-                                                        <DeviceTile
-                                                            key={d.id}
-                                                            device={d}
-                                                            showRoom={roomName(d.roomId)}
-                                                            reorder={{ ids, kind: 'favoriteOrder' }}
-                                                        />
-                                                    )}
-                                                />
-                                            ) : (
-                                                <p className="hint hint--static">
-                                                    Noch keine Favoriten – öffne ein Gerät und markiere es mit ☆.
-                                                </p>
-                                            )}
-                                        </section>
-                                    ) : null,
-                            },
-                            {
-                                key: 'playing',
-                                label: 'Läuft gerade',
-                                node: playing.length ? (
-                                    <Section
-                                        id="home-playing"
-                                        title="🎵 Läuft gerade"
-                                        devices={playing}
-                                        roomName={roomName}
+                        {open ? (
+                            <div className={`grid${compact ? ' grid--compact' : ''}`}>
+                                {g.devices.map(d => (
+                                    <DeviceTile
+                                        key={d.id}
+                                        device={d}
                                     />
-                                ) : (
-                                    placeholder('Erscheint, sobald ein Player abspielt.')
-                                ),
-                            },
-                            {
-                                key: 'lights',
-                                label: 'Eingeschaltete Lichter',
-                                node: lightsOn.length ? (
-                                    <section id="home-lights">
-                                        <h2 className="subtitle">💡 Eingeschaltete Lichter</h2>
-                                        {groupByRoom(lightsOn, model.rooms).map(g => (
-                                            <div
-                                                key={g.roomId ?? '_none'}
-                                                className="roomgroup"
-                                            >
-                                                <div className="roomgroup__head">
-                                                    <button
-                                                        type="button"
-                                                        className="roomgroup__title"
-                                                        onClick={() =>
-                                                            onNavigate(
-                                                                `rooms/${g.roomId ? encodeURIComponent(g.roomId) : '_none'}`,
-                                                            )
-                                                        }
-                                                    >
-                                                        {g.name}
-                                                        <span className="group__count">{g.devices.length}</span>
-                                                        <span aria-hidden="true">›</span>
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="roomgroup__off"
-                                                        aria-label={`${g.name}: alle Lichter ausschalten`}
-                                                        title="Alle Lichter ausschalten"
-                                                        onClick={() => switchLights(g.devices, false, states, g.name)}
-                                                    >
-                                                        💡 Alle aus
-                                                    </button>
-                                                </div>
-                                                <div className="grid">
-                                                    {g.devices.map(d => (
-                                                        <DeviceTile
-                                                            key={d.id}
-                                                            device={d}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </section>
-                                ) : (
-                                    placeholder('Erscheint, sobald ein Licht an ist.')
-                                ),
-                            },
-                            {
-                                key: 'climate',
-                                label: 'Klima aktiv',
-                                node: climateOn.length ? (
-                                    <Section
-                                        id="home-climate"
-                                        title={`${climateIcon} Klima aktiv`}
-                                        devices={climateOn}
-                                        roomName={roomName}
-                                    />
-                                ) : (
-                                    placeholder('Erscheint, sobald ein Klimagerät eingeschaltet ist.')
-                                ),
-                            },
-                            {
-                                key: 'open',
-                                label: 'Offene Fenster & Türen',
-                                node: open.length ? (
-                                    <Section
-                                        id="home-open"
-                                        title="🪟 Offene Fenster & Türen"
-                                        devices={open}
-                                        roomName={roomName}
-                                    />
-                                ) : (
-                                    placeholder('Erscheint, sobald ein Fenster oder eine Tür offen ist.')
-                                ),
-                            },
-                            {
-                                key: 'problems',
-                                label: 'Störungen',
-                                node: problems.length ? (
-                                    <Section
-                                        id="home-problems"
-                                        title="⚠️ Störungen"
-                                        devices={problems}
-                                        roomName={roomName}
-                                    />
-                                ) : (
-                                    placeholder('Erscheint bei nicht erreichbaren Geräten oder leerer Batterie.')
-                                ),
-                            },
-                        ]}
-                    />
-                    {!editing && lightsOn.length + climateOn.length + open.length + problems.length === 0 && (
-                        <p className="empty">Alles ruhig – keine Lichter an, alles geschlossen.</p>
-                    )}
-                </div>
-            </div>
-        </>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="roomgroup__names">{g.devices.map(d => d.name).join(' · ')}</p>
+                        )}
+                    </div>
+                );
+            })}
+        </section>
     );
 }
 

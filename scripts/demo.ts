@@ -76,6 +76,10 @@ const hueLights: [string, string, string, boolean][] = [
     ['2', 'Spots', 'Spots', false],
     ['3', 'Pendelleuchte', 'Pendelleuchte', false],
     ['4', 'Deckenlampe', 'Deckenlampe_Flur', false],
+    // Mehrere Lampen in einem Raum (Desktop: große Räume eingeklappt)
+    ['5', 'Leuchte Sideboard', 'Leuchte_Sideboard', true],
+    ['6', 'Leuchte Vitrine', 'Leuchte_Vitrine', true],
+    ['7', 'Leuchte Regal', 'Leuchte_Regal', true],
 ];
 for (const [hueId, name, key, on] of hueLights) {
     folder(`hue.0.${key}`, 'channel', name, 'light.dimmer');
@@ -84,7 +88,7 @@ for (const [hueId, name, key, on] of hueLights) {
     state(`hue.0.${key}.level`, 'level.dimmer', 'number', true, on ? 80 : 0, { min: 0, max: 100, unit: '%' });
 }
 for (const [gid, name, lights] of [
-    ['1', 'Wohnzimmer', ['1']],
+    ['1', 'Wohnzimmer', ['1', '5', '6', '7']],
     ['2', 'Küche', ['2', '3']],
     ['3', 'Flur', ['4']],
 ] as const) {

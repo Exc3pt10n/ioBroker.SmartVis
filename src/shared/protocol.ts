@@ -356,10 +356,16 @@ export interface SvUiSettings {
     views?: Record<string, SvViewLayout>;
 }
 
-/** Reihenfolge und ausgeblendete Bereiche einer Ansicht (Schlüssel der Bereiche) */
+/** Breite einer Karte im Desktop-Raster */
+export type SvCardWidth = 'third' | 'half' | 'twothirds' | 'full';
+
+export const CARD_WIDTHS: SvCardWidth[] = ['third', 'half', 'twothirds', 'full'];
+
+/** Reihenfolge, ausgeblendete Bereiche und Kartenbreiten einer Ansicht (Schlüssel der Bereiche) */
 export interface SvViewLayout {
     order?: string[];
     hidden?: string[];
+    widths?: Record<string, SvCardWidth>;
 }
 
 export interface SvOverrides {
@@ -416,7 +422,15 @@ export type SvEdit =
     | { kind: 'resetDevice'; id: string }
     | { kind: 'ui'; patch: { hideNoRoomHint?: boolean | null } }
     /** Bereiche einer Ansicht anordnen/ausblenden; null setzt zurück */
-    | { kind: 'view'; view: string; order?: string[] | null; hidden?: string[] | null };
+    | {
+          kind: 'view';
+          view: string;
+          order?: string[] | null;
+          hidden?: string[] | null;
+          /** Breite einer Karte setzen (null = Standard); widths: null setzt alle zurück */
+          width?: { key: string; width: SvCardWidth | null };
+          widths?: null;
+      };
 
 /** Szene einer Hue-Gruppe (Knopf-State, wird mit true ausgelöst) */
 export interface SvScene {

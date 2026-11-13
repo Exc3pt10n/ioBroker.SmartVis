@@ -138,6 +138,12 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.6.0 (2026-11-13)
+
+- (Exc3pt10n) Startseite auf dem Desktop: Kennzahlen als Leiste oben, darunter ein flexibles Raster – im Bearbeiten-Modus hat jede Karte zusätzlich zu Reihenfolge und Ein-/Ausblenden eine Breite (⅓, ½, ⅔, ganz); Standard: Wetter, Energiefluss und PV-Prognose nebeneinander, darunter die Statuslisten und die Lichter über die volle Breite; in schmaleren Fenstern werden Drittel zu Hälften, zwei Drittel zur vollen Breite
+- (Exc3pt10n) Eingeschaltete Lichter auf dem Desktop: kompakte Kacheln (mehr pro Zeile); Räume ab 4 Lichtern sind eingeklappt und zeigen die Lampennamen, „anzeigen“ klappt sie auf
+- (Exc3pt10n) Die Desktop-Anordnung der Startseite wird neu gespeichert; eine frühere Desktop-Anordnung beginnt einmalig mit dem neuen Standard
+
 ### 0.5.2 (2026-11-13)
 
 - (Exc3pt10n) Klimageräte: „Außengerät leise“ ist eine Schaltfläche, die durchschaltet (Stufe 1 → Stufe 2 → aus), mit Stufenanzeige
