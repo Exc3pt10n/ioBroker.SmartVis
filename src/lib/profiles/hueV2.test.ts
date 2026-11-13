@@ -109,17 +109,17 @@ const hueV1: [string, Obj][] = [
     ],
 ];
 
-function run(withLights: boolean, ignoreInstances: string[] = []): ReturnType<typeof discover> {
-    return discover(Object.fromEntries([...hueV2(withLights), ...hueV1]), {
-        language: 'de',
-        ignoreAdapters: [],
-        ignoreInstances,
-    });
+/** Alte Instanz in ioBroker deaktiviert (pausiert) oder aktiv */
+function run(withLights: boolean, hueV1Enabled = false): ReturnType<typeof discover> {
+    const objects = Object.fromEntries([...hueV2(withLights), ...hueV1]);
+    const instance = objects['system.adapter.hue.0'];
+    objects['system.adapter.hue.0'] = { ...instance, common: { ...instance.common, enabled: hueV1Enabled } } as Obj;
+    return discover(objects, { language: 'de', ignoreAdapters: [] });
 }
 
-describe('hue-v2 and paused instances', () => {
+describe('hue-v2 and disabled instances', () => {
     it('detects lights, rooms and groups of hue-v2', () => {
-        const { model } = run(true, ['hue.0']);
+        const { model } = run(true);
         const byId = Object.fromEntries(model.devices.map(d => [d.id, d]));
         const room = model.rooms.find(r => r.name === 'Wohnzimmer');
         expect(room).to.exist;
@@ -138,7 +138,7 @@ describe('hue-v2 and paused instances', () => {
     });
 
     it('offers scenes and smart scenes of hue-v2', () => {
-        const { model } = run(true, ['hue.0']);
+        const { model } = run(true);
         const group = model.scenes.find(g => g.id === 'hue-v2.0.rooms.Wohnzimmer');
         expect(group?.kind).to.equal('room');
         expect(group?.scenes.map(s => [s.name, !!s.smart])).to.deep.equal([
@@ -149,25 +149,23 @@ describe('hue-v2 and paused instances', () => {
     });
 
     it('keeps rooms and scenes when hue-v2 does not list the lights of a group', () => {
-        const { model } = run(false, ['hue.0']);
+        const { model } = run(false);
         const byId = Object.fromEntries(model.devices.map(d => [d.id, d]));
         const room = model.rooms.find(r => r.name === 'Wohnzimmer');
         expect(byId['hue-v2.0.rooms.Wohnzimmer']?.roomId).to.equal(room!.id);
         expect(model.scenes.find(g => g.id === 'hue-v2.0.rooms.Wohnzimmer')?.scenes).to.have.length(2);
     });
 
-    it('hides the objects of paused instances and marks them', () => {
-        const all = run(true);
-        expect(all.model.devices.some(d => d.id.startsWith('hue.0.'))).to.equal(true);
-        expect(all.model.scenes.some(g => g.id === 'hue.0.Wohnzimmer')).to.equal(true);
+    it('hides the objects of instances that are disabled in ioBroker', () => {
+        const active = run(true, true);
+        expect(active.model.devices.some(d => d.id.startsWith('hue.0.'))).to.equal(true);
+        expect(active.model.scenes.some(g => g.id === 'hue.0.Wohnzimmer')).to.equal(true);
+        expect(active.model.system?.instances.find(i => i.id === 'hue.0')?.paused).to.equal(undefined);
 
-        for (const input of ['hue.0', ' system.adapter.hue.0 ']) {
-            const paused = run(true, [input]);
-            expect(paused.model.devices.some(d => d.id.startsWith('hue.0.'))).to.equal(false);
-            expect(paused.model.scenes.some(g => g.id.startsWith('hue.0.'))).to.equal(false);
-            expect(paused.model.devices.some(d => d.id.startsWith('hue-v2.0.'))).to.equal(true);
-            expect(paused.model.system?.instances.find(i => i.id === 'hue.0')?.paused).to.equal(true);
-        }
-        expect(all.model.system?.instances.find(i => i.id === 'hue.0')?.paused).to.equal(undefined);
+        const paused = run(true, false);
+        expect(paused.model.devices.some(d => d.id.startsWith('hue.0.'))).to.equal(false);
+        expect(paused.model.scenes.some(g => g.id.startsWith('hue.0.'))).to.equal(false);
+        expect(paused.model.devices.some(d => d.id.startsWith('hue-v2.0.'))).to.equal(true);
+        expect(paused.model.system?.instances.find(i => i.id === 'hue.0')?.paused).to.equal(true);
     });
 });

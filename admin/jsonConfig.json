@@ -70,16 +70,6 @@
             "md": 12,
             "lg": 8
         },
-        "ignoreInstances": {
-            "type": "text",
-            "label": "Pausierte Instanzen (kommagetrennt, z. B. hue.0)",
-            "help": "Objekte dieser Instanzen blendet SmartVis aus – z. B. die alte Hue-Instanz während des Umstiegs auf hue-v2. Die Instanz selbst läuft weiter.",
-            "newLine": true,
-            "xs": 12,
-            "sm": 12,
-            "md": 12,
-            "lg": 8
-        },
         "_ui": {
             "type": "header",
             "text": "Oberfläche",

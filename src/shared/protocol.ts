@@ -467,7 +467,7 @@ export interface SvHostStatus {
 export interface SvInstanceStatus {
     /** z. B. "hue.0" */
     id: string;
-    /** In SmartVis pausiert (Objekte ausgeblendet, Instanz läuft weiter) */
+    /** In ioBroker deaktiviert: SmartVis blendet die Objekte der Instanz aus */
     paused?: boolean;
     /** Adaptername, z. B. "hue" */
     adapter: string;

@@ -52,6 +52,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Neu-Erkennung bei Objektänderungen
 - **Verläufe** aus `sql`, `history` oder `influxdb`: automatisch für alle aufgezeichneten Werte (Einstellung „Aufzeichnung aktiviert“ am Datenpunkt) – in der Detailansicht der Geräte, im Wetter-Verlauf (Link in der Wetterkarte) und in der Energie-Sicht; Zeiträume 6 Std./24 Std./7 Tage als Mittelwerte, mit Min./Ø/Max., Tooltip und Tabelle. Für die Q.HOME werden auch die aufgezeichneten kW-Varianten (`GridPwPurchase`, `GridPwFeedIn`) erkannt
 - **Hue-Szenen**: die Szenen der Hue-Räume und -Zonen lassen sich in der Detailansicht jeder Hue-Lampe und in der Raumansicht (unter „Licht“) auslösen; interne Bridge-Szenen und doppelte Gruppen werden ausgeblendet. Mit `hue-v2` auch Smart Scenes wie „Natürliches Licht“ (mit ✨ gekennzeichnet)
+- **Deaktivierte Instanzen**: Ist eine Adapter-Instanz in ioBroker deaktiviert, zeigt SmartVis ihre Geräte nicht an (ihre Werte aktualisieren sich ohnehin nicht mehr) – praktisch z. B. beim Umstieg von `hue` auf `hue-v2`
 - **hue-v2**: Lampen unter `lights`, Räume und Zonen unter `rooms`/`zones` mit Szenen (`scenes`) und Smart Scenes (`smartScenes`). Für die Zuordnung der Lampen zu den Räumen braucht SmartVis am Raum-/Zonen-Kanal `native.lights` (IDs der Lampen wie in `native.id` der Lampen-Kanäle); fehlt die Liste, funktionieren Raum und Szenen trotzdem, die Lampen stehen dann aber unter „Ohne Raum“
 - Der Hinweis „Geräte ohne Raum“ auf der Startseite lässt sich mit ✕ ausblenden (gilt für alle Geräte); im Bearbeiten-Modus wieder einblenden
 - Startseite zeigt unter „Läuft gerade“ alle Medien-Player (z. B. Echos), die gerade abspielen
@@ -95,7 +96,6 @@ Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 22.
 | Sprache | `de` | Sprache für mehrsprachige Objektnamen |
 | Neu-Erkennung | `10` s | Wartezeit nach Objektänderungen |
 | Ignorierte Adapter | `system,admin,…,iot` | Werden bei der Erkennung übersprungen |
-| Pausierte Instanzen | leer | Einzelne Instanzen ausblenden, z. B. `hue.0` beim Umstieg auf `hue-v2`; die Instanz läuft weiter, unter Mehr → ioBroker steht „in SmartVis pausiert“ |
 | Bearbeiten-Modus erlauben | an | Anpassungen aus der App speichern |
 
 ## Entwicklung
@@ -143,7 +143,7 @@ scripts/demo.ts Demo-Server ohne ioBroker
 ### 0.7.0 (2026-11-13)
 
 - (Exc3pt10n) Neuer unterstützter Adapter [`hue-v2`](https://github.com/Exc3pt10n/ioBroker.hue-v2) (Hue-Bridge-API v2): Lampen, Räume (als „Alle Lichter“), Zonen, Szenen und Smart Scenes (z. B. „Natürliches Licht“, mit ✨); Räume aus den Hue-Räumen, Lampen über `native.lights` am Raum zugeordnet
-- (Exc3pt10n) Neue Einstellung „Pausierte Instanzen“: Objekte einzelner Instanzen (z. B. `hue.0`) blendet SmartVis aus, ohne die Instanz zu stoppen – etwa für den Umstieg vom alten Hue-Adapter auf hue-v2; unter Mehr → ioBroker als „in SmartVis pausiert“ gekennzeichnet
+- (Exc3pt10n) In ioBroker deaktivierte (pausierte) Instanzen: SmartVis blendet ihre Geräte, Szenen und Profile aus – z. B. die alte `hue`-Instanz beim Umstieg auf hue-v2; nach dem Aktivieren erscheinen sie automatisch wieder. Unter Mehr → ioBroker steht bei der Instanz „Geräte ausgeblendet“
 
 ### 0.6.0 (2026-11-13)
 

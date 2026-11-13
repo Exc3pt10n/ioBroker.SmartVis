@@ -198,16 +198,6 @@ export function SystemCard({ system, states }: { system: SvSystemStatus; states:
                     {disabled ? ` · ${disabled} deaktiviert` : ''}
                 </span>
             </p>
-            {system.instances.some(i => i.paused) && (
-                <p className="system__paused">
-                    ⏸️ In SmartVis pausiert:{' '}
-                    {system.instances
-                        .filter(i => i.paused)
-                        .map(i => i.id)
-                        .join(', ')}{' '}
-                    <span className="system__count">(Einstellung „Pausierte Instanzen“ in der Instanz)</span>
-                </p>
-            )}
             {problems.length > 0 && (
                 <ul className="instances instances--problems">
                     {problems.map(({ instance, state }) => (
@@ -254,8 +244,8 @@ function InstanceRow({ instance, state }: { instance: SvInstanceStatus; state: I
             </span>
             <span className="instance__state">
                 {info.label}
-                {/* In SmartVis pausiert: Objekte ausgeblendet, die Instanz selbst läuft weiter */}
-                {instance.paused && <span className="instance__paused">⏸️ in SmartVis pausiert</span>}
+                {/* Deaktivierte Instanz: SmartVis zeigt ihre Geräte nicht an */}
+                {instance.paused && <span className="instance__paused">Geräte ausgeblendet</span>}
             </span>
         </li>
     );

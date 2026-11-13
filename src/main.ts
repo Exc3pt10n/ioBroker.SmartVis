@@ -93,7 +93,6 @@ class SmartVis extends utils.Adapter {
         this.discovery = discover(objects, {
             language: this.config.language || 'de',
             ignoreAdapters: [this.name, ...(this.config.ignoreAdapters || '').split(',')],
-            ignoreInstances: (this.config.ignoreInstances || '').split(','),
         });
 
         await this.syncSubscriptions(this.discovery.stateIds);

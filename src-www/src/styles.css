@@ -3840,8 +3840,3 @@ button.kpi:hover {
     color: var(--text-muted);
     white-space: nowrap;
 }
-
-.system__paused {
-    margin: 8px 0 0;
-    font-size: 14px;
-}

@@ -17,8 +17,6 @@ export interface DiscoveryOptions {
     language: string;
     /** Adapter-Namespaces, die ignoriert werden (z. B. "system", "admin") */
     ignoreAdapters: string[];
-    /** Pausierte Instanzen, z. B. "hue.0" (die Instanz läuft weiter, SmartVis blendet ihre Objekte aus) */
-    ignoreInstances?: string[];
 }
 
 export interface DiscoveryResult {
@@ -107,17 +105,14 @@ class RoomRegistry {
 export function discover(objects: ObjectMap, options: DiscoveryOptions): DiscoveryResult {
     const lang = options.language;
     const ignore = new Set(options.ignoreAdapters.map(a => a.trim()).filter(Boolean));
-    // Instanzen: "hue.0" (auch "hue.0." oder "system.adapter.hue.0" eingegeben)
-    const paused = new Set(
-        (options.ignoreInstances || [])
-            .map(i =>
-                i
-                    .trim()
-                    .replace(/^system\.adapter\./, '')
-                    .replace(/\.$/, ''),
-            )
-            .filter(i => /^[\w-]+\.\d+$/.test(i)),
-    );
+    // In ioBroker deaktivierte Instanzen (z. B. der alte Hue-Adapter beim Umstieg auf hue-v2): ihre Objekte
+    // bleiben in ioBroker stehen, ihre Werte aktualisieren sich aber nicht mehr – nicht anzeigen
+    const paused = new Set<string>();
+    for (const [id, obj] of Object.entries(objects)) {
+        if (obj?.type === 'instance' && id.startsWith('system.adapter.') && obj.common?.enabled === false) {
+            paused.add(id.slice('system.adapter.'.length));
+        }
+    }
     const isIgnored = (id: string): boolean => {
         const parts = id.split('.');
         return ignore.has(parts[0]) || paused.has(`${parts[0]}.${parts[1]}`);
