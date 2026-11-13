@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "news": {
+            "0.7.0": {
+                "en": "New supported adapter hue-v2 (Hue bridge API v2): lights, rooms, zones, scenes and smart scenes (e.g. \"Natural light\"); new setting \"Paused instances\": SmartVis hides the objects of single instances (e.g. hue.0) without stopping them – e.g. while switching from the old Hue adapter to hue-v2",
+                "de": "Neuer unterstützter Adapter hue-v2 (Hue-Bridge-API v2): Lampen, Räume, Zonen, Szenen und Smart Scenes (z. B. „Natürliches Licht“); neue Einstellung „Pausierte Instanzen“: SmartVis blendet die Objekte einzelner Instanzen (z. B. hue.0) aus, ohne sie zu stoppen – etwa beim Umstieg vom alten Hue-Adapter auf hue-v2",
+                "ru": "Новый поддерживаемый адаптер hue-v2 (API моста Hue v2): лампы, комнаты, зоны, сцены и умные сцены (например «Естественный свет»); новая настройка «Приостановленные экземпляры»: SmartVis скрывает объекты отдельных экземпляров (например hue.0), не останавливая их — например при переходе со старого адаптера Hue на hue-v2",
+                "pt": "Novo adaptador suportado hue-v2 (API v2 da bridge Hue): lâmpadas, divisões, zonas, cenas e cenas inteligentes (p. ex. \"Luz natural\"); nova definição \"Instâncias em pausa\": o SmartVis oculta os objetos de instâncias individuais (p. ex. hue.0) sem as parar – p. ex. na mudança do antigo adaptador Hue para o hue-v2",
+                "nl": "Nieuwe ondersteunde adapter hue-v2 (Hue-bridge-API v2): lampen, kamers, zones, scènes en slimme scènes (bijv. \"Natuurlijk licht\"); nieuwe instelling \"Gepauzeerde instanties\": SmartVis verbergt de objecten van afzonderlijke instanties (bijv. hue.0) zonder ze te stoppen – bijv. bij de overstap van de oude Hue-adapter naar hue-v2",
+                "fr": "Nouvel adaptateur pris en charge hue-v2 (API v2 du pont Hue) : lampes, pièces, zones, scènes et scènes intelligentes (p. ex. « Lumière naturelle ») ; nouveau réglage « Instances en pause » : SmartVis masque les objets de certaines instances (p. ex. hue.0) sans les arrêter – p. ex. lors du passage de l'ancien adaptateur Hue à hue-v2",
+                "it": "Nuovo adattatore supportato hue-v2 (API v2 del bridge Hue): lampade, stanze, zone, scene e scene smart (es. \"Luce naturale\"); nuova impostazione \"Istanze in pausa\": SmartVis nasconde gli oggetti di singole istanze (es. hue.0) senza fermarle – ad es. durante il passaggio dal vecchio adattatore Hue a hue-v2",
+                "es": "Nuevo adaptador compatible hue-v2 (API v2 del puente Hue): lámparas, habitaciones, zonas, escenas y escenas inteligentes (p. ej. \"Luz natural\"); nuevo ajuste \"Instancias en pausa\": SmartVis oculta los objetos de instancias individuales (p. ej. hue.0) sin detenerlas – p. ej. al cambiar del antiguo adaptador Hue a hue-v2",
+                "pl": "Nowy obsługiwany adapter hue-v2 (API v2 mostka Hue): lampy, pokoje, strefy, sceny i sceny inteligentne (np. „Naturalne światło”); nowe ustawienie „Wstrzymane instancje”: SmartVis ukrywa obiekty wybranych instancji (np. hue.0) bez ich zatrzymywania – np. przy przejściu ze starego adaptera Hue na hue-v2",
+                "uk": "Новий підтримуваний адаптер hue-v2 (API моста Hue v2): лампи, кімнати, зони, сцени та розумні сцени (наприклад «Природне світло»); нове налаштування «Призупинені екземпляри»: SmartVis приховує об’єкти окремих екземплярів (наприклад hue.0), не зупиняючи їх — наприклад під час переходу зі старого адаптера Hue на hue-v2",
+                "zh-cn": "新增支持 hue-v2 适配器（Hue 网桥 API v2）：灯、房间、区域、场景和智能场景（如“自然光”）；新增设置“暂停的实例”：SmartVis 隐藏单个实例（如 hue.0）的对象而不停止实例——例如从旧 Hue 适配器切换到 hue-v2 时"
+            },
             "0.6.0": {
                 "en": "Home page on the desktop: flexible grid below the key figures – in edit mode each card gets a width (⅓, ½, ⅔, full) in addition to order and visibility (default: weather, energy flow and PV forecast side by side); narrower windows automatically use wider cards; lights on: compact tiles on the desktop, rooms with 4 or more lights collapsed with the lamp names and \"Show\"",
                 "de": "Startseite auf dem Desktop: flexibles Raster unter den Kennzahlen – im Bearbeiten-Modus hat jede Karte neben Reihenfolge und Ein-/Ausblenden eine Breite (⅓, ½, ⅔, ganz); Standard: Wetter, Energiefluss und PV-Prognose nebeneinander; schmalere Fenster nehmen automatisch breitere Karten; eingeschaltete Lichter: kompakte Kacheln auf dem Desktop, Räume ab 4 Lichtern eingeklappt mit den Lampennamen und „anzeigen“",
@@ -250,6 +263,7 @@
         "bind": "0.0.0.0",
         "language": "de",
         "ignoreAdapters": "system,admin,discovery,backitup,history,influxdb,sql,web,vis,vis-2,material,iot",
+        "ignoreInstances": "",
         "rediscoverDelay": 10,
         "allowEdit": true
     },

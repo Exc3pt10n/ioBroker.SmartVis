@@ -1,3 +1,4 @@
+import { hueChannelRole, hueGroupLights } from './hueRooms';
 import type { ObjectMap } from './types';
 
 /**
@@ -54,20 +55,23 @@ function hmCandidate(id: string, obj: ioBroker.Object, objects: ObjectMap): bool
     return true;
 }
 
-/** Hue: nur Lampen, Steckdosen und Raum/Zonen-Gruppen mit mehreren Lampen */
+/**
+ * Hue (ioBroker.hue und hue-v2): nur Lampen, Steckdosen und Raum/Zonen-Gruppen mit mehreren Lampen.
+ * hue-v2-Gruppen ohne Lampenliste bleiben drin (dann ist die Gruppe der einzige Schalter des Raums).
+ */
 function hueCandidate(id: string, obj: ioBroker.Object, staleHue: Set<string>): boolean {
     if (staleHue.has(id)) {
         return false;
     }
-    const role = String(obj.common?.role || '');
+    const role = hueChannelRole(obj);
     if (role.startsWith('light') || role === 'switch') {
         return true;
     }
     if (role === 'Room' || role === 'Zone') {
-        const lights = (obj.native as { lights?: unknown[] })?.lights;
-        return Array.isArray(lights) && lights.length > 1;
+        const lights = hueGroupLights(obj);
+        return !!lights && (lights.length > 1 || (lights.length === 0 && !obj.common?.role));
     }
-    // LightGroup "All", Entertainment, Sensoren, Smart Scenes
+    // LightGroup "All" bzw. "all" (bridge_home), Entertainment, Sensoren, Smart Scenes
     return false;
 }
 
@@ -83,7 +87,7 @@ export function isCandidate(id: string, obj: ioBroker.Object, objects: ObjectMap
     if (adapter === 'hm-rpc') {
         return hmCandidate(id, obj, objects);
     }
-    if (adapter === 'hue') {
+    if (adapter === 'hue' || adapter === 'hue-v2') {
         return hueCandidate(id, obj, staleHue);
     }
     return true;

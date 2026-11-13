@@ -1,6 +1,6 @@
 import type { SvScene, SvSceneGroup } from '../../shared/protocol';
 import { getName } from '../names';
-import { HUE_IGNORED_GROUP_ROLES } from './hueRooms';
+import { HUE_IGNORED_GROUP_ROLES, hueChannelRole, hueGroupLights, hueNativeType, isHueId } from './hueRooms';
 import type { ObjectMap } from './types';
 
 /** Gruppen-Rollen des Hue-Adapters, die Szenen tragen können */
@@ -24,7 +24,10 @@ export function sceneName(raw: string): string {
 }
 
 /**
- * Szenen des Hue-Adapters (ioBroker.hue): Knopf-States "scene_*" unterhalb der Raum-/Zonen-Kanäle.
+ * Szenen der Hue-Adapter:
+ * - ioBroker.hue: Knopf-States "scene_*" direkt unterhalb der Raum-/Zonen-Kanäle
+ * - hue-v2: States in den Ordnern "scenes" (Knopf) und "smartScenes" (Schalter) unterhalb der Gruppe,
+ *   erkennbar an native.type "scene" bzw. "smart_scene"; ausgelöst wird beides mit true.
  * Die Lampen der Gruppe kommen aus native.lights (Hue-IDs) → Lampen-Kanäle mit gleichem native.id
  * auf derselben Ebene derselben Instanz. Gruppen mit gleicher Lampenauswahl werden nur einmal geliefert.
  *
@@ -36,18 +39,23 @@ export function hueSceneGroups(objects: ObjectMap, lang: string, stale: Set<stri
     const lightChannels = new Map<string, string>();
     const groups: { id: string; obj: ioBroker.Object; kind: SvSceneGroup['kind']; lights: string[] }[] = [];
     const scenes = new Map<string, SvScene[]>();
+    const addScene = (channel: string, scene: SvScene): void => {
+        scenes.set(channel, [...(scenes.get(channel) || []), scene]);
+    };
 
     for (const [id, obj] of Object.entries(objects)) {
-        if (!id.startsWith('hue.') || stale.has(id)) {
+        if (!isHueId(id) || stale.has(id)) {
             continue;
         }
         const parts = id.split('.');
+        const nativeType = hueNativeType(obj);
         if (obj.type === 'channel') {
-            const role = String(obj.common?.role || '');
-            const native = (obj.native || {}) as { id?: string | number; lights?: (string | number)[] };
+            const role = hueChannelRole(obj);
+            const native = (obj.native || {}) as { id?: string | number };
             const prefix = `${parts[0]}.${parts[1]}|${parts.length}`;
-            if (GROUP_KINDS[role] && !HUE_IGNORED_GROUP_ROLES.has(role) && Array.isArray(native.lights)) {
-                groups.push({ id, obj, kind: GROUP_KINDS[role], lights: native.lights.map(l => `${prefix}|${l}`) });
+            const lights = hueGroupLights(obj);
+            if (GROUP_KINDS[role] && !HUE_IGNORED_GROUP_ROLES.has(role) && lights) {
+                groups.push({ id, obj, kind: GROUP_KINDS[role], lights: lights.map(l => `${prefix}|${l}`) });
             } else if ((role.startsWith('light') || role === 'switch') && native.id !== undefined) {
                 lightChannels.set(`${prefix}|${native.id}`, id);
             }
@@ -57,15 +65,20 @@ export function hueSceneGroups(objects: ObjectMap, lang: string, stale: Set<stri
                 continue;
             }
             const common = obj.common as ioBroker.StateCommon;
-            const channel = parts.slice(0, -1).join('.');
-            scenes.set(channel, [
-                ...(scenes.get(channel) || []),
-                {
-                    name,
-                    // Der Hue-Adapter legt Szenen als Knopf ohne type/write an – auslösen per true
-                    state: { name: 'SCENE', id, type: 'boolean', role: common.role || 'button', write: true },
-                },
-            ]);
+            addScene(parts.slice(0, -1).join('.'), {
+                name,
+                // Der Hue-Adapter legt Szenen als Knopf ohne type/write an – auslösen per true
+                state: { name: 'SCENE', id, type: 'boolean', role: common.role || 'button', write: true },
+            });
+        } else if (obj.type === 'state' && (nativeType === 'scene' || nativeType === 'smart_scene')) {
+            // hue-v2: <Gruppe>.scenes.<Name> bzw. <Gruppe>.smartScenes.<Name>
+            const name = getName(obj, lang) || parts[parts.length - 1].replace(/_/g, ' ');
+            const smart = nativeType === 'smart_scene';
+            addScene(parts.slice(0, -2).join('.'), {
+                name,
+                state: { name: 'SCENE', id, type: 'boolean', role: smart ? 'switch' : 'button', write: true },
+                ...(smart && { smart }),
+            });
         }
     }
 

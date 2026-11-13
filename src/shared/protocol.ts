@@ -436,6 +436,8 @@ export type SvEdit =
 export interface SvScene {
     name: string;
     state: SvStateRef;
+    /** Smart Scene (Hue): wechselt selbst, z. B. "Natürliches Licht" über den Tag */
+    smart?: boolean;
 }
 
 /** Zustand eines ioBroker-Hosts (js-controller) */
@@ -465,6 +467,8 @@ export interface SvHostStatus {
 export interface SvInstanceStatus {
     /** z. B. "hue.0" */
     id: string;
+    /** In SmartVis pausiert (Objekte ausgeblendet, Instanz läuft weiter) */
+    paused?: boolean;
     /** Adaptername, z. B. "hue" */
     adapter: string;
     title: string;

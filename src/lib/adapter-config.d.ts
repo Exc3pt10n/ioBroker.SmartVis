@@ -6,6 +6,7 @@ declare global {
             bind: string;
             language: string;
             ignoreAdapters: string;
+            ignoreInstances: string;
             rediscoverDelay: number;
             allowEdit: boolean;
         }

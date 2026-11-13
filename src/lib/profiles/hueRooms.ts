@@ -2,6 +2,42 @@ import { getName } from '../names';
 import { guessRoom } from '../rooms';
 import type { ObjectMap } from './types';
 
+/** Objekte der Hue-Adapter: ioBroker.hue (Bridge-API v1) und hue-v2 (Bridge-API v2) */
+/** native.type eines Hue-Objekts (hue-v2: "room", "zone", "light", "scene", "smart_scene" …) */
+export function hueNativeType(obj: ioBroker.Object): string {
+    const type = (obj.native as { type?: unknown } | undefined)?.type;
+    return typeof type === 'string' ? type : '';
+}
+
+export function isHueId(id: string): boolean {
+    return id.startsWith('hue.') || id.startsWith('hue-v2.');
+}
+
+/**
+ * Rolle eines Hue-Kanals. ioBroker.hue setzt common.role ("Room", "Zone", "light.color" …);
+ * hue-v2 lässt die Kanal-Rolle leer und nennt die Art in native.type ("room", "zone", "light").
+ */
+export function hueChannelRole(obj: ioBroker.Object): string {
+    const role = String(obj.common?.role || '');
+    if (role) {
+        return role;
+    }
+    const type = hueNativeType(obj);
+    return ({ room: 'Room', zone: 'Zone', light: 'light' } as Record<string, string>)[type] || '';
+}
+
+/**
+ * Lampen-IDs einer Hue-Gruppe (native.lights). hue-v2-Gruppen ohne diese Liste gelten als Gruppe
+ * ohne bekannte Lampen: Raum und Szenen funktionieren, nur die Zuordnung der Lampen fehlt.
+ */
+export function hueGroupLights(obj: ioBroker.Object): string[] | undefined {
+    const lights = (obj.native as { lights?: unknown } | undefined)?.lights;
+    if (Array.isArray(lights)) {
+        return lights.map(String);
+    }
+    return !obj.common?.role && ['room', 'zone'].includes(hueNativeType(obj)) ? [] : undefined;
+}
+
 /** Gruppen-Rollen des Hue-Adapters (common.role = group.type) */
 const HUE_ROOM_ROLES = new Set(['Room']);
 /** Gruppen, die keine echten Bediengeräte sind */
@@ -50,7 +86,7 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
     const instances = new Map<string, Map<number, { lights: Map<string, string>; groups: HueGroup[] }>>();
 
     for (const [id, obj] of Object.entries(objects)) {
-        if (!id.startsWith('hue.') || obj.type !== 'channel') {
+        if (!isHueId(id) || obj.type !== 'channel') {
             continue;
         }
         const parts = id.split('.');
@@ -67,17 +103,15 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
         const levelKey = `${instance}|${depth}`;
         channelsByLevel.set(levelKey, [...(channelsByLevel.get(levelKey) || []), id]);
 
-        const role = String(obj.common?.role || '');
-        const native = (obj.native || {}) as { id?: string | number; name?: string; lights?: (string | number)[] };
-        if (Array.isArray(native.lights) && !HUE_IGNORED_GROUP_ROLES.has(role)) {
-            allGroups.set(`${instance}|${depth}`, [
-                ...(allGroups.get(`${instance}|${depth}`) || []),
-                { id, lights: native.lights.map(String) },
-            ]);
+        const role = hueChannelRole(obj);
+        const native = (obj.native || {}) as { id?: string | number; name?: string };
+        const lights = hueGroupLights(obj);
+        if (lights && !HUE_IGNORED_GROUP_ROLES.has(role)) {
+            allGroups.set(`${instance}|${depth}`, [...(allGroups.get(`${instance}|${depth}`) || []), { id, lights }]);
         }
-        if (HUE_ROOM_ROLES.has(role) && Array.isArray(native.lights)) {
+        if (HUE_ROOM_ROLES.has(role) && lights) {
             const name = native.name || getName(obj, lang) || parts[parts.length - 1];
-            level.groups.push({ id, name, lights: native.lights.map(String) });
+            level.groups.push({ id, name, lights });
         } else if ((role.startsWith('light') || role === 'switch') && native.id !== undefined) {
             level.lights.set(String(native.id), id);
         }

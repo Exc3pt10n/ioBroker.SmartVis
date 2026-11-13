@@ -60,9 +60,10 @@ export function ScenePanel({
                         key={s.state.id}
                         type="button"
                         className={`scene${fired === s.state.id ? ' scene--fired' : ''}`}
+                        title={s.smart ? 'Smart Scene – passt sich selbst an (z. B. über den Tag)' : undefined}
                         onClick={() => fire(s.state.id)}
                     >
-                        {fired === s.state.id ? '✓ ' : ''}
+                        {fired === s.state.id ? '✓ ' : s.smart ? '✨ ' : ''}
                         {s.name}
                     </button>
                 ))}
