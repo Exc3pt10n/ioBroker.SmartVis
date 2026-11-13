@@ -64,26 +64,34 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 
 ## Installation
 
-SmartVis ist (noch) nicht auf npm veröffentlicht und wird direkt aus GitHub installiert.
+SmartVis ist (noch) nicht auf npm veröffentlicht und wird direkt aus GitHub installiert. Jedes Release wird vorher automatisch gebaut und getestet.
 
 **Admin-Oberfläche:** Reiter *Adapter* → GitHub-Symbol („Installieren aus eigener URL“; ggf. Expertenmodus aktivieren) → Reiter *Beliebig* → URL eintragen, installieren, danach eine Instanz anlegen:
 
 ```
-https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/main
+https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/release
 ```
 
 **Konsole** auf dem ioBroker-Host:
 
 ```bash
-iobroker url https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/main
+iobroker url https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/release
 iobroker add smartvis
 ```
 
+Der Branch `release` zeigt immer auf das neueste Release. Updates werden genauso installiert; Instanz, Einstellungen und Anpassungen bleiben erhalten.
+
 > Hinweis: ioBroker leitet den Adapternamen aus dem Repository-Namen ab und unterscheidet dabei Groß-/Kleinschreibung. Der Name muss daher `ioBroker.smartvis` lauten (klein). Bei abweichender Schreibweise den Namen explizit angeben: `iobroker url <URL> smartvis`.
 
-Statt `main` lässt sich jeder Branch oder Commit angeben, z. B. zum Testen eines Entwicklungsstands. Updates werden genauso installiert; Instanz, Einstellungen und Anpassungen bleiben erhalten.
-
 > Bei der Installation von GitHub baut npm den Adapter selbst (Skript `prepare`): Dafür werden einmalig die Entwicklungswerkzeuge (TypeScript, Vite, React …) heruntergeladen. Das dauert auf einem Raspberry Pi einige Minuten und braucht vorübergehend etwa 300 MB Platz.
+
+**Ohne Build auf dem ioBroker-Host:** Jedes [GitHub-Release](https://github.com/Exc3pt10n/ioBroker.smartvis/releases) enthält das fertig gebaute Paket `iobroker.smartvis-<version>.tgz`. Installation über dessen Download-Adresse:
+
+```bash
+iobroker url https://github.com/Exc3pt10n/ioBroker.smartvis/releases/download/v<version>/iobroker.smartvis-<version>.tgz smartvis
+```
+
+**Entwicklungsstand:** `https://github.com/Exc3pt10n/ioBroker.smartvis/tarball/main` installiert den aktuellen Stand von `main`, der noch nicht freigegebene Änderungen enthalten kann. Statt `main` lässt sich auch jeder andere Branch oder Commit angeben.
 
 Voraussetzungen: js-controller ≥ 6.0.11, Admin ≥ 7.0.23, Node.js ≥ 22.
 
@@ -139,6 +147,10 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.7.1 (2026-11-13)
+
+- (Exc3pt10n) Releases werden automatisch gebaut, getestet und veröffentlicht: stabil installieren über den Branch `release` (`…/tarball/release`) oder als fertig gebautes Paket (`.tgz`) vom GitHub-Release, ohne Build auf dem ioBroker-Host
 
 ### 0.7.0 (2026-11-13)
 
