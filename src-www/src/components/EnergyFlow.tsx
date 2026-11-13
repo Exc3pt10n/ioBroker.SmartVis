@@ -128,7 +128,7 @@ export function EnergyFlow({
     const values: Record<string, { value: string; sub?: string }> = {
         car: {
             value: `${flow.carEstimated ? '≈ ' : ''}${formatPower(flow.car)}`,
-            sub: (flow.car ?? 0) >= THRESHOLD_W ? (flow.carEstimated ? 'lädt · geschätzt' : 'lädt') : undefined,
+            sub: (flow.car ?? 0) >= THRESHOLD_W ? 'lädt' : undefined,
         },
         pv: { value: formatPower(flow.pv) },
         grid: {

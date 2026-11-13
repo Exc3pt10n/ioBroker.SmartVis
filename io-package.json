@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "smartvis",
-        "version": "0.5.1",
+        "version": "0.5.2",
         "news": {
+            "0.5.2": {
+                "en": "Air conditioners: \"Outdoor unit silent\" is one button that cycles through level 1 → level 2 → off; energy page on the desktop: PV forecast across the full width (figures left, daily curve right), columns above balanced",
+                "de": "Klimageräte: „Außengerät leise“ ist eine Schaltfläche, die Stufe 1 → Stufe 2 → aus durchschaltet; Energie auf dem Desktop: PV-Prognose über die volle Breite (Zahlen links, Tageskurve rechts), Spalten darüber ausgeglichen",
+                "ru": "Кондиционеры: «Тихий наружный блок» — одна кнопка, переключающая уровень 1 → уровень 2 → выкл; страница энергии на компьютере: прогноз PV на всю ширину (цифры слева, кривая справа), колонки выше выровнены",
+                "pt": "Ar condicionado: \"Unidade exterior silenciosa\" é um botão que alterna nível 1 → nível 2 → desligado; energia no desktop: previsão PV em largura total (valores à esquerda, curva à direita), colunas acima equilibradas",
+                "nl": "Airco's: \"Buitenunit stil\" is één knop die doorschakelt: stand 1 → stand 2 → uit; energie op de desktop: PV-prognose over de volle breedte (cijfers links, dagcurve rechts), kolommen erboven gebalanceerd",
+                "fr": "Climatiseurs : « Unité extérieure silencieuse » est un bouton qui alterne niveau 1 → niveau 2 → arrêt ; énergie sur ordinateur : prévision PV pleine largeur (chiffres à gauche, courbe à droite), colonnes au-dessus équilibrées",
+                "it": "Climatizzatori: \"Unità esterna silenziosa\" è un pulsante che passa livello 1 → livello 2 → spento; energia su desktop: previsione FV a tutta larghezza (valori a sinistra, curva a destra), colonne sopra bilanciate",
+                "es": "Climatizadores: \"Unidad exterior silenciosa\" es un botón que alterna nivel 1 → nivel 2 → apagado; energía en escritorio: previsión FV a todo lo ancho (cifras a la izquierda, curva a la derecha), columnas superiores equilibradas",
+                "pl": "Klimatyzatory: „Cicha jednostka zewnętrzna” to jeden przycisk przełączający poziom 1 → poziom 2 → wył.; energia na komputerze: prognoza PV na całą szerokość (liczby po lewej, krzywa po prawej), kolumny powyżej wyrównane",
+                "uk": "Кондиціонери: «Тихий зовнішній блок» — одна кнопка, що перемикає рівень 1 → рівень 2 → вимк; енергія на комп’ютері: прогноз PV на всю ширину (цифри ліворуч, крива праворуч), колонки вище вирівняно",
+                "zh-cn": "空调：“室外机静音”为一个按钮，依次切换 1 级 → 2 级 → 关；桌面端能源页：光伏预测占满宽度（左侧数值，右侧曲线），上方列高度均衡"
+            },
             "0.5.1": {
                 "en": "Air conditioners: special functions (Hi-Power, Eco, outdoor unit silent, comfort, sleep, 8 °C frost protection) as buttons in the controls like in the manufacturer app – one at a time, tap again to switch off, functions not possible in the current mode are greyed out; fireplace mode and power limit (50/75/100 %) can be set independently",
                 "de": "Klimageräte: Sonderfunktionen (Hi-Power, Eco, Außengerät leise, Komfort, Schlafmodus, 8 °C Frostschutz) als Schaltflächen in der Steuerung wie in der Hersteller-App – eine zur Zeit, erneut antippen schaltet aus, in der Betriebsart nicht mögliche sind ausgegraut; Kaminmodus und Leistungsbegrenzung (50/75/100 %) unabhängig davon einstellbar",

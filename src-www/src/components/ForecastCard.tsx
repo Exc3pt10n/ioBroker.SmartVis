@@ -110,90 +110,98 @@ export function ForecastCard({
     return (
         <section className="card forecast">
             <h2 className="subtitle">☀️ PV-Prognose</h2>
-            <div className="stats">
-                <div className="stat">
-                    <span className="stat__value">{fmtKwh(todayKwh)}</span>
-                    <span className="stat__label">
-                        Heute erwartet
-                        {/* "noch 0 kWh" neben einer verfehlten Prognose verwirrt – nur zeigen, wenn noch etwas kommt */}
-                        {remainingKwh !== undefined && remainingKwh >= 0.05 ? ` · noch ${fmtKwh(remainingKwh)}` : ''}
-                    </span>
-                </div>
-                <div className="stat">
-                    <span className="stat__value">{fmtKwh(tomorrowKwh)}</span>
-                    <span className="stat__label">Morgen erwartet</span>
-                </div>
-            </div>
-            {progress !== undefined && (
-                <div
-                    className="progress"
-                    role="meter"
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-valuenow={Math.round(progress * 100)}
-                    aria-label="Erzeugt im Vergleich zur Prognose"
-                >
-                    <div className="progress__text">
-                        {progress >= 1
-                            ? `Erzeugt: ${fmtKwh(producedTodayKwh)} – Prognose erreicht`
-                            : `Erzeugt: ${fmtKwh(producedTodayKwh)} von ${fmtKwh(todayKwh)} erwartet (${Math.round(progress * 100)} %)`}
+            <div className="forecast__body">
+                <div className="forecast__summary">
+                    <div className="stats">
+                        <div className="stat">
+                            <span className="stat__value">{fmtKwh(todayKwh)}</span>
+                            <span className="stat__label">
+                                Heute erwartet
+                                {/* "noch 0 kWh" neben einer verfehlten Prognose verwirrt – nur zeigen, wenn noch etwas kommt */}
+                                {remainingKwh !== undefined && remainingKwh >= 0.05
+                                    ? ` · noch ${fmtKwh(remainingKwh)}`
+                                    : ''}
+                            </span>
+                        </div>
+                        <div className="stat">
+                            <span className="stat__value">{fmtKwh(tomorrowKwh)}</span>
+                            <span className="stat__label">Morgen erwartet</span>
+                        </div>
                     </div>
-                    <div className="progress__track">
+                    {progress !== undefined && (
                         <div
-                            className="progress__bar"
-                            style={{ width: `${progress * 100}%` }}
-                        />
-                    </div>
+                            className="progress"
+                            role="meter"
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-valuenow={Math.round(progress * 100)}
+                            aria-label="Erzeugt im Vergleich zur Prognose"
+                        >
+                            <div className="progress__text">
+                                {progress >= 1
+                                    ? `Erzeugt: ${fmtKwh(producedTodayKwh)} – Prognose erreicht`
+                                    : `Erzeugt: ${fmtKwh(producedTodayKwh)} von ${fmtKwh(todayKwh)} erwartet (${Math.round(progress * 100)} %)`}
+                            </div>
+                            <div className="progress__track">
+                                <div
+                                    className="progress__bar"
+                                    style={{ width: `${progress * 100}%` }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {pv.plants.length > 0 && (
+                        <table className="plants">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Anlage</th>
+                                    <th scope="col">Jetzt</th>
+                                    <th scope="col">Heute</th>
+                                    <th scope="col">Morgen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pv.plants.map(p => (
+                                    <PlantRow
+                                        key={p.name}
+                                        name={p.name}
+                                        power={watts(p.powerNow, states)}
+                                        today={kwh(p.energyToday, states)}
+                                        tomorrow={kwh(p.energyTomorrow, states)}
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
-            )}
-            {pv.plants.length > 0 && (
-                <table className="plants">
-                    <thead>
-                        <tr>
-                            <th scope="col">Anlage</th>
-                            <th scope="col">Jetzt</th>
-                            <th scope="col">Heute</th>
-                            <th scope="col">Morgen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pv.plants.map(p => (
-                            <PlantRow
-                                key={p.name}
-                                name={p.name}
-                                power={watts(p.powerNow, states)}
-                                today={kwh(p.energyToday, states)}
-                                tomorrow={kwh(p.energyTomorrow, states)}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-            )}
-            <div
-                className="segmented"
-                role="tablist"
-                aria-label="Tag"
-            >
-                {(['today', 'tomorrow'] as const).map(d => (
-                    <button
-                        key={d}
-                        type="button"
-                        role="tab"
-                        aria-selected={day === d}
-                        className={day === d ? 'segmented--active' : ''}
-                        onClick={() => setDay(d)}
+                <div className="forecast__chart">
+                    <div
+                        className="segmented"
+                        role="tablist"
+                        aria-label="Tag"
                     >
-                        {d === 'today' ? 'Heute' : 'Morgen'}
-                    </button>
-                ))}
+                        {(['today', 'tomorrow'] as const).map(d => (
+                            <button
+                                key={d}
+                                type="button"
+                                role="tab"
+                                aria-selected={day === d}
+                                className={day === d ? 'segmented--active' : ''}
+                                onClick={() => setDay(d)}
+                            >
+                                {d === 'today' ? 'Heute' : 'Morgen'}
+                            </button>
+                        ))}
+                    </div>
+                    <ForecastChart
+                        points={points}
+                        now={day === 'today' ? now : undefined}
+                        actualW={day === 'today' ? actualPvW : undefined}
+                        actual={day === 'today' ? actual : undefined}
+                        label={`PV-Prognose ${day === 'today' ? 'heute' : 'morgen'} im Tagesverlauf`}
+                    />
+                </div>
             </div>
-            <ForecastChart
-                points={points}
-                now={day === 'today' ? now : undefined}
-                actualW={day === 'today' ? actualPvW : undefined}
-                actual={day === 'today' ? actual : undefined}
-                label={`PV-Prognose ${day === 'today' ? 'heute' : 'morgen'} im Tagesverlauf`}
-            />
             {updated !== undefined && (
                 <p className="detail__note">
                     Prognose vom {new Date(updated).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}

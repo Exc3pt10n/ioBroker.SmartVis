@@ -840,7 +840,12 @@ const SPECIAL_DISABLED: Record<string, string[]> = {
  */
 function AcFunctions({ refs, mode, states }: { refs: AcRefs; mode: string; states: States }): React.JSX.Element | null {
     const { special, fireplace, powerLimit } = refs;
-    const specialOptions = Object.entries(special?.states || {}).filter(([v]) => v !== 'OFF');
+    // Stufen derselben Funktion (Außengerät leise 1/2) als eine Schaltfläche, die durchschaltet
+    const all = Object.entries(special?.states || {}).filter(([v]) => v !== 'OFF');
+    const silentSteps = all.filter(([v]) => /^CDU_SILENT_\d$/.test(v)).map(([v]) => v);
+    const specialOptions: [string, string][] = all
+        .filter(([v]) => silentSteps.length < 2 || !silentSteps.includes(v) || v === silentSteps[0])
+        .map(([v, l]) => (silentSteps.length > 1 && v === silentSteps[0] ? [v, l.replace(/\s*\d+$/, '')] : [v, l]));
     const fireOptions = Object.entries(fireplace?.states || {});
     const limitOptions = Object.entries(powerLimit?.states || {});
     if (!specialOptions.length && fireOptions.length < 2 && limitOptions.length < 2) {
@@ -864,8 +869,20 @@ function AcFunctions({ refs, mode, states }: { refs: AcRefs; mode: string; state
                         aria-label="Sonderfunktion"
                     >
                         {specialOptions.map(([value, label]) => {
-                            const active = current === value;
+                            const cycle = silentSteps.length > 1 && value === silentSteps[0];
+                            const active = cycle ? silentSteps.includes(current) : current === value;
                             const off = disabled.includes(value);
+                            // Durchschalten: aus → Stufe 1 → Stufe 2 → aus
+                            const step = cycle ? silentSteps.indexOf(current) : -1;
+                            const next = cycle
+                                ? step < 0
+                                    ? silentSteps[0]
+                                    : step + 1 < silentSteps.length
+                                      ? silentSteps[step + 1]
+                                      : 'OFF'
+                                : active
+                                  ? 'OFF'
+                                  : value;
                             return (
                                 <button
                                     key={value}
@@ -874,17 +891,36 @@ function AcFunctions({ refs, mode, states }: { refs: AcRefs; mode: string; state
                                     aria-checked={active}
                                     disabled={off && !active}
                                     className={`ac__special${active ? ' ac__special--on' : ''}`}
-                                    // Erneutes Antippen schaltet die Funktion wieder aus
-                                    onClick={() => connection.setState(special.id, active ? 'OFF' : value)}
+                                    // Erneutes Antippen schaltet die Funktion wieder aus (bzw. zur nächsten Stufe)
+                                    onClick={() => connection.setState(special.id, next)}
+                                    aria-label={
+                                        cycle
+                                            ? `${label}: ${active ? `Stufe ${step + 1}` : 'aus'} – antippen für ${next === 'OFF' ? 'aus' : `Stufe ${silentSteps.indexOf(next) + 1}`}`
+                                            : undefined
+                                    }
                                 >
                                     <span aria-hidden="true">{SPECIAL_ICONS[value] || '✨'}</span>
                                     <span>{label}</span>
+                                    {cycle && (
+                                        <span
+                                            className="ac__steps"
+                                            aria-hidden="true"
+                                        >
+                                            {silentSteps.map((v, i) => (
+                                                <i
+                                                    key={v}
+                                                    className={i <= step ? 'is-on' : ''}
+                                                />
+                                            ))}
+                                        </span>
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
                     <p className="detail__note">
-                        Immer nur eine dieser Funktionen gleichzeitig – erneut antippen schaltet sie aus.
+                        Immer nur eine dieser Funktionen gleichzeitig – erneut antippen schaltet sie aus
+                        {silentSteps.length > 1 ? ' („Außengerät leise“: Stufe 1 → Stufe 2 → aus)' : ''}.
                         {blocked > 0 ? ' Ausgegraute sind in dieser Betriebsart nicht möglich.' : ''}
                     </p>
                 </>

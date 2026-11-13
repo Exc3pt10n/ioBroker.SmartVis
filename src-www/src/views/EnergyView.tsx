@@ -123,6 +123,7 @@ export function EnergyView(): React.JSX.Element {
                 {
                     key: `flow-${system.id}`,
                     label: `Energiefluss${suffix}`,
+                    weight: 5,
                     node: (
                         <section className="card energy__flow">
                             <h2 className="subtitle">⚡ {multi ? system.name : 'Energiefluss'}</h2>
@@ -143,6 +144,7 @@ export function EnergyView(): React.JSX.Element {
                 {
                     key: `totals-${system.id}`,
                     label: `Energiezähler${suffix}`,
+                    weight: 4,
                     node: (
                         <EnergyTotals
                             system={system}
@@ -155,6 +157,7 @@ export function EnergyView(): React.JSX.Element {
         ...model.wallboxes.map(wb => ({
             key: `wallbox-${wb.id}`,
             label: model.wallboxes.length > 1 ? `Wallbox ${wb.name}` : 'Wallbox',
+            weight: 3.5,
             node: <WallboxCard wallbox={wb} />,
         })),
         {
@@ -173,6 +176,8 @@ export function EnergyView(): React.JSX.Element {
         ...model.pvForecast.map(pv => ({
             key: `forecast-${pv.id}`,
             label: 'PV-Prognose',
+            // Tageskurve: auf dem Desktop über die volle Breite wie der Verlauf
+            wide: true,
             node: (
                 <ForecastCard
                     pv={pv}
@@ -183,7 +188,7 @@ export function EnergyView(): React.JSX.Element {
             ),
         })),
     ];
-    // Standard: Fluss, Wallbox, Zähler, Prognose (zwei ausgeglichene Spalten), Verlauf über die volle Breite
+    // Standard: Fluss, Wallbox, Zähler (zwei Spalten), Prognose und Verlauf über die volle Breite
     const rank = (k: string): number =>
         k.startsWith('flow-')
             ? 0
