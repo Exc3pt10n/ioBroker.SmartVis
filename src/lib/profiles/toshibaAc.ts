@@ -38,6 +38,7 @@ const LABELS: Record<string, Record<string, string>> = {
         CDU_SILENT_1: 'Außengerät leise 1',
         CDU_SILENT_2: 'Außengerät leise 2',
         HEATING_8C: '8 °C Frostschutz',
+        FLOOR: 'Fußboden',
     },
     meritB: { OFF: 'Aus', FIREPLACE_1: 'Kamin 1', FIREPLACE_2: 'Kamin 2' },
     powerSelection: { POWER_50: '50 %', POWER_75: '75 %', POWER_100: '100 %' },

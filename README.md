@@ -138,6 +138,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.5.1 (2026-11-13)
+
+- (Exc3pt10n) Klimageräte: Bereich „Funktionen“ in der Steuerung wie in der Hersteller-App – Sonderfunktionen (Hi-Power, Eco, Außengerät leise, Komfort, Schlafmodus, 8 °C Frostschutz) als Schaltflächen; das Gerät kennt immer nur eine davon gleichzeitig, erneutes Antippen schaltet sie aus, in der aktuellen Betriebsart nicht mögliche sind ausgegraut
+- (Exc3pt10n) Klimageräte: Kaminmodus (nur beim Heizen) und Leistungsbegrenzung (50/75/100 %) unabhängig davon direkt einstellbar statt unter „Alle Werte“
+
 ### 0.5.0 (2026-11-12)
 
 - (Exc3pt10n) Energie: Statuszeile über dem Energiefluss – Überschuss oder Netzbezug, Autarkie jetzt, Batterie voll/leer in …

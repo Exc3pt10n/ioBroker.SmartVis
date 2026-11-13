@@ -788,6 +788,12 @@ interface AcRefs {
     actual?: SvStateRef;
     speed?: SvStateRef;
     swing?: SvStateRef;
+    /** Sonderfunktion (z. B. Toshiba meritA: Hi-Power, Eco, Leise …) – immer nur eine gleichzeitig */
+    special?: SvStateRef;
+    /** Kaminmodus (Toshiba meritB) */
+    fireplace?: SvStateRef;
+    /** Leistungsbegrenzung (50/75/100 %) */
+    powerLimit?: SvStateRef;
 }
 
 function acRefs(device: SvDevice): AcRefs {
@@ -798,7 +804,143 @@ function acRefs(device: SvDevice): AcRefs {
         actual: find(device, ['ACTUAL']),
         speed: find(device, ['SPEED'], { write: true }),
         swing: find(device, ['SWING'], { write: true }),
+        special: find(device, ['SPECIAL'], { write: true }),
+        fireplace: find(device, ['FIREPLACE'], { write: true }),
+        powerLimit: find(device, ['POWER_LIMIT'], { write: true }),
     };
+}
+
+/** Symbole der Sonderfunktionen (Werte wie im toshiba-ac-Adapter) */
+const SPECIAL_ICONS: Record<string, string> = {
+    HIGH_POWER: '🚀',
+    ECO: '🌱',
+    CDU_SILENT_1: '🤫',
+    CDU_SILENT_2: '🤫',
+    COMFORT: '🛋️',
+    SLEEP_CARE: '😴',
+    HEATING_8C: '🛡️',
+    FLOOR: '🦶',
+};
+
+/**
+ * Welche Sonderfunktionen in welcher Betriebsart möglich sind (wie im toshiba-ac-Adapter;
+ * nicht erlaubte Werte lehnt das Gerät ab)
+ */
+const SPECIAL_DISABLED: Record<string, string[]> = {
+    AUTO: ['HEATING_8C', 'SLEEP_CARE', 'FLOOR'],
+    COOL: ['HEATING_8C', 'SLEEP_CARE', 'FLOOR'],
+    DRY: ['HIGH_POWER', 'ECO', 'CDU_SILENT_1', 'CDU_SILENT_2', 'HEATING_8C', 'SLEEP_CARE', 'FLOOR'],
+    FAN: ['HIGH_POWER', 'ECO', 'CDU_SILENT_1', 'CDU_SILENT_2', 'HEATING_8C', 'SLEEP_CARE', 'FLOOR'],
+    HEAT: [],
+};
+
+/**
+ * Funktionen wie in der Hersteller-App: Sonderfunktionen als Schalter (eine zur Zeit – das Gerät
+ * kennt nur einen Wert dafür), daneben unabhängig Kaminmodus und Leistungsbegrenzung.
+ */
+function AcFunctions({ refs, mode, states }: { refs: AcRefs; mode: string; states: States }): React.JSX.Element | null {
+    const { special, fireplace, powerLimit } = refs;
+    const specialOptions = Object.entries(special?.states || {}).filter(([v]) => v !== 'OFF');
+    const fireOptions = Object.entries(fireplace?.states || {});
+    const limitOptions = Object.entries(powerLimit?.states || {});
+    if (!specialOptions.length && fireOptions.length < 2 && limitOptions.length < 2) {
+        return null;
+    }
+    const current = special ? String(states[special.id]?.val ?? 'OFF') : 'OFF';
+    const disabled = SPECIAL_DISABLED[mode] || [];
+    const fire = fireplace ? String(states[fireplace.id]?.val ?? 'OFF') : 'OFF';
+    const fireAllowed = !mode || mode === 'HEAT';
+    const limit = powerLimit ? String(states[powerLimit.id]?.val ?? '') : '';
+    const blocked = specialOptions.filter(([v]) => disabled.includes(v)).length;
+
+    return (
+        <div className="detail__controls ac__functions">
+            <h3 className="ac__functions-title">Funktionen</h3>
+            {specialOptions.length > 0 && special && (
+                <>
+                    <div
+                        className={`ac__specials${states[special.id]?.ack === false ? ' slider--pending' : ''}`}
+                        role="radiogroup"
+                        aria-label="Sonderfunktion"
+                    >
+                        {specialOptions.map(([value, label]) => {
+                            const active = current === value;
+                            const off = disabled.includes(value);
+                            return (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={active}
+                                    disabled={off && !active}
+                                    className={`ac__special${active ? ' ac__special--on' : ''}`}
+                                    // Erneutes Antippen schaltet die Funktion wieder aus
+                                    onClick={() => connection.setState(special.id, active ? 'OFF' : value)}
+                                >
+                                    <span aria-hidden="true">{SPECIAL_ICONS[value] || '✨'}</span>
+                                    <span>{label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <p className="detail__note">
+                        Immer nur eine dieser Funktionen gleichzeitig – erneut antippen schaltet sie aus.
+                        {blocked > 0 ? ' Ausgegraute sind in dieser Betriebsart nicht möglich.' : ''}
+                    </p>
+                </>
+            )}
+            {fireplace && fireOptions.length > 1 && (
+                <div className="ac__row">
+                    <span className="ac__row-label">
+                        🔥 Kaminmodus
+                        {!fireAllowed && <span className="toggle__hint">nur beim Heizen</span>}
+                    </span>
+                    <div
+                        className="segmented ac__segment"
+                        role="radiogroup"
+                        aria-label="Kaminmodus"
+                    >
+                        {fireOptions.map(([value, label]) => (
+                            <button
+                                key={value}
+                                type="button"
+                                role="radio"
+                                aria-checked={fire === value}
+                                disabled={!fireAllowed && value !== 'OFF'}
+                                className={fire === value ? 'segmented--active' : ''}
+                                onClick={() => connection.setState(fireplace.id, value)}
+                            >
+                                {label.replace(/^Kamin /, '')}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {powerLimit && limitOptions.length > 1 && (
+                <div className="ac__row">
+                    <span className="ac__row-label">⚡ Leistung</span>
+                    <div
+                        className="segmented ac__segment"
+                        role="radiogroup"
+                        aria-label="Leistungsbegrenzung"
+                    >
+                        {limitOptions.map(([value, label]) => (
+                            <button
+                                key={value}
+                                type="button"
+                                role="radio"
+                                aria-checked={limit === value}
+                                className={limit === value ? 'segmented--active' : ''}
+                                onClick={() => connection.setState(powerLimit.id, value)}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
 
 const AC_MODE_ICONS: Record<string, string> = { AUTO: '🔄', COOL: '❄️', HEAT: '🔥', DRY: '💧', FAN: '🌀' };
@@ -869,6 +1011,11 @@ function AcControls({ refs, states }: { refs: AcRefs; states: States }): React.J
                     )}
                 </div>
             )}
+            <AcFunctions
+                refs={refs}
+                mode={current}
+                states={states}
+            />
         </>
     );
 }
