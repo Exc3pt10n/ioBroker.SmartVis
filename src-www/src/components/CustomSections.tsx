@@ -1,4 +1,4 @@
-import type { SvViewLayout } from '../../../src/shared/protocol';
+import type { SvCardWidth, SvViewLayout } from '../../../src/shared/protocol';
 import { connection, useConnection } from '../connection';
 import { useEditing } from '../editing';
 import { DragHandle, SortableGrid, useSortable } from './SortableGrid';
@@ -17,7 +17,16 @@ export interface SectionDef {
     wide?: boolean;
     /** Ungefähre Höhe (relativ), damit die Spalten gleich lang werden; Standard 1 */
     weight?: number;
+    /** Standardbreite im Raster (grid); im Bearbeiten-Modus änderbar */
+    width?: SvCardWidth;
 }
+
+const WIDTH_CHOICES: { width: SvCardWidth; label: string; title: string }[] = [
+    { width: 'third', label: '⅓', title: 'ein Drittel' },
+    { width: 'half', label: '½', title: 'halbe Breite' },
+    { width: 'twothirds', label: '⅔', title: 'zwei Drittel' },
+    { width: 'full', label: '▭', title: 'volle Breite' },
+];
 
 /** Bereiche der Reihe nach jeweils in die bisher kürzeste Spalte (bei gleichen Gewichten wie zeilenweise) */
 export function distribute<T extends { weight?: number }>(items: T[], columns: number): T[][] {
@@ -60,6 +69,7 @@ export function CustomSections({
     sections,
     className = 'csecs',
     columns = 1,
+    grid = false,
 }: {
     /** Schlüssel der Ansicht, z. B. "energy" */
     view: string;
@@ -71,6 +81,11 @@ export function CustomSections({
      * manche Browser Animationen (z. B. den Energiefluss) nicht zuverlässig neu.
      */
     columns?: number;
+    /**
+     * Raster (Desktop): Karten nebeneinander, Breite je Karte (⅓, ½, ⅔, ganz) im Bearbeiten-Modus
+     * wählbar; auf schmaleren Fenstern werden die Karten automatisch breiter.
+     */
+    grid?: boolean;
 }): React.JSX.Element | null {
     const { model } = useConnection();
     const { editing } = useEditing();
@@ -79,11 +94,26 @@ export function CustomSections({
     const available = sections.filter(s => s.node !== null && s.node !== undefined && s.node !== false);
     const ordered = applyLayout(available, layout);
     const canEdit = editing && !!model?.editable;
+    const widthOf = (s: SectionDef): SvCardWidth => layout?.widths?.[s.key] ?? s.width ?? 'full';
 
     if (!canEdit) {
         const visible = ordered.filter(s => !hidden.has(s.key));
         if (!visible.length) {
             return null;
+        }
+        if (grid) {
+            return (
+                <div className={`${className} dgrid`}>
+                    {visible.map(s => (
+                        <div
+                            key={s.key}
+                            className={`csec dgrid__item dgrid__item--${widthOf(s)}`}
+                        >
+                            {s.node}
+                        </div>
+                    ))}
+                </div>
+            );
         }
         if (columns > 1) {
             // Abschnitte zwischen breiten Bereichen werden zeilenweise auf die Spalten verteilt
@@ -160,12 +190,16 @@ export function CustomSections({
         const next = hidden.has(key) ? [...hidden].filter(k => k !== key) : [...hidden, key];
         connection.edit({ kind: 'view', view, hidden: next.length ? next : null });
     };
-    const customized = !!(layout?.order?.length || layout?.hidden?.length);
+    const customized = !!(
+        layout?.order?.length ||
+        layout?.hidden?.length ||
+        (layout?.widths && Object.keys(layout.widths).length)
+    );
 
     return (
         <>
             <SortableGrid
-                className={`${className} csecs--editing`}
+                className={`${className} csecs--editing${grid ? ' dgrid' : ''}`}
                 items={ordered}
                 getId={s => s.key}
                 onReorder={saveOrder}
@@ -177,6 +211,15 @@ export function CustomSections({
                         index={order.indexOf(s.key)}
                         count={order.length}
                         onToggle={() => toggle(s.key)}
+                        width={grid ? widthOf(s) : undefined}
+                        onWidth={w =>
+                            connection.edit({
+                                kind: 'view',
+                                view,
+                                // Standardbreite wieder als "nicht angepasst" speichern
+                                width: { key: s.key, width: w === (s.width ?? 'full') ? null : w },
+                            })
+                        }
                         onMove={delta => {
                             const i = order.indexOf(s.key);
                             const next = [...order];
@@ -190,7 +233,7 @@ export function CustomSections({
                 <button
                     type="button"
                     className="linkbtn csecs__reset"
-                    onClick={() => connection.edit({ kind: 'view', view, order: null, hidden: null })}
+                    onClick={() => connection.edit({ kind: 'view', view, order: null, hidden: null, widths: null })}
                 >
                     Anordnung dieser Ansicht zurücksetzen
                 </button>
@@ -206,6 +249,8 @@ function EditableSection({
     count,
     onToggle,
     onMove,
+    width,
+    onWidth,
 }: {
     section: SectionDef;
     hidden: boolean;
@@ -213,12 +258,15 @@ function EditableSection({
     count: number;
     onToggle: () => void;
     onMove: (delta: -1 | 1) => void;
+    /** Nur im Raster: aktuelle Breite */
+    width?: SvCardWidth | undefined;
+    onWidth: (width: SvCardWidth) => void;
 }): React.JSX.Element {
     const sort = useSortable();
     const dragging = sort?.dragId === section.key;
     return (
         <div
-            className={`csec csec--editing${hidden ? ' csec--hidden' : ''}${dragging ? ' is-dragging' : ''}`}
+            className={`csec csec--editing${hidden ? ' csec--hidden' : ''}${dragging ? ' is-dragging' : ''}${width ? ` dgrid__item dgrid__item--${width}` : ''}`}
             data-sort-id={section.key}
         >
             <div className="csec__bar">
@@ -257,6 +305,29 @@ function EditableSection({
                 >
                     {hidden ? 'Einblenden' : 'Ausblenden'}
                 </button>
+                {width && (
+                    <span
+                        className="csec__widths"
+                        role="radiogroup"
+                        aria-label={`Breite von ${section.label}`}
+                    >
+                        <span className="csec__widths-label">Breite</span>
+                        {WIDTH_CHOICES.map(c => (
+                            <button
+                                key={c.width}
+                                type="button"
+                                role="radio"
+                                aria-checked={width === c.width}
+                                aria-label={c.title}
+                                title={c.title}
+                                className={`csec__btn${width === c.width ? ' csec__btn--on' : ''}`}
+                                onClick={() => onWidth(c.width)}
+                            >
+                                {c.label}
+                            </button>
+                        ))}
+                    </span>
+                )}
             </div>
             {!hidden && <div className="csec__body">{section.node}</div>}
         </div>

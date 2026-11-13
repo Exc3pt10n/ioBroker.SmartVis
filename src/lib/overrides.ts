@@ -1,4 +1,14 @@
-import type { SvDevice, SvEdit, SvModel, SvOverrides, SvRoom, SvUiSettings, SvViewLayout } from '../shared/protocol';
+import {
+    CARD_WIDTHS,
+    type SvCardWidth,
+    type SvDevice,
+    type SvEdit,
+    type SvModel,
+    type SvOverrides,
+    type SvRoom,
+    type SvUiSettings,
+    type SvViewLayout,
+} from '../shared/protocol';
 import { slug } from './rooms';
 
 export function emptyOverrides(): SvOverrides {
@@ -41,6 +51,19 @@ function keyList(raw: unknown): string[] | undefined {
     return list.length ? list : undefined;
 }
 
+function widthMap(raw: unknown): Record<string, SvCardWidth> | undefined {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+        return undefined;
+    }
+    const entries = Object.entries(raw as Record<string, unknown>)
+        .filter(
+            (e): e is [string, SvCardWidth] =>
+                e[0].length > 0 && e[0].length <= 200 && CARD_WIDTHS.includes(e[1] as SvCardWidth),
+        )
+        .slice(0, MAX_KEYS);
+    return entries.length ? Object.fromEntries(entries) : undefined;
+}
+
 function parseViews(raw: unknown): Record<string, SvViewLayout> | undefined {
     if (!raw || typeof raw !== 'object') {
         return undefined;
@@ -52,8 +75,9 @@ function parseViews(raw: unknown): Record<string, SvViewLayout> | undefined {
         }
         const order = keyList((layout as SvViewLayout).order);
         const hidden = keyList((layout as SvViewLayout).hidden);
-        if (order || hidden) {
-            views[view] = { ...(order && { order }), ...(hidden && { hidden }) };
+        const widths = widthMap((layout as SvViewLayout).widths);
+        if (order || hidden || widths) {
+            views[view] = { ...(order && { order }), ...(hidden && { hidden }), ...(widths && { widths }) };
         }
     }
     return Object.keys(views).length ? views : undefined;
@@ -223,6 +247,25 @@ export function applyEdit(current: SvOverrides, edit: SvEdit): SvOverrides {
             }
             if ('hidden' in edit) {
                 layout.hidden = edit.hidden === null ? undefined : keyList(edit.hidden);
+            }
+            if ('widths' in edit && edit.widths === null) {
+                layout.widths = undefined;
+            }
+            if (edit.width) {
+                const { key, width } = edit.width;
+                if (typeof key !== 'string' || !key || key.length > 200) {
+                    throw new Error('Ungültiger Bereich');
+                }
+                if (width !== null && !CARD_WIDTHS.includes(width)) {
+                    throw new Error('Ungültige Breite');
+                }
+                const widths = { ...layout.widths };
+                if (width === null) {
+                    delete widths[key];
+                } else {
+                    widths[key] = width;
+                }
+                layout.widths = Object.keys(widths).length ? widths : undefined;
             }
             views[edit.view] = layout;
             o.ui = { ...o.ui, views };

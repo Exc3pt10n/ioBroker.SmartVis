@@ -3019,18 +3019,8 @@ button.kpi:hover {
 }
 
 .home--dashboard {
-    display: grid;
-    grid-template-columns: minmax(400px, 1fr) minmax(0, 1.6fr);
-    grid-template-areas:
-        'kpis kpis'
-        'overview main';
-    grid-template-rows: auto 1fr;
-    column-gap: 24px;
-    align-items: start;
-}
-
-.home--dashboard .home__kpis {
-    grid-area: kpis;
+    display: flex;
+    flex-direction: column;
 }
 
 .home--dashboard .home__kpis .kpis,
@@ -3038,21 +3028,12 @@ button.kpi:hover {
     margin-top: 0;
 }
 
-.home--dashboard .home__overview {
-    grid-area: overview;
-    margin-top: 24px;
+.home--dashboard .home__kpis {
+    order: 0;
 }
 
-.home--dashboard .home__main {
-    grid-area: main;
-    min-width: 0;
-}
-
-/* Sehr breit: Favoriten und Statuslisten zusätzlich in zwei Spalten (Verteilung in CustomSections) */
-@media (min-width: 1800px) {
-    .home--dashboard {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    }
+.home__desk {
+    margin-top: 20px;
 }
 
 .card__head {
@@ -3146,9 +3127,28 @@ button.kpi:hover {
 
 .csec__bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
     padding: 2px 2px 6px;
+}
+
+.csec__widths {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.csec__widths-label {
+    margin-right: 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.csec__btn.csec__btn--on {
+    background: var(--accent);
+    color: #fff;
 }
 
 .csec__bar .draghandle {
@@ -3699,4 +3699,136 @@ button.kpi:hover {
     .group__head .subtitle {
         flex: none;
     }
+}
+
+/* ===== Raster (Desktop-Startseite): Karten nebeneinander, Breite je Karte ===== */
+.dgrid {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px 20px;
+    align-items: start;
+}
+
+.dgrid__item {
+    min-width: 0;
+    grid-column: span 6;
+}
+
+.dgrid__item > .card,
+.dgrid__item > section,
+.dgrid__item > .weather {
+    margin: 0;
+}
+
+.dgrid__item > section > .subtitle:first-child {
+    margin-top: 4px;
+}
+
+@container (min-width: 1000px) {
+    .dgrid__item--third {
+        grid-column: span 2;
+    }
+
+    .dgrid__item--half {
+        grid-column: span 3;
+    }
+
+    .dgrid__item--twothirds {
+        grid-column: span 4;
+    }
+}
+
+/* Mittelbreit: Drittel werden zu Hälften, zwei Drittel zur vollen Breite */
+@container (min-width: 640px) and (max-width: 999px) {
+    .dgrid__item--third,
+    .dgrid__item--half {
+        grid-column: span 3;
+    }
+}
+
+/* ===== Eingeschaltete Lichter auf dem Desktop: kompakte Kacheln, große Räume eingeklappt ===== */
+.grid--compact {
+    gap: 8px;
+}
+
+@media (min-width: 600px) {
+    .grid--compact {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    }
+}
+
+.grid--compact .tile {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 0;
+    min-height: 60px;
+    padding: 10px 40px 10px 10px;
+}
+
+.grid--compact .tile__icon {
+    grid-row: span 2;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+}
+
+.grid--compact .tile__icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.grid--compact .tile__name,
+.grid--compact .tile__value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.grid--compact .tile__name {
+    display: block;
+    font-size: 14px;
+}
+
+.grid--compact .tile__value {
+    font-size: 12px;
+}
+
+.grid--compact .tile__auto {
+    grid-column: 2;
+}
+
+.grid--compact .tile__warn {
+    top: 8px;
+}
+
+.roomgroup__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 36px;
+    margin-left: auto;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.roomgroup__toggle .chevron {
+    border-color: var(--accent);
+}
+
+.roomgroup__names {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
 }
