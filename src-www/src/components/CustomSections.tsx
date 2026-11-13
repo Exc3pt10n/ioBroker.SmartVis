@@ -15,6 +15,20 @@ export interface SectionDef {
     note?: string;
     /** Bei mehreren Spalten über die volle Breite (z. B. Diagramme); teilt die Spalten an dieser Stelle */
     wide?: boolean;
+    /** Ungefähre Höhe (relativ), damit die Spalten gleich lang werden; Standard 1 */
+    weight?: number;
+}
+
+/** Bereiche der Reihe nach jeweils in die bisher kürzeste Spalte (bei gleichen Gewichten wie zeilenweise) */
+export function distribute<T extends { weight?: number }>(items: T[], columns: number): T[][] {
+    const cols: T[][] = Array.from({ length: Math.min(columns, items.length) }, () => []);
+    const heights = cols.map(() => 0);
+    for (const item of items) {
+        const c = heights.indexOf(Math.min(...heights));
+        cols[c].push(item);
+        heights[c] += item.weight ?? 1;
+    }
+    return cols;
 }
 
 /** Reihenfolge anwenden: gespeicherte Schlüssel zuerst, neue Bereiche an ihrer Standardposition danach */
@@ -101,21 +115,19 @@ export function CustomSections({
                                     gridTemplateColumns: `repeat(${Math.min(columns, block.items.length)}, minmax(0, 1fr))`,
                                 }}
                             >
-                                {Array.from({ length: Math.min(columns, block.items.length) }, (_, c) => (
+                                {distribute(block.items, columns).map((col, c) => (
                                     <div
                                         key={c}
                                         className="csecs__col"
                                     >
-                                        {block.items
-                                            .filter((_, i) => i % columns === c)
-                                            .map(sec => (
-                                                <div
-                                                    key={sec.key}
-                                                    className="csec"
-                                                >
-                                                    {sec.node}
-                                                </div>
-                                            ))}
+                                        {col.map(sec => (
+                                            <div
+                                                key={sec.key}
+                                                className="csec"
+                                            >
+                                                {sec.node}
+                                            </div>
+                                        ))}
                                     </div>
                                 ))}
                             </div>

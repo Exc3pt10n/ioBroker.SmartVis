@@ -1480,6 +1480,21 @@ details[open] > summary > .chevron {
 
 .forecast {
     margin-top: 16px;
+    container-type: inline-size;
+}
+
+/* Breit (Desktop, volle Breite): Zahlen links, Tageskurve rechts */
+@container (min-width: 860px) {
+    .forecast__body {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) minmax(0, 1.8fr);
+        gap: 32px;
+        align-items: start;
+    }
+
+    .forecast__chart > .segmented {
+        margin-top: 0;
+    }
 }
 
 .progress {
@@ -3459,6 +3474,23 @@ button.kpi:hover {
 .ac__special > span:first-child {
     font-size: 20px;
     line-height: 1;
+}
+
+.ac__steps {
+    display: flex;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.ac__steps i {
+    width: 14px;
+    height: 4px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--text-muted) 35%, transparent);
+}
+
+.ac__steps i.is-on {
+    background: var(--accent);
 }
 
 .ac__special--on {

@@ -138,6 +138,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.5.2 (2026-11-13)
+
+- (Exc3pt10n) Klimageräte: „Außengerät leise“ ist eine Schaltfläche, die durchschaltet (Stufe 1 → Stufe 2 → aus), mit Stufenanzeige
+- (Exc3pt10n) Energie auf dem Desktop: PV-Prognose über die volle Breite wie der Verlauf (Zahlen links, Tageskurve rechts); die Karten darüber werden nach Höhe auf die Spalten verteilt
+
 ### 0.5.1 (2026-11-13)
 
 - (Exc3pt10n) Klimageräte: Bereich „Funktionen“ in der Steuerung wie in der Hersteller-App – Sonderfunktionen (Hi-Power, Eco, Außengerät leise, Komfort, Schlafmodus, 8 °C Frostschutz) als Schaltflächen; das Gerät kennt immer nur eine davon gleichzeitig, erneutes Antippen schaltet sie aus, in der aktuellen Betriebsart nicht mögliche sind ausgegraut
