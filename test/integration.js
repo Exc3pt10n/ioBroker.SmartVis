@@ -76,8 +76,10 @@ tests.integration(path.join(__dirname, '..'), {
 
                 // Auszüge aus einem echten Objektbaum: Wetterstation + CCU-Variablen, shuttercontrol, KEBA
                 const objects = { ...fixture('hmip-weather'), ...fixture('shuttercontrol'), ...fixture('kecontact') };
-                // Instanz soll nicht vom Controller gestartet werden
-                objects['system.adapter.shuttercontrol.0'].common.enabled = false;
+                // Instanz ist aktiv, läuft aber auf einem anderen Host – der Controller startet sie hier nicht.
+                // (Deaktivierte Instanzen blendet SmartVis aus, siehe unten.)
+                objects['system.adapter.shuttercontrol.0'].common.enabled = true;
+                objects['system.adapter.shuttercontrol.0'].common.host = 'anderer-host';
                 // Homematic-Dimmer (Gerät → Kanal → State) in einem Raum aus enum.rooms
                 Object.assign(objects, {
                     'hm-rpc.0.DIM1': { type: 'device', common: { name: 'Deckenlicht' }, native: { TYPE: 'HmIP-BDT' } },
@@ -99,6 +101,23 @@ tests.integration(path.join(__dirname, '..'), {
                     'enum.rooms.living': {
                         type: 'enum',
                         common: { name: 'Wohnzimmer', members: ['hm-rpc.0.DIM1.4'] },
+                        native: {},
+                    },
+                    // Zweite, in ioBroker deaktivierte Homematic-Instanz: ihre Geräte zeigt SmartVis nicht an
+                    'system.adapter.hm-rpc.1': {
+                        type: 'instance',
+                        common: { name: 'hm-rpc', title: 'Homematic', enabled: false, mode: 'daemon', host: 'anderer-host' },
+                        native: {},
+                    },
+                    'hm-rpc.1.DIM2': { type: 'device', common: { name: 'Stehlampe' }, native: { TYPE: 'HmIP-BDT' } },
+                    'hm-rpc.1.DIM2.4': {
+                        type: 'channel',
+                        common: { name: 'Stehlampe:4' },
+                        native: { TYPE: 'DIMMER_VIRTUAL_RECEIVER' },
+                    },
+                    'hm-rpc.1.DIM2.4.LEVEL': {
+                        type: 'state',
+                        common: { name: 'LEVEL', role: 'level.dimmer', type: 'number', read: true, write: true, min: 0, max: 100, unit: '%' },
                         native: {},
                     },
                 });
@@ -131,6 +150,11 @@ tests.integration(path.join(__dirname, '..'), {
                 expect(model.wallboxes).to.have.length(1);
                 expect(model.shutterControl, 'shuttercontrol erkannt').to.have.length(1);
                 expect(model.shutterControl[0].shutters).to.have.length(13);
+                expect(
+                    model.devices.some(d => d.id.startsWith('hm-rpc.1.')),
+                    'Geräte deaktivierter Instanzen ausgeblendet',
+                ).to.equal(false);
+                expect(model.system.instances.find(i => i.id === 'hm-rpc.1')?.paused).to.equal(true);
             });
         });
 

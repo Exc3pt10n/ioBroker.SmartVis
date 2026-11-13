@@ -8,7 +8,7 @@ Selbstkonfigurierende, **mobile-first** Visualisierung für ioBroker.
 SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anlegen von Widgets als installierbare Web-App (PWA) an – auf dem Smartphone wie im Browser.
 
 > **Status:** Version 0.x – im täglichen Einsatz und vollständig nutzbar. Bis Version 1.0 können sich Einstellungen und das Speicherformat noch ändern; solche Änderungen sind im [Changelog](#changelog) als **Breaking** markiert und werden, wo möglich, automatisch übernommen.
-> Die Erkennung ist bisher vor allem an einer Installation mit Homematic (IP), Philips Hue, QCells Q.HOME, KEBA, Toshiba-Klimageräten und Echo abgestimmt. Bei anderen Systemen können Geräte fehlen oder überzählig sein – sie lassen sich im Bearbeiten-Modus ausblenden; Rückmeldungen und Objektbäume (anonymisiert) als Issue helfen, die Erkennung zu verbessern.
+> Die Erkennung ist bisher vor allem an einer Installation mit Homematic (IP), Philips Hue (`hue` und `hue-v2`), QCells Q.HOME, KEBA, Toshiba-Klimageräten und Echo abgestimmt. Bei anderen Systemen können Geräte fehlen oder überzählig sein – sie lassen sich im Bearbeiten-Modus ausblenden; Rückmeldungen und Objektbäume (anonymisiert) als Issue helfen, die Erkennung zu verbessern.
 > Hintergrund und Konzept: [docs/KONZEPT.md](docs/KONZEPT.md).
 
 ## Funktionen
@@ -16,7 +16,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - Automatische Geräteerkennung über [`@iobroker/type-detector`](https://github.com/ioBroker/ioBroker.type-detector)
 - Räume aus mehreren Quellen, gleichnamige Räume werden zusammengeführt:
   1. `enum.rooms` – z. B. die Räume der Homematic-CCU, wenn `hm-rega` sie synchronisiert
-  2. Hue-Räume aus dem `hue`-Adapter (Zonen werden bewusst nicht als Raum verwendet)
+  2. Hue-Räume aus dem `hue`- bzw. [`hue-v2`](https://github.com/Exc3pt10n/ioBroker.hue-v2)-Adapter (Zonen werden bewusst nicht als Raum verwendet)
   3. Gerätenamen („Wohnzimmer Deckenlicht“ → Raum *Wohnzimmer*, Gerät *Deckenlicht*)
 - **Bearbeiten-Modus** (✎ in Startseite, Raumliste und Räumen):
   - Geräte umbenennen, in einen anderen oder neuen Raum verschieben, ausblenden, als Favorit markieren; alles einzeln zurücksetzbar
@@ -51,7 +51,9 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   - Ist eine Wallbox vorhanden, wird ihre Leistung aus dem Hausverbrauch des Speichers herausgerechnet (der Speicher misst am Netzanschluss)
 - Neu-Erkennung bei Objektänderungen
 - **Verläufe** aus `sql`, `history` oder `influxdb`: automatisch für alle aufgezeichneten Werte (Einstellung „Aufzeichnung aktiviert“ am Datenpunkt) – in der Detailansicht der Geräte, im Wetter-Verlauf (Link in der Wetterkarte) und in der Energie-Sicht; Zeiträume 6 Std./24 Std./7 Tage als Mittelwerte, mit Min./Ø/Max., Tooltip und Tabelle. Für die Q.HOME werden auch die aufgezeichneten kW-Varianten (`GridPwPurchase`, `GridPwFeedIn`) erkannt
-- **Hue-Szenen**: die Szenen der Hue-Räume und -Zonen lassen sich in der Detailansicht jeder Hue-Lampe und in der Raumansicht (unter „Licht“) auslösen; interne Bridge-Szenen und doppelte Gruppen werden ausgeblendet
+- **Hue-Szenen**: die Szenen der Hue-Räume und -Zonen lassen sich in der Detailansicht jeder Hue-Lampe und in der Raumansicht (unter „Licht“) auslösen; interne Bridge-Szenen und doppelte Gruppen werden ausgeblendet. Mit `hue-v2` auch Smart Scenes wie „Natürliches Licht“ (mit ✨ gekennzeichnet)
+- **Deaktivierte Instanzen**: Ist eine Adapter-Instanz in ioBroker deaktiviert, zeigt SmartVis ihre Geräte nicht an (ihre Werte aktualisieren sich ohnehin nicht mehr) – praktisch z. B. beim Umstieg von `hue` auf `hue-v2`
+- **hue-v2**: Lampen unter `lights`, Räume und Zonen unter `rooms`/`zones` mit Szenen (`scenes`) und Smart Scenes (`smartScenes`). Für die Zuordnung der Lampen zu den Räumen braucht SmartVis am Raum-/Zonen-Kanal `native.lights` (IDs der Lampen wie in `native.id` der Lampen-Kanäle); fehlt die Liste, funktionieren Raum und Szenen trotzdem, die Lampen stehen dann aber unter „Ohne Raum“
 - Der Hinweis „Geräte ohne Raum“ auf der Startseite lässt sich mit ✕ ausblenden (gilt für alle Geräte); im Bearbeiten-Modus wieder einblenden
 - Startseite zeigt unter „Läuft gerade“ alle Medien-Player (z. B. Echos), die gerade abspielen
 - Auf dem Desktop nutzt die Oberfläche die gesamte Fensterbreite: Die Startseite wird ab 1200 px zum Dashboard mit Spalten (Wetter · Favoriten und Status · Energiefluss und PV-Prognose), darüber Kennzahl-Kacheln (PV, Batterie, Verbrauch, Prognose, Lichter, offene Fenster …); auf dem Handy stehen die Kennzahlen als kompaktes Raster (alle gleichzeitig sichtbar)
@@ -137,6 +139,11 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.7.0 (2026-11-13)
+
+- (Exc3pt10n) Neuer unterstützter Adapter [`hue-v2`](https://github.com/Exc3pt10n/ioBroker.hue-v2) (Hue-Bridge-API v2): Lampen, Räume (als „Alle Lichter“), Zonen, Szenen und Smart Scenes (z. B. „Natürliches Licht“, mit ✨); Räume aus den Hue-Räumen, Lampen über `native.lights` am Raum zugeordnet
+- (Exc3pt10n) In ioBroker deaktivierte (pausierte) Instanzen: SmartVis blendet ihre Geräte, Szenen und Profile aus – z. B. die alte `hue`-Instanz beim Umstieg auf hue-v2; nach dem Aktivieren erscheinen sie automatisch wieder. Unter Mehr → ioBroker steht bei der Instanz „Geräte ausgeblendet“
 
 ### 0.6.0 (2026-11-13)
 

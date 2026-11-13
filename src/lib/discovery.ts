@@ -105,7 +105,18 @@ class RoomRegistry {
 export function discover(objects: ObjectMap, options: DiscoveryOptions): DiscoveryResult {
     const lang = options.language;
     const ignore = new Set(options.ignoreAdapters.map(a => a.trim()).filter(Boolean));
-    const isIgnored = (id: string): boolean => ignore.has(id.split('.')[0]);
+    // In ioBroker deaktivierte Instanzen (z. B. der alte Hue-Adapter beim Umstieg auf hue-v2): ihre Objekte
+    // bleiben in ioBroker stehen, ihre Werte aktualisieren sich aber nicht mehr – nicht anzeigen
+    const paused = new Set<string>();
+    for (const [id, obj] of Object.entries(objects)) {
+        if (obj?.type === 'instance' && id.startsWith('system.adapter.') && obj.common?.enabled === false) {
+            paused.add(id.slice('system.adapter.'.length));
+        }
+    }
+    const isIgnored = (id: string): boolean => {
+        const parts = id.split('.');
+        return ignore.has(parts[0]) || paused.has(`${parts[0]}.${parts[1]}`);
+    };
 
     const filtered: ObjectMap = {};
     for (const [id, obj] of Object.entries(objects)) {
@@ -300,20 +311,23 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     devices.sort((a, b) => a.name.localeCompare(b.name, lang));
     const roomList = [...rooms.rooms.values()].sort((a, b) => a.name.localeCompare(b.name, lang));
 
-    // Hue-Szenen: Lampen-Kanäle auf erkannte Geräte abbilden (Geräte-ID = Kanal-ID, ggf. mit "#n")
+    // Hue-Szenen (hue und hue-v2): Lampen-Kanäle auf erkannte Geräte abbilden (Geräte-ID = Kanal-ID, ggf. mit "#n")
     const scenes: SvSceneGroup[] = [];
-    if (!isIgnored('hue')) {
-        const devicesOf = (channel: string): string[] =>
-            devices.filter(d => d.id === channel || d.id.startsWith(`${channel}#`)).map(d => d.id);
-        for (const group of hueSceneGroups(filtered, lang, hue.stale)) {
-            const { lightChannels, ...rest } = group;
-            scenes.push({ ...rest, devices: [...new Set([group.id, ...lightChannels].flatMap(devicesOf))] });
-            group.scenes.forEach(s => writableIds.add(s.state.id));
-        }
+    const devicesOf = (channel: string): string[] =>
+        devices.filter(d => d.id === channel || d.id.startsWith(`${channel}#`)).map(d => d.id);
+    for (const group of hueSceneGroups(filtered, lang, hue.stale)) {
+        const { lightChannels, ...rest } = group;
+        scenes.push({ ...rest, devices: [...new Set([group.id, ...lightChannels].flatMap(devicesOf))] });
+        group.scenes.forEach(s => writableIds.add(s.state.id));
     }
 
     // ioBroker-Status (Hosts, Instanzen) aus allen Objekten – unabhängig von der Ignorierliste
     const system = systemStatus(objects, lang);
+    for (const instance of system.instances) {
+        if (paused.has(instance.id)) {
+            instance.paused = true;
+        }
+    }
     systemStateIds(system).forEach(id => stateIds.add(id));
 
     const model: SvModel = {

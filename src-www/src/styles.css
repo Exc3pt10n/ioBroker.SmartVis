@@ -3832,3 +3832,11 @@ button.kpi:hover {
     font-size: 13px;
     line-height: 1.5;
 }
+
+.instance__paused {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    white-space: nowrap;
+}

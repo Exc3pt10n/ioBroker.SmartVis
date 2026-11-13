@@ -242,7 +242,11 @@ function InstanceRow({ instance, state }: { instance: SvInstanceStatus; state: I
                     {instance.version ? ` · ${instance.version}` : ''}
                 </span>
             </span>
-            <span className="instance__state">{info.label}</span>
+            <span className="instance__state">
+                {info.label}
+                {/* Deaktivierte Instanz: SmartVis zeigt ihre Geräte nicht an */}
+                {instance.paused && <span className="instance__paused">Geräte ausgeblendet</span>}
+            </span>
         </li>
     );
 }
