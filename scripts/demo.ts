@@ -5,6 +5,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { buildDiagnosis } from '../src/lib/diagnosis';
 import { discover } from '../src/lib/discovery';
 import { applyEdit, applyOverrides } from '../src/lib/overrides';
 import { historyOptions, holdGaps } from '../src/lib/history';
@@ -657,6 +658,7 @@ const server = new SmartVisServer(
             const { step, end } = historyOptions(range) as { step: number; end: number };
             return new Promise(resolve => setTimeout(() => resolve(holdGaps(demoHistory(id, range), step, end)), 250));
         },
+        diagnose: () => buildDiagnosis(result, 'de'),
         edit: (clientId, edit) => {
             store = withOverrides(store, clientId, applyEdit(overridesFor(store, clientId), edit));
             server.publishModels(false, clientId);

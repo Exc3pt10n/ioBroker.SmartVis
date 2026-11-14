@@ -504,10 +504,16 @@ export function DeviceDetail({
 function LightControls({ refs, states }: { refs: LightRefs; states: States }): React.JSX.Element {
     const { onOff, level, ct, hue } = refs;
 
-    // Farbtemperatur: Hue liefert Mired (153–500, hoch = warm), andere Kelvin (hoch = kalt)
+    // Farbtemperatur: Hue liefert Mired (153–500, hoch = warm), andere Kelvin (hoch = kalt),
+    // Tuya einen relativen Wert (0 = warm … 1000 = kalt, Einheit "%")
     const ctMin = ct?.min ?? 153;
     const ctMax = ct?.max ?? 500;
-    const isKelvin = ctMax > 1000;
+    const isRelative = ct?.unit === '%';
+    const isKelvin = ctMax > 1000 || isRelative;
+    const formatCt = (v: number): string =>
+        isRelative
+            ? `${Math.round(((v - ctMin) / (ctMax - ctMin || 1)) * 100)} % kalt`
+            : `${Math.round((isKelvin ? v : 1_000_000 / v) / 100) * 100} K`;
 
     return (
         <div className="detail__controls">
@@ -538,7 +544,7 @@ function LightControls({ refs, states }: { refs: LightRefs; states: States }): R
                     min={ctMin}
                     max={ctMax}
                     pending={pending(states, ct)}
-                    format={v => `${Math.round((isKelvin ? v : 1_000_000 / v) / 100) * 100} K`}
+                    format={formatCt}
                     onCommit={v => connection.setState(ct.id, v)}
                     variant={isKelvin ? 'warm' : 'ct'}
                 />

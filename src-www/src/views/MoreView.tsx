@@ -3,6 +3,7 @@ import { CustomSections } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { SystemCard } from '../components/SystemCard';
 import { CustomizationsCard } from '../components/CustomizationsCard';
+import { DiagnosisCard } from '../components/DiagnosisCard';
 import { useConnection } from '../connection';
 import { setMotion, useMotion, type MotionSetting } from '../motion';
 import { BatteryList } from '../components/BatteryList';
@@ -98,6 +99,7 @@ export function MoreView(): React.JSX.Element {
                             ) : null,
                     },
                     { key: 'connection', label: 'Info', node: infoCard },
+                    { key: 'diagnosis', label: 'Erkennung', node: <DiagnosisCard /> },
                 ]}
             />
         </>

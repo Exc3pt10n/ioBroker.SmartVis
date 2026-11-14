@@ -4037,3 +4037,75 @@ button.battery__row {
     font-size: 15px;
     line-height: 1;
 }
+
+/* ===== Diagnose der Erkennung (Mehr) ===== */
+.diag__table {
+    width: 100%;
+    margin-top: 8px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.diag__table th,
+.diag__table td {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--surface-2);
+    text-align: right;
+}
+
+.diag__table th:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.diag__table thead th {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.diag__known {
+    color: var(--accent);
+}
+
+.diag__list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.diag__list > li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--surface-2);
+}
+
+.diag__list summary {
+    cursor: pointer;
+}
+
+.diag__name {
+    font-weight: 500;
+}
+
+.diag__meta,
+.diag__id {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.diag__id {
+    margin: 4px 0;
+    overflow-wrap: anywhere;
+}
+
+.diag__states {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.diag__error {
+    color: var(--warn);
+}

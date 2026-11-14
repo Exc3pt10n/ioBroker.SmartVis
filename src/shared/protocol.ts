@@ -558,13 +558,52 @@ export interface SvStateValue {
 
 export type ioBrokerValue = string | number | boolean | null;
 
+/** Diagnose der Erkennung: je Adapter erkannte Geräte und Kanäle ohne Kachel */
+export interface SvDiagnosis {
+    generatedAt: number;
+    adapters: SvDiagnosisAdapter[];
+    /** Kanäle/Geräte mit bedienbaren oder Mess-Datenpunkten, aus denen keine Kachel wurde (höchstens 300) */
+    unmatched: SvDiagnosisEntry[];
+}
+
+export interface SvDiagnosisAdapter {
+    adapter: string;
+    /** SmartVis kennt die Objektstruktur des Adapters (eigene Regeln/Profile) */
+    supported: boolean;
+    devices: number;
+    unmatched: number;
+}
+
+export interface SvDiagnosisEntry {
+    id: string;
+    adapter: string;
+    name: string;
+    /** device oder channel */
+    kind: string;
+    /** no-match: keine passenden Rollen; filtered: Gerätetyp für diesen Adapter ausgeschlossen */
+    reason: 'no-match' | 'filtered';
+    states: SvDiagnosisState[];
+}
+
+/** Datenpunkt (relativ zum Kanal) – ohne Werte; für den anonymen Bericht geeignet */
+export interface SvDiagnosisState {
+    key: string;
+    type?: string;
+    role?: string;
+    unit?: string;
+    write?: boolean;
+    /** Datenpunkt-Code des Herstellers (z. B. Tuya "switch_led") */
+    code?: string;
+}
+
 /** Nachrichten Server → Client */
 export type ServerMessage =
     | { t: 'hello'; protocol: number; version: string }
     | { t: 'model'; model: SvModel }
     | { t: 'states'; states: Record<string, SvStateValue | null> }
     | { t: 'error'; message: string }
-    | { t: 'history'; reqId: number; points: [number, number][]; error?: string };
+    | { t: 'history'; reqId: number; points: [number, number][]; error?: string }
+    | { t: 'diagnose'; reqId: number; report?: SvDiagnosis; error?: string };
 
 /** Nachrichten Client → Server */
 export type ClientMessage =
@@ -574,4 +613,6 @@ export type ClientMessage =
     | { t: 'set'; id: string; val: ioBrokerValue }
     | { t: 'edit'; edit: SvEdit }
     | { t: 'history'; reqId: number; id: string; range: SvHistoryRange }
+    /** Diagnose der Erkennung anfordern (Mehr → Erkennung) */
+    | { t: 'diagnose'; reqId: number }
     | { t: 'ping' };
