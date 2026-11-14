@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Icon } from './components/Icon';
 import { Toast } from './components/Toast';
+import { motionAllowed } from './motion';
 import { useConnection } from './connection';
 import { DetailContext } from './detail';
 import { EditContext } from './editing';
@@ -18,6 +20,36 @@ function readRoute(): string[] {
     return window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
 }
 
+/**
+ * Seitenwechsel weich überblenden (View Transitions, Safari ab iOS 18, Chrome, Edge): Die alte Seite wird als
+ * Bild festgehalten, die neue in einem Schritt fertig aufgebaut und dann eingeblendet – ohne Zwischenzustände.
+ * Ohne Unterstützung oder bei abgeschalteten Animationen wird sofort gewechselt.
+ */
+function withTransition(update: () => void): void {
+    const doc = document as Document & {
+        startViewTransition?: (cb: () => void) => { finished: Promise<unknown> };
+    };
+    if (typeof doc.startViewTransition === 'function' && motionAllowed()) {
+        // Übergangs-Namen nur während des Wechsels (sie machen den Inhalt zu einer eigenen Ebene, unter der
+        // sonst z. B. geöffnete Fenster der Seite hinter der Navigationsleiste lägen)
+        const root = document.documentElement;
+        root.classList.add('is-navigating');
+        const transition = doc.startViewTransition(() => flushSync(update));
+        void transition.finished.finally(() => root.classList.remove('is-navigating'));
+    } else {
+        update();
+    }
+}
+
+/** Nächster Verlaufs-Schritt kommt von unserem Zurück-Knopf (soll überblendet werden, die Wisch-Geste nicht) */
+let animateNextPop = false;
+
+/** Zurück mit Überblendung */
+export function animatedBack(): void {
+    animateNextPop = true;
+    history.back();
+}
+
 /** Scroll-Position je Seite, damit "Zurück" (und Tab-Wechsel) dort weitermacht, wo man war */
 const scrollPositions = new Map<string, number>();
 
@@ -28,11 +60,20 @@ function useRoute(): [string[], (path: string) => void] {
         if ('scrollRestoration' in history) {
             history.scrollRestoration = 'manual';
         }
-        const onChange = (): void =>
-            setRoute(prev => {
-                const next = readRoute();
-                return next.join('/') === prev.join('/') ? prev : next;
-            });
+        const onChange = (): void => {
+            const update = (): void =>
+                setRoute(prev => {
+                    const next = readRoute();
+                    return next.join('/') === prev.join('/') ? prev : next;
+                });
+            // Wisch-Geste/Browser-Zurück animiert der Browser selbst – nur unseren Zurück-Knopf überblenden
+            if (animateNextPop) {
+                animateNextPop = false;
+                withTransition(update);
+            } else {
+                update();
+            }
+        };
         window.addEventListener('hashchange', onChange);
         window.addEventListener('popstate', onChange);
         return () => {
@@ -46,7 +87,7 @@ function useRoute(): [string[], (path: string) => void] {
         }
         // Eintrag als "in der App navigiert" markieren: Zurück kann dann history.back() nutzen
         history.pushState({ sv: true }, '', `#/${path}`);
-        setRoute(readRoute());
+        withTransition(() => setRoute(readRoute()));
     };
     return [route, navigate];
 }
@@ -105,7 +146,7 @@ export function App(): React.JSX.Element {
                 roomId={decodeURIComponent(param)}
                 onBack={() =>
                     // Zurück dorthin, woher man kam (Raumliste oder Startseite); sonst zur Raumliste
-                    (history.state as { sv?: boolean } | null)?.sv ? history.back() : navigate('rooms')
+                    (history.state as { sv?: boolean } | null)?.sv ? animatedBack() : navigate('rooms')
                 }
             />
         );
@@ -135,6 +176,14 @@ export function App(): React.JSX.Element {
                                 key={t.id}
                                 href={`#/${t.id}`}
                                 className={`nav__item${tab === t.id ? ' nav__item--active' : ''}`}
+                                aria-current={tab === t.id ? 'page' : undefined}
+                                onClick={e => {
+                                    // Über navigate (statt reinem Hash-Link), damit der Wechsel überblendet wird
+                                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                                        e.preventDefault();
+                                        navigate(t.id);
+                                    }
+                                }}
                             >
                                 <Icon name={t.icon} />
                                 <span>{t.label}</span>
@@ -150,7 +199,13 @@ export function App(): React.JSX.Element {
                                 {status === 'connecting' ? 'Verbinde …' : 'Keine Verbindung – versuche erneut …'}
                             </div>
                         )}
-                        {view}
+                        {/* key: neue Seite = neuer Knoten; ohne View Transitions blendet CSS ihn kurz ein */}
+                        <div
+                            key={route.join('/') || 'home'}
+                            className="page"
+                        >
+                            {view}
+                        </div>
                     </main>
                     <Toast />
                     {detailId &&

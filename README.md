@@ -154,6 +154,8 @@ scripts/demo.ts Demo-Server ohne ioBroker
 - (Exc3pt10n) Hue-Zonen (hue und hue-v2): Liegen alle Lampen einer Zone in einem Raum (z. B. „Esstisch“ im Wohnzimmer), steht der Zonen-Schalter als Kachel in diesem Raum; Zonen über mehrere Räume (z. B. „Erdgeschoss“) bekommen in der Raumübersicht einen eigenen Eintrag unter „Zonen“ mit Status, „Alle aus“ und einer eigenen Seite mit allen Lampen der Zone (aus allen Räumen), dem Zonen-Schalter und den Szenen
 - (Exc3pt10n) Aktive Szene sichtbar: Der Szenen-Knopf ist umrandet und mit „aktiv“ gekennzeichnet, der Name steht im Szenen-Kopf (auch eingeklappt) und auf der Raum- bzw. Zonenkarte; mit hue-v2 (`activeScene`) auch für Smart Scenes, die sich mit erneutem Antippen beenden lassen
 - (Exc3pt10n) Geräte lassen sich nur Räumen zuordnen, nicht Zonen
+- (Exc3pt10n) Weichere Seitenwechsel: Die neue Seite blendet kurz ein, statt hart umzuspringen; die Navigationsleiste bleibt dabei stehen (View Transitions in Safari ab iOS 18, Chrome und Edge, sonst eine kurze Einblendung). Gilt für die Tabs und den Zurück-Knopf, nicht für die Wisch-Geste; die Einstellung „Animationen“ wird beachtet
+- (Exc3pt10n) Verläufe und PV-Prognose messen ihre Breite vor dem ersten Zeichnen (kein kurzes Umspringen beim Öffnen)
 
 ### 0.7.1 (2026-11-13)
 

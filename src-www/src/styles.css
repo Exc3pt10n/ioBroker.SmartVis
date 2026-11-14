@@ -3891,3 +3891,52 @@ button.kpi:hover {
     color: var(--text-muted);
     white-space: nowrap;
 }
+
+/* ===== Seitenwechsel ===== */
+/* View Transitions: Navigationsleiste bleibt stehen, nur der Inhalt wechselt (Namen nur während des Wechsels) */
+.is-navigating .nav {
+    view-transition-name: nav;
+}
+
+.is-navigating .main {
+    view-transition-name: page;
+}
+
+::view-transition-group(nav),
+::view-transition-old(nav),
+::view-transition-new(nav) {
+    animation: none;
+}
+
+/* Alte Seite sofort weg (keine Überlagerung zweier Seiten), neue weich einblenden */
+::view-transition-old(page) {
+    display: none;
+}
+
+::view-transition-new(page) {
+    animation: page-in 200ms ease-out both;
+}
+
+@keyframes page-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+}
+
+/* Ohne View Transitions (ältere iOS-Versionen): die neue Seite kurz einblenden */
+@supports not (view-transition-name: none) {
+    .page {
+        animation: page-in 160ms ease-out backwards;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion='on']) .page {
+        animation: none;
+    }
+}
+
+:root[data-motion='off'] .page {
+    animation: none;
+}
