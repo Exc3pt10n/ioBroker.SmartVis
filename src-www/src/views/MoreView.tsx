@@ -5,6 +5,8 @@ import { SystemCard } from '../components/SystemCard';
 import { CustomizationsCard } from '../components/CustomizationsCard';
 import { useConnection } from '../connection';
 import { setMotion, useMotion, type MotionSetting } from '../motion';
+import { BatteryList } from '../components/BatteryList';
+import { batteryLevel, isBatteryLow } from '../battery';
 
 export function MoreView(): React.JSX.Element {
     const { status, version, model, lastError, states } = useConnection();
@@ -78,6 +80,11 @@ export function MoreView(): React.JSX.Element {
                             />
                         ) : null,
                     },
+                    {
+                        key: 'batteries',
+                        label: 'Batterien',
+                        node: model?.batteries?.length ? <BatteryCard /> : null,
+                    },
                     { key: 'display', label: 'Darstellung', node: <DisplayCard /> },
                     {
                         key: 'customizations',
@@ -94,6 +101,50 @@ export function MoreView(): React.JSX.Element {
                 ]}
             />
         </>
+    );
+}
+
+/** Alle Batteriegeräte: schwache zuerst, dann nach Ladestand; Liste aufklappbar, um die Karte kurz zu halten */
+function BatteryCard(): React.JSX.Element | null {
+    const { model, states } = useConnection();
+    const all = model?.batteries || [];
+    const sorted = [...all].sort(
+        (a, b) =>
+            Number(isBatteryLow(b, states)) - Number(isBatteryLow(a, states)) ||
+            (batteryLevel(a, states) ?? 101) - (batteryLevel(b, states) ?? 101) ||
+            a.name.localeCompare(b.name, 'de'),
+    );
+    const low = sorted.filter(b => isBatteryLow(b, states));
+    if (!model || !all.length) {
+        return null;
+    }
+    return (
+        <section className="card">
+            <h2 className="subtitle">🔋 Batterien</h2>
+            <p className={`info__summary${low.length ? ' system__summary--warn' : ''}`}>
+                {low.length
+                    ? `🪫 ${low.length} ${low.length === 1 ? 'Batterie' : 'Batterien'} schwach`
+                    : '✅ Alle Batterien in Ordnung'}{' '}
+                <span className="system__count">
+                    · {all.length} {all.length === 1 ? 'Gerät' : 'Geräte'} mit Batterie
+                </span>
+            </p>
+            {low.length > 0 && (
+                <BatteryList
+                    items={low}
+                    rooms={model.rooms}
+                    states={states}
+                />
+            )}
+            <details className="info__details">
+                <summary>Alle Batteriegeräte ({all.length})</summary>
+                <BatteryList
+                    items={sorted}
+                    rooms={model.rooms}
+                    states={states}
+                />
+            </details>
+        </section>
     );
 }
 

@@ -3940,3 +3940,100 @@ button.kpi:hover {
 :root[data-motion='off'] .page {
     animation: none;
 }
+
+/* ===== Batterien ===== */
+.batteries {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.battery + .battery {
+    border-top: 1px solid var(--surface-2);
+}
+
+.battery__row {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 6px 0;
+    border: 0;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+button.battery__row {
+    cursor: pointer;
+}
+
+.battery__icon {
+    font-size: 18px;
+    text-align: center;
+}
+
+.battery__name {
+    display: grid;
+    min-width: 0;
+    font-size: 15px;
+}
+
+.battery__name,
+.battery__room {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.battery__room {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.battery__value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.battery__track {
+    width: 48px;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--surface-2);
+}
+
+.battery__fill {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: #10b981;
+}
+
+/* Schwach: Text in Warnfarbe + Symbol 🪫 (nicht nur Farbe) */
+.battery--low .battery__value {
+    color: var(--warn);
+    font-weight: 600;
+}
+
+.battery--low .battery__fill {
+    background: var(--warn);
+}
+
+.card--list {
+    margin: 0;
+    padding: 2px 16px;
+}
+
+.tile__battery {
+    font-size: 15px;
+    line-height: 1;
+}

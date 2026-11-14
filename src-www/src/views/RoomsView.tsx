@@ -7,6 +7,7 @@ import { moved, useEditing, visibleDevices, visibleRooms } from '../editing';
 import { CreateRoomSheet, EditRoomSheet } from './EditSheets';
 import { roomDevices, roomIcon, roomStatus, type RoomStatus } from '../rooms';
 import { activeScene, scenesForRoom } from '../scenes';
+import { lowBatteries } from '../battery';
 import { switchLights } from '../lightActions';
 
 export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }): React.JSX.Element {
@@ -29,6 +30,8 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
         .filter(r => r.kind === 'zone')
         .map(r => ({ room: r, devices: roomDevices(r, devices) }))
         .filter(r => editing || r.devices.length > 0);
+    const weak = lowBatteries(model.batteries, states);
+    const weakIn = (roomId: string): number => weak.filter(b => b.roomId === roomId).length;
     const sceneOf = (list: typeof devices): string | undefined => activeScene(scenesForRoom(model, list), states)?.name;
     const openRoom = (room: SvRoom): void =>
         editing ? setEditRoom(room) : onNavigate(`rooms/${encodeURIComponent(room.id)}`);
@@ -53,6 +56,7 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
                             room={room}
                             status={roomStatus(list, states)}
                             scene={sceneOf(list)}
+                            weakBatteries={weakIn(room.id)}
                             count={list.length}
                             editing={editing}
                             canBack={i > 0}
@@ -147,6 +151,7 @@ function RoomCard({
     room,
     status,
     scene,
+    weakBatteries = 0,
     count,
     editing,
     canBack,
@@ -158,6 +163,8 @@ function RoomCard({
     status: RoomStatus;
     /** Name der gerade aktiven Szene */
     scene?: string | undefined;
+    /** Geräte mit schwacher Batterie in diesem Raum */
+    weakBatteries?: number;
     count: number;
     editing: boolean;
     canBack: boolean;
@@ -184,6 +191,12 @@ function RoomCard({
             key: 'blind',
             text: `▤ ${Math.round(status.blindMin)} %`,
             label: `Rollladen ${Math.round(status.blindMin)} % offen`,
+        },
+        weakBatteries > 0 && {
+            key: 'battery',
+            text: `🪫 ${weakBatteries}`,
+            label: `${weakBatteries} ${weakBatteries === 1 ? 'Batterie' : 'Batterien'} schwach`,
+            warn: true,
         },
         status.problems > 0 && {
             key: 'problems',

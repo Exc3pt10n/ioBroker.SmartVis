@@ -181,7 +181,12 @@ export function App(): React.JSX.Element {
                                     // Über navigate (statt reinem Hash-Link), damit der Wechsel überblendet wird
                                     if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
                                         e.preventDefault();
-                                        navigate(t.id);
+                                        // Erneut auf den aktiven Tab: nach oben (wie bei iOS-Apps)
+                                        if (tab === t.id && route.length <= 1) {
+                                            window.scrollTo({ top: 0, behavior: motionAllowed() ? 'smooth' : 'auto' });
+                                        } else {
+                                            navigate(t.id);
+                                        }
                                     }
                                 }}
                             >

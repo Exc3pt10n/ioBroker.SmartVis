@@ -149,6 +149,13 @@ scripts/demo.ts Demo-Server ohne ioBroker
     ### **WORK IN PROGRESS**
 -->
 
+### 0.9.0 (2026-11-14)
+
+- (Exc3pt10n) Batterien: SmartVis erfasst alle batteriebetriebenen Geräte (Anzeige „Batterie schwach“ bzw. Ladestand in %), auch ohne eigene Kachel wie Fensterkontakte, Bewegungsmelder oder Schalter; der Raum kommt von der Kachel, aus den Raum-Aufzählungen oder aus dem Gerätenamen. Hausspeicher, Autos und Telefone zählen nicht dazu, die Teilsensoren eines Hue-Bewegungsmelders (alter Hue-Adapter) nur einmal
+- (Exc3pt10n) Startseite: Kennzahl „🪫 Batterien schwach“ (eigene Anzeige des Geräts oder höchstens 20 %) mit einer Liste der betroffenen Geräte samt Raum und Ladestand; schwache Batterien zählen nicht mehr als „Störung“
+- (Exc3pt10n) Raumkarte mit 🪫 und Anzahl, Kacheln zeigen bei schwacher Batterie 🪫 statt ⚠️; unter „Mehr“ die Karte „Batterien“ mit allen Batteriegeräten, schwächste zuerst
+- (Exc3pt10n) Erneutes Antippen des aktiven Tabs scrollt die Seite nach oben
+
 ### 0.8.0 (2026-11-14)
 
 - (Exc3pt10n) Hue-Zonen (hue und hue-v2): Liegen alle Lampen einer Zone in einem Raum (z. B. „Esstisch“ im Wohnzimmer), steht der Zonen-Schalter als Kachel in diesem Raum; Zonen über mehrere Räume (z. B. „Erdgeschoss“) bekommen in der Raumübersicht einen eigenen Eintrag unter „Zonen“ mit Status, „Alle aus“ und einer eigenen Seite mit allen Lampen der Zone (aus allen Räumen), dem Zonen-Schalter und den Szenen

@@ -154,7 +154,9 @@ export function roomStatus(devices: SvDevice[], states: States): RoomStatus {
                 blindMin = blindMin === undefined ? level : Math.min(blindMin, level);
             }
         }
-        if (warnings(d, states).length) {
+        const w = warnings(d, states);
+        // Schwache Batterie zählt nicht als Störung (eigenes Kennzeichen 🪫 auf der Raumkarte)
+        if (w.length && !w.every(x => x === 'Batterie schwach')) {
             status.problems++;
         }
     }
