@@ -260,6 +260,44 @@ export interface SvWeather {
     lowBat?: SvStateRef;
     /** Zusätzliche Helligkeitssensoren (z. B. HmIP-SLO je Himmelsrichtung) */
     lightSensors?: SvLightSensor[];
+    /** station: eigene Messwerte (Vorrang); service: Wetterdienst (Vorhersage, Wetterlage) */
+    source?: 'station' | 'service';
+    pressure?: SvStateRef;
+    /** Wetterlage als Text des Dienstes (z. B. "leichter Regen") */
+    conditionText?: SvStateRef;
+    /** Symbol-Code des Dienstes bzw. Symbol-URL (siehe codeScheme) */
+    conditionCode?: SvStateRef;
+    /** owm: OpenWeatherMap ("10d"), twc: The Weather Company (0–47); sonst nur der Text */
+    codeScheme?: 'owm' | 'twc';
+    /** Tagesvorhersage, Tag 0 = heute */
+    forecast?: SvForecastDay[];
+}
+
+export interface SvForecastDay {
+    /** 0 = heute, 1 = morgen … */
+    offset: number;
+    tempMin?: SvStateRef;
+    tempMax?: SvStateRef;
+    conditionText?: SvStateRef;
+    conditionCode?: SvStateRef;
+    /** Niederschlag in mm */
+    rain?: SvStateRef;
+    /** Regenwahrscheinlichkeit in % */
+    rainChance?: SvStateRef;
+    windSpeed?: SvStateRef;
+}
+
+/** Amtliche Warnung (DWD), ein Platz des Adapters; aktiv, solange headline gefüllt ist */
+export interface SvWeatherWarning {
+    id: string;
+    adapter: string;
+    headline: SvStateRef;
+    /** DWD-Stufe: 1–2 Wetterwarnung (gelb), 3 markant (orange), 4 Unwetter (rot), 5 extrem (violett) */
+    level?: SvStateRef;
+    begin?: SvStateRef;
+    end?: SvStateRef;
+    description?: SvStateRef;
+    instruction?: SvStateRef;
 }
 
 export interface SvLightSensor {
@@ -538,6 +576,8 @@ export interface SvModel {
     scenes: SvSceneGroup[];
     /** Batteriebetriebene Geräte */
     batteries?: SvBattery[];
+    /** Amtliche Wetterwarnungen (DWD) */
+    weatherWarnings?: SvWeatherWarning[];
     /** Zustand von ioBroker (Hosts, Instanzen) */
     system?: SvSystemStatus;
     /** Zeitpunkt der letzten Erkennung (ms) */

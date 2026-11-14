@@ -5,7 +5,7 @@ import { attachHistory } from './history';
 import { getName } from './names';
 import { normalizeObjects } from './normalize';
 import { splitOutputs, type Unmatched } from './outputs';
-import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
+import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs, warningRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { hueSceneGroups } from './profiles/hueScenes';
@@ -222,6 +222,9 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             stateIds.add(s.id);
         }
     }
+    for (const w of profiles.weatherWarnings) {
+        warningRefs(w).forEach(r => stateIds.add(r.id));
+    }
     const claimed = profiles.claimedInstances.map(i => `${i}.`);
     const isClaimed = (id: string): boolean => claimed.some(prefix => id.startsWith(prefix));
 
@@ -416,7 +419,9 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         energy: profiles.energy,
         wallboxes: profiles.wallboxes,
         pvForecast: profiles.pvForecast,
-        weather: profiles.weather,
+        // Eigene Wetterstationen zuerst (Messwerte haben Vorrang), dann Wetterdienste
+        weather: [...profiles.weather].sort((a, b) => Number(a.source === 'service') - Number(b.source === 'service')),
+        weatherWarnings: profiles.weatherWarnings,
         shutterControl: profiles.shutterControl,
         scenes,
         batteries,

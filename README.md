@@ -49,6 +49,8 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   - `fritzdect`: Heizkörperthermostate (Soll/Ist, Boost), Steckdosen mit Messung, LED-Lampen (Helligkeit, Farbe, Farbtemperatur), Rollläden, Kontakte und Taster mit Klimawerten
   - `zigbee`, `zigbee2mqtt`, `deconz`: Rollläden/Markisen, Wassermelder, Fenster-/Türkontakte, Doppelschalter; Kindersicherung, Übergangszeiten u. ä. ausgeblendet
   - Allgemein: Geräte mit technischem Namen (z. B. „DVES_4E55F6“) heißen wie ihr smartName aus iot/Alexa; Mehrfach-Schalter werden zu einem Gerät je Ausgang; Kontakte mit „Tür“ im Namen sind Türen; umgekehrt laufende Rollladen-Positionen (deCONZ, FRITZ!DECT: 0 = offen) rechnet SmartVis beim Lesen, Schreiben und im Verlauf um
+- **Wetterdienste** für die Wetterkarte: `openweathermap`, `weatherunderground` und `daswetter` (ab 4.x, Meteored) liefern Wetterlage mit Symbol und eine Vorhersage für heute und die nächsten vier Tage (Höchst-/Tiefstwert, Regen); ohne eigene Wetterstation zeigt die Karte auch die aktuellen Werte des Dienstes (Wind in km/h, °F in °C umgerechnet). Mit Station bleiben deren Messwerte maßgeblich, Regen und Sturm meldet weiterhin die Station
+- **Amtliche Warnungen** des Deutschen Wetterdienstes (`dwd`): aktive Warnungen oben in der Wetterkarte, farbig nach Stufe (gelb, orange, rot, violett), antippen zeigt Beschreibung und Verhaltenshinweise
 - **Diagnose der Erkennung** unter Mehr → Erkennung: erkannte Geräte je Adapter, Kanäle ohne Kachel mit Grund und Datenpunkten, anonymer Bericht zum Teilen
 - Adapterspezifische Regeln gegen Kachel-Rauschen: Homematic IP nur den ersten virtuellen Kanal je Ausgang (keine Wartungs-, Tasten-, Wochenprofil- oder Schwellwert-Kanäle), Hue ohne Sensoren, Smart Scenes, Entertainment-Bereiche und Altlasten der alten Objektstruktur, Alexa nur Player
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
@@ -167,6 +169,8 @@ scripts/demo.ts Demo-Server ohne ioBroker
 - (Exc3pt10n) Zigbee/zigbee2mqtt/deCONZ: Rollläden und Markisen, Wassermelder und Kontakte werden erkannt; Kindersicherung erscheint nicht mehr als „Schloss“
 - (Exc3pt10n) Umgekehrt laufende Rollladen-Positionen (deCONZ, FRITZ!DECT: 0 = offen) werden beim Lesen, Schreiben und im Verlauf umgerechnet
 - (Exc3pt10n) Geräte mit technischem Namen (z. B. Tasmota „DVES_4E55F6“) heißen wie ihr smartName aus iot/Alexa; als „Licht“ zugeordnete Schalter werden zu Lampen; Kontakte mit „Tür“ im Namen sind Türen
+- (Exc3pt10n) Wetterdienste `openweathermap`, `weatherunderground` und `daswetter`: Wetterlage mit Symbol und Vorhersage für fünf Tage in der Wetterkarte; ohne eigene Wetterstation auch die aktuellen Werte des Dienstes
+- (Exc3pt10n) Amtliche Warnungen des DWD (`dwd`) farbig nach Stufe in der Wetterkarte, mit Beschreibung und Verhaltenshinweisen
 - (Exc3pt10n) Mehr → Erkennung: erkannte Geräte je Adapter, Kanäle ohne Kachel mit Grund und Datenpunkten und ein anonymer Bericht (nur Adapter, Datenpunkt-Schlüssel und Rollen) zum Anhängen an ein Issue
 
 ### 0.9.0 (2026-11-14)

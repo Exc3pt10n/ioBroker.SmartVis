@@ -5,6 +5,7 @@ import type {
     SvStateRef,
     SvWallbox,
     SvWeather,
+    SvWeatherWarning,
 } from '../../shared/protocol';
 
 export type ObjectMap = Record<string, ioBroker.Object>;
@@ -15,6 +16,8 @@ export interface ProfileResult {
     weather?: SvWeather[];
     shutterControl?: SvShutterControl;
     pvForecast?: SvPvForecast;
+    /** Amtliche Wetterwarnungen (DWD) */
+    warnings?: SvWeatherWarning[];
 }
 
 /**

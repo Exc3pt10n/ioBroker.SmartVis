@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
-import type { SvWeather } from '../../../src/shared/protocol';
+import type { SvWeather, SvWeatherWarning } from '../../../src/shared/protocol';
 import { useConnection } from '../connection';
 import { HistoryPanel, type HistorySeries } from './HistoryPanel';
 import { Sheet } from './Sheet';
 import { Sparkline } from './Sparkline';
 import {
+    activeWarnings,
     compass,
     condition,
     fmt,
+    forecastSnapshot,
     formatLux,
     formatMinutes,
+    serviceCondition,
     weatherSnapshot,
     windLabel,
+    type ForecastSnapshot,
+    type WarningSnapshot,
     type WeatherSnapshot,
 } from '../weather';
 
@@ -54,10 +59,18 @@ let compactOpen = false;
 export function WeatherCard({
     weather,
     extra,
+    service,
+    warnings = [],
     compact = false,
 }: {
+    /** Hauptquelle: eigene Station oder (ohne Station) ein Wetterdienst */
     weather: SvWeather;
+    /** Weitere Außensensoren (Stationen) */
     extra?: SvWeather[];
+    /** Wetterdienst für Wetterlage und Vorhersage (kann gleich weather sein) */
+    service?: SvWeather;
+    /** Amtliche Warnungen (DWD) */
+    warnings?: SvWeatherWarning[];
     compact?: boolean;
 }): React.JSX.Element {
     const { states } = useConnection();
@@ -71,9 +84,19 @@ export function WeatherCard({
     const [showHistory, setShowHistory] = useState(false);
     const s = weatherSnapshot(weather, states);
     const historySeries = weatherHistorySeries(weather, extra);
-    const c = condition(s);
+    const isService = weather.source === 'service';
+    // Wetterlage: Regen und Sturm misst die eigene Station verlässlich, sonst zählt der Wetterdienst
+    const fromService = service ? serviceCondition(service, service.codeScheme, states) : undefined;
+    const derived = condition(s);
+    const c =
+        (!isService && (s.raining || s.windAlarm)) || !fromService
+            ? derived
+            : { icon: fromService.icon, label: fromService.label || derived.label };
+    const forecast = service ? forecastSnapshot(service, states, new Date(now)) : [];
+    const active = activeWarnings(warnings, states, now);
     const updated = s.updated ? new Date(s.updated) : undefined;
-    const stale = updated ? now - updated.getTime() > 60 * 60 * 1000 : false;
+    // Wetterdienste melden seltener (teils alle paar Stunden) als eine Station
+    const stale = updated ? now - updated.getTime() > (isService ? 6 : 1) * 60 * 60 * 1000 : false;
 
     const details: { label: string; value: string }[] = [];
     if (weather.humidity) {
@@ -93,6 +116,10 @@ export function WeatherCard({
             label: 'Sonne heute',
             value: s.sunshineToday !== undefined ? formatMinutes(s.sunshineToday) : '–',
         });
+    }
+    const pressure = weather.pressure ? Number(states[weather.pressure.id]?.val) : NaN;
+    if (weather.pressure && Number.isFinite(pressure)) {
+        details.push({ label: 'Luftdruck', value: `${fmt(pressure, 0)} ${weather.pressure.unit || 'hPa'}` });
     }
 
     const panels = (weather.temperature?.history || s.light.length > 0) && (
@@ -153,6 +180,18 @@ export function WeatherCard({
             {!s.online ? 'Wetterstation nicht erreichbar' : `Letzter Messwert ${updated!.toLocaleString('de-DE')}`}
         </p>
     );
+    const warningList = active.length > 0 && (
+        <WeatherWarnings
+            warnings={active}
+            now={now}
+        />
+    );
+    const forecastRow = forecast.length > 0 && (
+        <ForecastRow
+            days={forecast}
+            source={service!.name}
+        />
+    );
 
     if (compact) {
         const summary = [
@@ -196,6 +235,7 @@ export function WeatherCard({
                     />
                     <span className="sr-only">{open ? 'Details ausblenden' : 'Details anzeigen'}</span>
                 </button>
+                {warningList}
                 {warn}
                 {open && (
                     <div className="weather__more">
@@ -209,6 +249,7 @@ export function WeatherCard({
                                 ))}
                             </dl>
                         )}
+                        {forecastRow}
                         {panels}
                         {sensors}
                         {historyButton}
@@ -224,6 +265,7 @@ export function WeatherCard({
             className={tone}
             aria-label="Aktuelles Wetter"
         >
+            {warningList}
             <div className="weather__top">
                 <div className="weather__main">
                     <span
@@ -253,12 +295,129 @@ export function WeatherCard({
                     </dl>
                 )}
             </div>
+            {forecastRow}
             {panels}
             {sensors}
             {historyButton}
             {historySheet}
             {warn}
         </section>
+    );
+}
+
+function timeText(ts: number): string {
+    const d = new Date(ts);
+    const today = new Date();
+    const sameDay = d.toDateString() === today.toDateString();
+    return sameDay
+        ? d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+        : d.toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+/** Nur Warnungen (DWD ohne Wetterstation und Wetterdienst) */
+export function WarningsCard({ warnings }: { warnings: SvWeatherWarning[] }): React.JSX.Element | null {
+    const { states } = useConnection();
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        const timer = setInterval(() => setNow(Date.now()), 60_000);
+        return () => clearInterval(timer);
+    }, []);
+    const active = activeWarnings(warnings, states, now);
+    return active.length ? (
+        <section
+            className="card"
+            aria-label="Wetterwarnungen"
+        >
+            <WeatherWarnings
+                warnings={active}
+                now={now}
+            />
+        </section>
+    ) : null;
+}
+
+/** Amtliche Warnungen (DWD): Farbe nach Stufe, Antippen zeigt Beschreibung und Verhaltenshinweise */
+export function WeatherWarnings({ warnings, now }: { warnings: WarningSnapshot[]; now: number }): React.JSX.Element {
+    return (
+        <ul
+            className="wwarn"
+            aria-label="Wetterwarnungen"
+        >
+            {warnings.map(w => {
+                const when = [
+                    w.begin && w.begin > now ? `ab ${timeText(w.begin)}` : undefined,
+                    w.end ? `bis ${timeText(w.end)}` : undefined,
+                ]
+                    .filter(Boolean)
+                    .join(' ');
+                return (
+                    <li
+                        key={w.id}
+                        className={`wwarn__item wwarn__item--${w.tone}`}
+                    >
+                        <details>
+                            <summary>
+                                <span aria-hidden="true">⚠️</span> <span className="wwarn__headline">{w.headline}</span>
+                                {when && <span className="wwarn__when"> · {when}</span>}
+                            </summary>
+                            {w.description && <p>{w.description}</p>}
+                            {w.instruction && <p className="wwarn__instruction">{w.instruction}</p>}
+                        </details>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+}
+
+/** Tagesvorhersage des Wetterdienstes */
+function ForecastRow({ days, source }: { days: ForecastSnapshot[]; source: string }): React.JSX.Element {
+    return (
+        <div className="wforecast">
+            <ol
+                className="wforecast__days"
+                aria-label={`Vorhersage (${source})`}
+            >
+                {days.map(d => (
+                    <li
+                        key={d.offset}
+                        className="wforecast__day"
+                    >
+                        <span className="wforecast__label">{d.label}</span>
+                        <span
+                            className="wforecast__icon"
+                            title={d.condition?.label}
+                            aria-label={d.condition?.label}
+                            role="img"
+                        >
+                            {d.condition?.icon ?? '–'}
+                        </span>
+                        <span className="wforecast__temp">
+                            <strong>{d.max !== undefined ? `${fmt(d.max, 0)}°` : '–'}</strong>
+                            {d.min !== undefined && <span className="wforecast__min"> {fmt(d.min, 0)}°</span>}
+                        </span>
+                        {d.rainChance !== undefined && d.rainChance >= 10 ? (
+                            <span
+                                className="wforecast__rain"
+                                title="Regenwahrscheinlichkeit"
+                            >
+                                💧{fmt(d.rainChance, 0)} %
+                            </span>
+                        ) : d.rainChance === undefined && d.rain !== undefined && d.rain >= 0.1 ? (
+                            <span
+                                className="wforecast__rain"
+                                title="Niederschlag"
+                            >
+                                {fmt(d.rain)} mm
+                            </span>
+                        ) : (
+                            <span className="wforecast__rain wforecast__rain--none" />
+                        )}
+                    </li>
+                ))}
+            </ol>
+            <p className="wforecast__source">Vorhersage: {source}</p>
+        </div>
     );
 }
 
