@@ -7,6 +7,7 @@ import {
     type ClientMessage,
     type ServerMessage,
     type SvClientAction,
+    type SvDiagnosis,
     type SvEdit,
     type SvHistoryRange,
     type SvModel,
@@ -49,6 +50,8 @@ export interface ServerHandlers {
     client?(clientId: string | undefined, request: SvClientAction): Promise<void>;
     /** Verlauf eines aufgezeichneten States (Punkte [ts, wert]) */
     history?(id: string, range: SvHistoryRange): Promise<[number, number][]>;
+    /** Diagnose der letzten Erkennung */
+    diagnose?(): SvDiagnosis;
     onClientCountChange?(count: number): void;
     log: ioBroker.Logger;
 }
@@ -165,6 +168,17 @@ export class SmartVisServer {
                     send(ws, { t: 'history', reqId: msg.reqId, points });
                 } catch (e) {
                     send(ws, { t: 'history', reqId: msg.reqId, points: [], error: (e as Error).message });
+                }
+                return;
+            }
+            if (msg.t === 'diagnose') {
+                try {
+                    if (!this.handlers.diagnose) {
+                        throw new Error('Diagnose ist nicht verfügbar');
+                    }
+                    send(ws, { t: 'diagnose', reqId: msg.reqId, report: this.handlers.diagnose() });
+                } catch (e) {
+                    send(ws, { t: 'diagnose', reqId: msg.reqId, error: (e as Error).message });
                 }
                 return;
             }

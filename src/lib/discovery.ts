@@ -3,7 +3,9 @@ import type { RoomSource, SvDevice, SvModel, SvRoom, SvSceneGroup, SvStateRef } 
 import { batteryDevices } from './batteries';
 import { attachHistory } from './history';
 import { getName } from './names';
-import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
+import { normalizeObjects } from './normalize';
+import { splitOutputs, type Unmatched } from './outputs';
+import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs, warningRefs } from './profiles';
 import { ADAPTER_ALLOWED_TYPES, isCandidate } from './profiles/candidates';
 import { hueRoomHints } from './profiles/hueRooms';
 import { hueSceneGroups } from './profiles/hueScenes';
@@ -28,6 +30,12 @@ export interface DiscoveryResult {
     writableIds: Set<string>;
     /** Aufgezeichnete State-IDs → History-Instanz (Whitelist für Verlaufsabfragen) */
     historyIds: Map<string, string>;
+    /** States mit umgekehrter Position (z. B. Rollladen 0 = offen) → Wertebereich zum Umrechnen */
+    inverted: Map<string, { min: number; max: number }>;
+    /** Kanäle/Geräte, aus denen keine Kachel wurde (für die Diagnose) */
+    unmatched: Unmatched[];
+    /** Für die Erkennung aufbereitete Objekte (für die Diagnose) */
+    objects: ObjectMap;
 }
 
 type ObjectMap = Record<string, ioBroker.Object>;
@@ -54,6 +62,8 @@ const SECONDARY_TYPES = new Set<string>([
     Types.volume,
     Types.button,
     Types.illuminance,
+    // Leistungsmessung eines Rollladen-/Lichtaktors (z. B. Shelly) gehört zum Aktor, nicht auf eine eigene Kachel
+    Types.electricity,
 ]);
 
 const LIGHT_TYPES = new Set<string>([
@@ -150,13 +160,15 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         return ignore.has(parts[0]) || paused.has(`${parts[0]}.${parts[1]}`);
     };
 
-    const filtered: ObjectMap = {};
+    const raw: ObjectMap = {};
     for (const [id, obj] of Object.entries(objects)) {
         // Instanz-Objekte (system.adapter.*) werden für die Konfiguration einiger Profile benötigt
         if (obj && (id.startsWith('enum.') || id.startsWith('system.adapter.') || !isIgnored(id))) {
-            filtered[id] = obj;
+            raw[id] = obj;
         }
     }
+    // Adapter-Anpassungen (Rollen, Hilfs-Datenpunkte, technische Namen) – siehe ./normalize
+    const { objects: filtered, inverted } = normalizeObjects(raw, lang);
 
     // 1. Räume aus Enums (z. B. von hm-rega aus der CCU synchronisiert)
     const rooms = new RoomRegistry();
@@ -210,6 +222,9 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             stateIds.add(s.id);
         }
     }
+    for (const w of profiles.weatherWarnings) {
+        warningRefs(w).forEach(r => stateIds.add(r.id));
+    }
     const claimed = profiles.claimedInstances.map(i => `${i}.`);
     const isClaimed = (id: string): boolean => claimed.some(prefix => id.startsWith(prefix));
 
@@ -253,6 +268,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
+    const unmatched: Unmatched[] = [];
     const detector = new ChannelDetector();
     for (const id of candidates) {
         let controls: PatternControl[] | null = null;
@@ -274,11 +290,16 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         } catch {
             controls = null;
         }
-        if (!controls) {
+        if (!controls?.length) {
+            unmatched.push({ id, reason: 'no-match' });
             continue;
         }
         const allowed = ADAPTER_ALLOWED_TYPES[id.split('.')[0]];
         controls = controls.filter(c => !allowed || allowed.includes(c.type));
+        if (!controls.length) {
+            unmatched.push({ id, reason: 'filtered' });
+            continue;
+        }
         // Mehrere Treffer in einem Kanal: Hilfs-Slider/Prozentwerte neben einem Hauptgerät verwerfen
         if (controls.length > 1) {
             const primary = controls.filter(c => !SECONDARY_TYPES.has(c.type));
@@ -290,9 +311,11 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
                 controls = controls.filter(c => c.type !== Types.window && c.type !== Types.windowTilt);
             }
         }
-        for (const [index, control] of controls.entries()) {
-            const deviceId = controls.length > 1 ? `${id}#${index}` : id;
-            const device = toDevice(id, deviceId, control, filtered, lang, memberToRoom, hue, rooms);
+        // Mehrfach-Schalter (Tasmota POWER1–4, Tuya switch_1–3, Zigbee state_l1/l2): ein Gerät je Ausgang
+        const outputs = splitOutputs(id, controls, filtered, keys);
+        for (const [index, { control, suffix }] of outputs.entries()) {
+            const deviceId = outputs.length > 1 ? `${id}#${index}` : id;
+            const device = toDevice(id, deviceId, control, filtered, lang, memberToRoom, hue, rooms, suffix);
             if (!device) {
                 continue;
             }
@@ -396,7 +419,9 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         energy: profiles.energy,
         wallboxes: profiles.wallboxes,
         pvForecast: profiles.pvForecast,
-        weather: profiles.weather,
+        // Eigene Wetterstationen zuerst (Messwerte haben Vorrang), dann Wetterdienste
+        weather: [...profiles.weather].sort((a, b) => Number(a.source === 'service') - Number(b.source === 'service')),
+        weatherWarnings: profiles.weatherWarnings,
         shutterControl: profiles.shutterControl,
         scenes,
         batteries,
@@ -406,7 +431,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     };
     const historyIds = attachHistory(model, filtered);
 
-    return { model, stateIds: [...stateIds], writableIds, historyIds };
+    return { model, stateIds: [...stateIds], writableIds, historyIds, inverted, unmatched, objects: filtered };
 }
 
 /** Name für Geräte, die genauso heißen wie ihr Raum (z. B. Klimaanlage "Arbeitszimmer") */
@@ -432,6 +457,8 @@ function toDevice(
     memberToRoom: Map<string, string>,
     hue: { hints: Map<string, string>; roomGroups: Set<string> },
     rooms: RoomRegistry,
+    /** Ausgang eines Mehrfach-Schalters, z. B. "2" → "Gartenrelais 2" */
+    suffix?: string,
 ): SvDevice | null {
     const states: SvStateRef[] = [];
     for (const s of control.states) {
@@ -480,6 +507,9 @@ function toDevice(
         name = parentName;
         genericName = true;
     }
+    if (suffix) {
+        name = `${name} ${suffix}`;
+    }
 
     // Raum: Enum (Kanal, Gerät, States) → Adapter → Name
     let roomId: string | null = null;
@@ -522,10 +552,19 @@ function toDevice(
         }
     }
 
+    // Kontaktsensor ohne Angabe, ob Fenster oder Tür (Tuya, Zigbee, deCONZ melden nur "offen"): anhand des Namens
+    const isDoorName = /t(ü|ue)r|door|tor\b|pforte/i.test(`${name} ${parentName ?? ''}`);
+    const type =
+        control.type === Types.contact || control.type === Types.window
+            ? isDoorName
+                ? 'door'
+                : 'window'
+            : control.type;
+
     return {
         id: deviceId,
         name,
-        type: control.type,
+        type,
         roomId,
         roomSource,
         adapter: id.split('.')[0],

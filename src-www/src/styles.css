@@ -4037,3 +4037,184 @@ button.battery__row {
     font-size: 15px;
     line-height: 1;
 }
+
+/* ===== Diagnose der Erkennung (Mehr) ===== */
+.diag__table {
+    width: 100%;
+    margin-top: 8px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.diag__table th,
+.diag__table td {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--surface-2);
+    text-align: right;
+}
+
+.diag__table th:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.diag__table thead th {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.diag__known {
+    color: var(--accent);
+}
+
+.diag__list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.diag__list > li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--surface-2);
+}
+
+.diag__list summary {
+    cursor: pointer;
+}
+
+.diag__name {
+    font-weight: 500;
+}
+
+.diag__meta,
+.diag__id {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.diag__id {
+    margin: 4px 0;
+    overflow-wrap: anywhere;
+}
+
+.diag__states {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.diag__error {
+    color: var(--warn);
+}
+
+/* ===== Wetter: Vorhersage der Wetterdienste ===== */
+.wforecast {
+    margin-top: 12px;
+}
+
+.wforecast__days {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wforecast__day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.wforecast__label {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.wforecast__icon {
+    font-size: 22px;
+    line-height: 1.2;
+}
+
+.wforecast__min {
+    color: var(--text-muted);
+}
+
+.wforecast__rain {
+    min-height: 1.2em;
+    white-space: nowrap;
+    color: var(--accent);
+    font-size: 12px;
+}
+
+.wforecast__source {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* ===== Wetter: amtliche Warnungen (DWD-Farben) ===== */
+.wwarn {
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+}
+
+.weather--compact .wwarn {
+    margin: 8px 0;
+}
+
+.wwarn__item {
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-left: 4px solid #e8c200;
+    border-radius: 10px;
+    background: color-mix(in srgb, #ffe500 18%, var(--surface));
+    font-size: 14px;
+}
+
+.wwarn__item--moderate {
+    border-left-color: #f08a00;
+    background: color-mix(in srgb, #ff8c00 18%, var(--surface));
+}
+
+.wwarn__item--severe {
+    border-left-color: #d61f1f;
+    background: color-mix(in srgb, #e53935 18%, var(--surface));
+}
+
+.wwarn__item--extreme {
+    border-left-color: #8e24aa;
+    background: color-mix(in srgb, #8e24aa 20%, var(--surface));
+}
+
+.wwarn__item summary {
+    cursor: pointer;
+}
+
+.wwarn__headline {
+    font-weight: 600;
+}
+
+.wwarn__when {
+    color: var(--text-muted);
+}
+
+.wwarn__item p {
+    margin: 6px 0 0;
+    font-size: 13px;
+}
+
+.wwarn__instruction {
+    color: var(--text-muted);
+}

@@ -9,7 +9,8 @@ import { SortableGrid } from '../components/SortableGrid';
 import { CustomSections, type SectionDef } from '../components/CustomSections';
 import { EditBanner, EditButton } from '../components/EditButton';
 import { favorites, useEditing, visibleDevices } from '../editing';
-import { WeatherCard } from '../components/WeatherCard';
+import { WarningsCard, WeatherCard } from '../components/WeatherCard';
+import { activeWarnings } from '../weather';
 import { EnergyFlow, FlowStatus } from '../components/EnergyFlow';
 import { ForecastCard } from '../components/ForecastCard';
 import { switchLights } from '../lightActions';
@@ -230,16 +231,28 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             ),
         },
     ];
+    // Wetter: eigene Station zuerst, ein Wetterdienst liefert Wetterlage und Vorhersage
+    const stations = model.weather.filter(w => w.source !== 'service');
+    const weatherService =
+        model.weather.find(w => w.source === 'service' && w.forecast?.length) ??
+        model.weather.find(w => w.source === 'service');
+    const weatherMain = stations[0] ?? weatherService;
+    // Ohne Wetterquelle: Karte nur, solange eine Warnung aktiv ist
+    const warningsOnly = !weatherMain && activeWarnings(model.weatherWarnings ?? [], states).length > 0;
     const overviewSections: SectionDef[] = [
         {
             key: 'weather',
             label: 'Wetter',
-            node: model.weather[0] ? (
+            node: weatherMain ? (
                 <WeatherCard
-                    weather={model.weather[0]}
-                    extra={model.weather.slice(1)}
+                    weather={weatherMain}
+                    extra={stations.filter(w => w !== weatherMain)}
+                    service={weatherService}
+                    warnings={model.weatherWarnings}
                     compact={phone}
                 />
+            ) : warningsOnly ? (
+                <WarningsCard warnings={model.weatherWarnings ?? []} />
             ) : null,
         },
         {

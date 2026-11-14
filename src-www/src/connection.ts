@@ -3,6 +3,7 @@ import type {
     ClientMessage,
     ServerMessage,
     SvClientAction,
+    SvDiagnosis,
     SvEdit,
     SvHistoryRange,
     SvModel,
@@ -34,6 +35,10 @@ class Connection {
     private pendingHistory = new Map<
         number,
         { resolve: (p: [number, number][]) => void; reject: (e: Error) => void; timer: number }
+    >();
+    private pendingDiagnosis = new Map<
+        number,
+        { resolve: (r: SvDiagnosis) => void; reject: (e: Error) => void; timer: number }
     >();
 
     constructor() {
@@ -72,6 +77,22 @@ class Connection {
             }, 25_000);
             this.pendingHistory.set(reqId, { resolve, reject, timer });
             this.send({ t: 'history', reqId, id, range });
+        });
+    }
+
+    /** Diagnose der Erkennung anfordern (erkannte Geräte, Kanäle ohne Kachel) */
+    diagnose(): Promise<SvDiagnosis> {
+        if (this.ws?.readyState !== WebSocket.OPEN) {
+            return Promise.reject(new Error('Keine Verbindung'));
+        }
+        const reqId = this.nextReqId++;
+        return new Promise((resolve, reject) => {
+            const timer = window.setTimeout(() => {
+                this.pendingDiagnosis.delete(reqId);
+                reject(new Error('Zeitüberschreitung bei der Diagnose'));
+            }, 15_000);
+            this.pendingDiagnosis.set(reqId, { resolve, reject, timer });
+            this.send({ t: 'diagnose', reqId });
         });
     }
 
@@ -131,6 +152,19 @@ class Connection {
             case 'error':
                 this.update({ lastError: msg.message });
                 break;
+            case 'diagnose': {
+                const pending = this.pendingDiagnosis.get(msg.reqId);
+                if (pending) {
+                    window.clearTimeout(pending.timer);
+                    this.pendingDiagnosis.delete(msg.reqId);
+                    if (msg.report) {
+                        pending.resolve(msg.report);
+                    } else {
+                        pending.reject(new Error(msg.error || 'Diagnose fehlgeschlagen'));
+                    }
+                }
+                break;
+            }
             case 'history': {
                 const pending = this.pendingHistory.get(msg.reqId);
                 if (pending) {

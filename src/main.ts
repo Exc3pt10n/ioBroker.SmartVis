@@ -1,7 +1,9 @@
 import * as utils from '@iobroker/adapter-core';
 import { join } from 'node:path';
+import { buildDiagnosis } from './lib/diagnosis';
 import { discover, type DiscoveryResult } from './lib/discovery';
 import { historyOptions, holdGaps, toPoints } from './lib/history';
+import { invertNumber, presentStates, presentValue, type InvertMap } from './lib/invert';
 import {
     applyClientAction,
     clientInfo,
@@ -25,6 +27,9 @@ import type {
 
 /** Datei im ioBroker-Dateispeicher der Instanz (Teil von Backups) */
 const OVERRIDES_FILE = 'overrides.json';
+
+/** Leere Zuordnung, solange noch keine Erkennung gelaufen ist */
+const NO_INVERTED: InvertMap = new Map();
 
 class SmartVis extends utils.Adapter {
     private server?: SmartVisServer;
@@ -60,10 +65,16 @@ class SmartVis extends utils.Adapter {
                 getModel: clientId => this.modelFor(clientId),
                 hello: (clientId, name) => this.queue(() => this.registerClient(clientId, name)),
                 client: (clientId, request) => this.queue(() => this.clientAction(clientId, request)),
-                getStates: () => this.states,
+                getStates: () => presentStates(this.states, this.inverted()),
                 setState: (id, val) => this.writeState(id, val),
                 edit: (clientId, edit) => this.queue(() => this.applyAndSave(clientId, edit)),
                 history: (id, range) => this.readHistory(id, range),
+                diagnose: () => {
+                    if (!this.discovery) {
+                        throw new Error('Die Erkennung läuft noch');
+                    }
+                    return buildDiagnosis(this.discovery, this.config.language || 'de');
+                },
                 onClientCountChange: count => void this.setState('info.clients', count, true),
                 log: this.log,
             },
@@ -104,6 +115,11 @@ class SmartVis extends utils.Adapter {
         );
         await this.setStateAsync('info.devices', devices.length, true);
         this.updateModel(true);
+    }
+
+    /** Umgekehrt laufende States der aktuellen Erkennung */
+    private inverted(): InvertMap {
+        return this.discovery?.inverted ?? NO_INVERTED;
     }
 
     private updateModel(withStates: boolean): void {
@@ -264,14 +280,16 @@ class SmartVis extends utils.Adapter {
         if (response.error) {
             throw new Error(String(response.error));
         }
-        return holdGaps(toPoints(response.result), options.step, options.end);
+        const flip = this.inverted().get(id);
+        const points = holdGaps(toPoints(response.result), options.step, options.end);
+        return flip ? points.map(([t, v]) => [t, invertNumber(v, flip) as number]) : points;
     }
 
     private async writeState(id: string, val: ioBrokerValue): Promise<void> {
         if (!this.discovery?.writableIds.has(id)) {
             throw new Error(`State ${id} ist nicht freigegeben`);
         }
-        await this.setForeignStateAsync(id, val, false);
+        await this.setForeignStateAsync(id, invertNumber(val, this.inverted().get(id)), false);
     }
 
     private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
@@ -280,7 +298,7 @@ class SmartVis extends utils.Adapter {
         }
         const value = toValue(state);
         this.states[id] = value;
-        this.server?.queueState(id, value);
+        this.server?.queueState(id, presentValue(id, value, this.inverted()));
     }
 
     private onObjectChange(id: string): void {

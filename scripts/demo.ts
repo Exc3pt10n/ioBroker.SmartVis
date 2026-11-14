@@ -5,6 +5,8 @@
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { buildDiagnosis } from '../src/lib/diagnosis';
+import { dwdTree, openweathermapTree } from '../src/lib/fixtures/weather';
 import { discover } from '../src/lib/discovery';
 import { applyEdit, applyOverrides } from '../src/lib/overrides';
 import { historyOptions, holdGaps } from '../src/lib/history';
@@ -623,6 +625,43 @@ function demoHistory(id: string, range: string): [number, number][] {
     return id.endsWith('statistics.surplus') ? changes.filter(p => p[0] > now - 3 * 3600_000) : changes;
 }
 
+// Wetterdienst (OpenWeatherMap) mit Vorhersage und eine amtliche Warnung (DWD)
+Object.assign(objects, openweathermapTree().objects, dwdTree().objects);
+const owmNow = (key: string, val: SvStateValue['val']): void => {
+    states[`openweathermap.0.forecast.${key}`] = { val, ack: true, ts: Date.now() };
+};
+owmNow('current.temperature', 7.4);
+owmNow('current.humidity', 81);
+owmNow('current.windSpeed', 4.2);
+owmNow('current.pressure', 1012);
+owmNow('current.title', 'überwiegend bewölkt');
+owmNow('current.icon', 'https://openweathermap.org/img/w/04d.png');
+[
+    [9, 3, '04d', 'überwiegend bewölkt', 0],
+    [11, 4, '10d', 'leichter Regen', 2.4],
+    [8, 1, '13d', 'Schneeregen', 5.1],
+    [6, -1, '01d', 'klarer Himmel', 0],
+    [10, 2, '03d', 'Mäßig bewölkt', 0],
+].forEach(([max, min, icon, title, rain], i) => {
+    owmNow(`day${i}.temperatureMax`, max);
+    owmNow(`day${i}.temperatureMin`, min);
+    owmNow(`day${i}.icon`, `https://openweathermap.org/img/w/${String(icon)}.png`);
+    owmNow(`day${i}.title`, title);
+    owmNow(`day${i}.precipitation`, rain);
+});
+const dwdNow = (key: string, val: SvStateValue['val']): void => {
+    states[`dwd.0.warning.${key}`] = { val, ack: true, ts: Date.now() };
+};
+dwdNow('headline', 'Amtliche WARNUNG vor STURMBÖEN');
+dwdNow('level', 2);
+dwdNow('begin', Date.now() - 3600_000);
+dwdNow('end', Date.now() + 5 * 3600_000);
+dwdNow(
+    'description',
+    'Es treten Sturmböen mit Geschwindigkeiten um 70 km/h (20 m/s, 38 kn, Bft 8) aus südwestlicher Richtung auf.',
+);
+dwdNow('instruction', 'ACHTUNG! Hinweis auf mögliche Gefahren: Es können zum Beispiel einzelne Äste herabstürzen.');
+
 const result = discover(objects, { language: 'de', ignoreAdapters: [] });
 // Anpassungen aus dem Bearbeiten-Modus (in der Demo nur im Speicher)
 // Anpassungen je Endgerät, nur im Speicher (wie overrides.json im Adapter)
@@ -657,6 +696,7 @@ const server = new SmartVisServer(
             const { step, end } = historyOptions(range) as { step: number; end: number };
             return new Promise(resolve => setTimeout(() => resolve(holdGaps(demoHistory(id, range), step, end)), 250));
         },
+        diagnose: () => buildDiagnosis(result, 'de'),
         edit: (clientId, edit) => {
             store = withOverrides(store, clientId, applyEdit(overridesFor(store, clientId), edit));
             server.publishModels(false, clientId);

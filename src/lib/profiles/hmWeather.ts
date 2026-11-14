@@ -123,6 +123,7 @@ export const hmWeatherProfile: AdapterProfile = {
                 id,
                 name: getName(obj, lang) || model,
                 adapter: 'hm-rpc',
+                source: 'station',
                 model,
                 temperature: first(objects, ch, ['ACTUAL_TEMPERATURE', 'TEMPERATURE'], 'Temperatur'),
                 humidity: first(objects, ch, ['HUMIDITY'], 'Luftfeuchte'),

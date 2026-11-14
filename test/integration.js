@@ -141,6 +141,20 @@ tests.integration(path.join(__dirname, '..'), {
                 const history = await answer;
                 expect(history.points).to.deep.equal([]);
                 expect(history.error).to.match(/Kein Verlauf/);
+
+                // Diagnose der Erkennung (Mehr → Erkennung)
+                const diagnosis = new Promise(resolve => {
+                    ws.on('message', raw => {
+                        const msg = JSON.parse(raw.toString());
+                        if (msg.t === 'diagnose' && msg.reqId === 8) {
+                            resolve(msg);
+                        }
+                    });
+                });
+                ws.send(JSON.stringify({ t: 'diagnose', reqId: 8 }));
+                const report = (await diagnosis).report;
+                expect(report.adapters.find(a => a.adapter === 'hm-rpc')?.devices).to.be.greaterThan(0);
+                expect(report.unmatched).to.be.an('array');
                 ws.close();
 
                 const dimmer = model.devices.find(d => d.id === 'hm-rpc.0.DIM1.4');

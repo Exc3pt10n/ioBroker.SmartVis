@@ -7,12 +7,14 @@ import type {
     SvSwitch,
     SvWallbox,
     SvWeather,
+    SvWeatherWarning,
 } from '../../shared/protocol';
 import { pvforecastProfile } from './pvforecast';
 import { shuttercontrolProfile } from './shuttercontrol';
 import { hmWeatherProfile } from './hmWeather';
 import { kecontactProfile } from './kecontact';
 import { qhomeProfile } from './qhome';
+import { daswetterProfile, dwdProfile, openweathermapProfile, weatherundergroundProfile } from './weatherServices';
 import { instancesOf, type AdapterProfile, type ObjectMap } from './types';
 
 export const PROFILES: AdapterProfile[] = [
@@ -21,6 +23,10 @@ export const PROFILES: AdapterProfile[] = [
     hmWeatherProfile,
     shuttercontrolProfile,
     pvforecastProfile,
+    openweathermapProfile,
+    weatherundergroundProfile,
+    daswetterProfile,
+    dwdProfile,
 ];
 
 export interface ProfilesResult {
@@ -29,6 +35,7 @@ export interface ProfilesResult {
     weather: SvWeather[];
     shutterControl: SvShutterControl[];
     pvForecast: SvPvForecast[];
+    weatherWarnings: SvWeatherWarning[];
     /** Instanzen, die vollständig von einem Profil abgebildet werden */
     claimedInstances: string[];
 }
@@ -41,6 +48,7 @@ export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: st
         weather: [],
         shutterControl: [],
         pvForecast: [],
+        weatherWarnings: [],
         claimedInstances: [],
     };
     for (const profile of PROFILES) {
@@ -60,6 +68,9 @@ export function runProfiles(objects: ObjectMap, lang: string, isIgnored: (id: st
             }
             if (found.weather) {
                 result.weather.push(...found.weather);
+            }
+            if (found.warnings) {
+                result.weatherWarnings.push(...found.warnings);
             }
             if (found.pvForecast) {
                 result.pvForecast.push(found.pvForecast);
@@ -124,6 +135,11 @@ export function pvForecastRefs(pv: SvPvForecast): SvStateRef[] {
     return [...vals(pv.summary), ...pv.plants.flatMap(vals), pv.curve, pv.lastUpdated].filter(isRef);
 }
 
+/** Nur lesende State-Referenzen einer Wetterwarnung */
+export function warningRefs(w: SvWeatherWarning): SvStateRef[] {
+    return Object.values(w).filter(isRef);
+}
+
 /** Alle State-Referenzen eines Profil-Objekts (für Abos und Schreib-Whitelist) */
 export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): SvStateRef[] {
     const nested: unknown[] = [
@@ -141,6 +157,11 @@ export function profileStateRefs(item: SvEnergySystem | SvWallbox | SvWeather): 
                   ...(item.periods || []).flatMap(p => [p.periodKey, ...Object.values(p.totals)]),
                   item.connected,
               ]
-            : [...Object.values(item), ...nested];
+            : [
+                  ...Object.values(item),
+                  ...nested,
+                  // Vorhersagetage des Wetterdienstes
+                  ...('forecast' in item && item.forecast ? item.forecast.flatMap(d => Object.values(d)) : []),
+              ];
     return refs.filter((r): r is SvStateRef => !!r && typeof r === 'object' && 'id' in r && 'write' in r);
 }

@@ -8,7 +8,7 @@ Selbstkonfigurierende, **mobile-first** Visualisierung für ioBroker.
 SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anlegen von Widgets als installierbare Web-App (PWA) an – auf dem Smartphone wie im Browser.
 
 > **Status:** Version 0.x – im täglichen Einsatz und vollständig nutzbar. Bis Version 1.0 können sich Einstellungen und das Speicherformat noch ändern; solche Änderungen sind im [Changelog](#changelog) als **Breaking** markiert und werden, wo möglich, automatisch übernommen.
-> Die Erkennung ist bisher vor allem an einer Installation mit Homematic (IP), Philips Hue (`hue` und `hue-v2`), QCells Q.HOME, KEBA, Toshiba-Klimageräten und Echo abgestimmt. Bei anderen Systemen können Geräte fehlen oder überzählig sein – sie lassen sich im Bearbeiten-Modus ausblenden; Rückmeldungen und Objektbäume (anonymisiert) als Issue helfen, die Erkennung zu verbessern.
+> Die Erkennung ist an einer Installation mit Homematic (IP), Philips Hue (`hue` und `hue-v2`), QCells Q.HOME, KEBA, Toshiba-Klimageräten und Echo abgestimmt; für Shelly, Sonoff (Tasmota), Tuya, FRITZ!DECT, Zigbee, zigbee2mqtt und deCONZ gibt es eigene Regeln, die anhand der Objektstrukturen aus dem Quellcode dieser Adapter entwickelt und getestet sind (noch ohne Rückmeldungen echter Anlagen). Bei anderen Systemen können Geräte fehlen oder überzählig sein – sie lassen sich im Bearbeiten-Modus ausblenden. Unter **Mehr → Erkennung** zeigt SmartVis, welche Kanäle keine Kachel bekommen haben, und speichert einen anonymen Bericht (nur Adapter, Datenpunkt-Schlüssel und Rollen); als Anhang an ein Issue hilft er, die Erkennung zu verbessern.
 > Hintergrund und Konzept: [docs/KONZEPT.md](docs/KONZEPT.md).
 
 ## Funktionen
@@ -42,6 +42,16 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
   - Sonnenauf-/-untergang und Sonnenstand
   - Verknüpfung mit den Rollladen-Kacheln über die Instanz-Konfiguration: Status an der Kachel, Namen und fehlende Räume aus shuttercontrol
   - Sind Trigger-Datenpunkte konfiguriert (z. B. `triggerAutoLiving`, `HolidayDP`), schreibt SmartVis auf diese – shuttercontrol würde direkte Änderungen sonst wieder überschreiben
+- **Weitere Geräte-Adapter** (die meistgenutzten laut ioBroker-Statistik), jeweils mit korrigierten Rollen, ausgeblendeten Hilfs-Datenpunkten und lesbaren Namen:
+  - `shelly`: Relais, Dimmer, Rollläden (Ist-Position), Sensoren und Energiemesser (3EM als Summe); Eingänge, Gerätetemperatur und Schwellwerte erscheinen nicht als Kacheln; ohne Namen in der Shelly-App heißen Geräte nach dem Modell („Shelly Plus 1PM 1A2B“), mehrere Ausgänge werden durchnummeriert
+  - `sonoff` (Tasmota): Mehrfach-Relais (POWER1–4) als einzelne Schalter, Rollläden ohne die Motor-Relais, Lampen mit Dimmer/Farbe, Sensoren
+  - `tuya`: Zuordnung über die Datenpunkt-Codes (`switch_led`, `bright_value`, `percent_control`, `temp_set` …) – Lampen, Steckdosen(-leisten), Rollläden, Thermostate, Klima-, Tür- und Wassersensoren
+  - `fritzdect`: Heizkörperthermostate (Soll/Ist, Boost), Steckdosen mit Messung, LED-Lampen (Helligkeit, Farbe, Farbtemperatur), Rollläden, Kontakte und Taster mit Klimawerten
+  - `zigbee`, `zigbee2mqtt`, `deconz`: Rollläden/Markisen, Wassermelder, Fenster-/Türkontakte, Doppelschalter; Kindersicherung, Übergangszeiten u. ä. ausgeblendet
+  - Allgemein: Geräte mit technischem Namen (z. B. „DVES_4E55F6“) heißen wie ihr smartName aus iot/Alexa; Mehrfach-Schalter werden zu einem Gerät je Ausgang; Kontakte mit „Tür“ im Namen sind Türen; umgekehrt laufende Rollladen-Positionen (deCONZ, FRITZ!DECT: 0 = offen) rechnet SmartVis beim Lesen, Schreiben und im Verlauf um
+- **Wetterdienste** für die Wetterkarte: `openweathermap`, `weatherunderground` und `daswetter` (ab 4.x, Meteored) liefern Wetterlage mit Symbol und eine Vorhersage für heute und die nächsten vier Tage (Höchst-/Tiefstwert, Regen); ohne eigene Wetterstation zeigt die Karte auch die aktuellen Werte des Dienstes (Wind in km/h, °F in °C umgerechnet). Mit Station bleiben deren Messwerte maßgeblich, Regen und Sturm meldet weiterhin die Station
+- **Amtliche Warnungen** des Deutschen Wetterdienstes (`dwd`): aktive Warnungen oben in der Wetterkarte, farbig nach Stufe (gelb, orange, rot, violett), antippen zeigt Beschreibung und Verhaltenshinweise
+- **Diagnose der Erkennung** unter Mehr → Erkennung: erkannte Geräte je Adapter, Kanäle ohne Kachel mit Grund und Datenpunkten, anonymer Bericht zum Teilen
 - Adapterspezifische Regeln gegen Kachel-Rauschen: Homematic IP nur den ersten virtuellen Kanal je Ausgang (keine Wartungs-, Tasten-, Wochenprofil- oder Schwellwert-Kanäle), Hue ohne Sensoren, Smart Scenes, Entertainment-Bereiche und Altlasten der alten Objektstruktur, Alexa nur Player
 - Eigener Webserver mit WebSocket-API; die App erhält nur erkannte States, Schreibzugriffe nur auf freigegebene States
 - **Energie-Sicht** mit Energiefluss (PV, Haus, Batterie, Netz, Auto) und Tageswerten über Adapter-Profile:
@@ -148,6 +158,20 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.10.0 (2026-11-14)
+
+- (Exc3pt10n) Erkennung für die meistgenutzten Geräte-Adapter (laut ioBroker-Statistik): `shelly`, `sonoff` (Tasmota), `tuya`, `fritzdect`, `zigbee`, `zigbee2mqtt` und `deconz` – Rollen korrigiert, Hilfs-Datenpunkte (Eingänge, Gerätetemperatur, Übergangszeiten, Kindersicherung …) ausgeblendet, lesbare Namen; entwickelt und getestet an Objektbäumen, die nach dem Quellcode der Adapter nachgebaut sind
+- (Exc3pt10n) Shelly: Dimmer als Licht statt Steckdose, H&T als Klimasensor statt Thermostat, Rollladen mit Ist-Position, 3EM mit Gesamtleistung; ohne Namen in der Shelly-App das Modell als Name („Shelly Plus 1PM 1A2B“) statt „Channel Relay0“
+- (Exc3pt10n) Tuya: Zuordnung über die Datenpunkt-Codes – Lampen, Steckdosen(-leisten), Rollläden, Thermostate und Sensoren werden erkannt; Farbtemperatur in Prozent
+- (Exc3pt10n) FRITZ!DECT: LED-Lampe als Farblicht (bisher Thermostat), Thermostat mit richtigem Ist-Wert und Boost, Rollläden und Kontakte werden erkannt, Batterien erscheinen in der Batterieübersicht
+- (Exc3pt10n) Mehrfach-Schalter (Tasmota POWER1–4, Tuya-Steckdosenleisten, Zigbee-Doppelschalter): ein Gerät je Ausgang statt nur eines
+- (Exc3pt10n) Zigbee/zigbee2mqtt/deCONZ: Rollläden und Markisen, Wassermelder und Kontakte werden erkannt; Kindersicherung erscheint nicht mehr als „Schloss“
+- (Exc3pt10n) Umgekehrt laufende Rollladen-Positionen (deCONZ, FRITZ!DECT: 0 = offen) werden beim Lesen, Schreiben und im Verlauf umgerechnet
+- (Exc3pt10n) Geräte mit technischem Namen (z. B. Tasmota „DVES_4E55F6“) heißen wie ihr smartName aus iot/Alexa; als „Licht“ zugeordnete Schalter werden zu Lampen; Kontakte mit „Tür“ im Namen sind Türen
+- (Exc3pt10n) Wetterdienste `openweathermap`, `weatherunderground` und `daswetter`: Wetterlage mit Symbol und Vorhersage für fünf Tage in der Wetterkarte; ohne eigene Wetterstation auch die aktuellen Werte des Dienstes
+- (Exc3pt10n) Amtliche Warnungen des DWD (`dwd`) farbig nach Stufe in der Wetterkarte, mit Beschreibung und Verhaltenshinweisen
+- (Exc3pt10n) Mehr → Erkennung: erkannte Geräte je Adapter, Kanäle ohne Kachel mit Grund und Datenpunkten und ein anonymer Bericht (nur Adapter, Datenpunkt-Schlüssel und Rollen) zum Anhängen an ein Issue
 
 ### 0.9.0 (2026-11-14)
 
