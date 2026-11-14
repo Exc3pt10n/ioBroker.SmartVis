@@ -1,4 +1,4 @@
-import type { SvScene, SvSceneGroup } from '../../shared/protocol';
+import type { SvScene, SvSceneGroup, SvStateRef } from '../../shared/protocol';
 import { getName } from '../names';
 import { HUE_IGNORED_GROUP_ROLES, hueChannelRole, hueGroupLights, hueNativeType, isHueId } from './hueRooms';
 import type { ObjectMap } from './types';
@@ -39,6 +39,8 @@ export function hueSceneGroups(objects: ObjectMap, lang: string, stale: Set<stri
     const lightChannels = new Map<string, string>();
     const groups: { id: string; obj: ioBroker.Object; kind: SvSceneGroup['kind']; lights: string[] }[] = [];
     const scenes = new Map<string, SvScene[]>();
+    // hue-v2: Name der aktiven Szene je Gruppe (<Gruppe>.activeScene, leer = keine)
+    const activeRefs = new Map<string, SvStateRef>();
     const addScene = (channel: string, scene: SvScene): void => {
         scenes.set(channel, [...(scenes.get(channel) || []), scene]);
     };
@@ -69,6 +71,14 @@ export function hueSceneGroups(objects: ObjectMap, lang: string, stale: Set<stri
                 name,
                 // Der Hue-Adapter legt Szenen als Knopf ohne type/write an – auslösen per true
                 state: { name: 'SCENE', id, type: 'boolean', role: common.role || 'button', write: true },
+            });
+        } else if (obj.type === 'state' && parts[parts.length - 1] === 'activeScene') {
+            activeRefs.set(parts.slice(0, -1).join('.'), {
+                name: 'ACTIVE_SCENE',
+                id,
+                type: 'string',
+                role: 'text',
+                write: false,
             });
         } else if (obj.type === 'state' && (nativeType === 'scene' || nativeType === 'smart_scene')) {
             // hue-v2: <Gruppe>.scenes.<Name> bzw. <Gruppe>.smartScenes.<Name>
@@ -112,6 +122,7 @@ export function hueSceneGroups(objects: ObjectMap, lang: string, stale: Set<stri
             kind: group.kind,
             lightChannels: group.channels,
             scenes: group.list.sort((a, b) => a.name.localeCompare(b.name, lang)),
+            ...(activeRefs.has(group.id) && { active: activeRefs.get(group.id) }),
         });
     }
     result.sort((a, b) => a.id.localeCompare(b.id));

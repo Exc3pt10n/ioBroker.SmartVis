@@ -57,12 +57,23 @@ export const ROOM_ICON_CHOICES = [
     '🏡',
 ];
 
+/** Geräte eines Raums; bei einer Hue-Zone zusätzlich ihre Lampen aus den anderen Räumen */
+export function roomDevices(room: Pick<SvRoom, 'id' | 'members'>, devices: SvDevice[]): SvDevice[] {
+    const members = new Set(room.members || []);
+    return devices.filter(d => d.roomId === room.id || members.has(d.id));
+}
+
 export function autoRoomIcon(name: string): string {
     return ROOM_ICONS.find(([re]) => re.test(name))?.[1] ?? '🏠';
 }
 
-export function roomIcon(room: Pick<SvRoom, 'name' | 'icon'>): string {
-    return room.icon || autoRoomIcon(room.name);
+export function roomIcon(room: Pick<SvRoom, 'name' | 'icon' | 'kind'>): string {
+    if (room.icon) {
+        return room.icon;
+    }
+    // Zonen: Raumname-Symbol, wenn es passt (z. B. "Garten"), sonst ein eigenes Zeichen
+    const auto = autoRoomIcon(room.name);
+    return room.kind === 'zone' && auto === '🏠' ? '🔆' : auto;
 }
 
 export interface RoomStatus {

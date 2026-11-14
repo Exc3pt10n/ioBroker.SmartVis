@@ -97,6 +97,37 @@ class RoomRegistry {
 }
 
 /**
+ * Hue-Zonen einordnen (die Zonen-Kachel kennt ihre Lampen bereits über groupOf):
+ * - alle Lampen in einem Raum (z. B. "Esstisch" im Wohnzimmer) → Zonen-Schalter in diesen Raum
+ * - Lampen in mehreren Räumen (z. B. "Erdgeschoss") → eigener Eintrag unter "Zonen" mit den Lampen als members;
+ *   der Zonen-Schalter heißt dort "Alle Lichter"
+ * Eine Zuordnung über enum.rooms (bewusst vom Nutzer) bleibt unangetastet.
+ */
+function placeHueZones(devices: SvDevice[], zones: Map<string, string>, rooms: RoomRegistry): void {
+    const byId = new Map(devices.map(d => [d.id, d]));
+    for (const device of devices) {
+        const zoneName = zones.get(device.id);
+        if (!zoneName || !device.groupOf?.length || device.roomSource === 'enum') {
+            continue;
+        }
+        const memberRooms = new Set(device.groupOf.map(id => byId.get(id)?.roomId).filter((r): r is string => !!r));
+        if (memberRooms.size === 1 && device.groupOf.every(id => byId.get(id)?.roomId)) {
+            device.roomId = [...memberRooms][0];
+            device.roomSource = 'adapter';
+            continue;
+        }
+        let id = `zone.${slug(zoneName)}`;
+        for (let n = 2; rooms.rooms.has(id); n++) {
+            id = `zone.${slug(zoneName)}-${n}`;
+        }
+        rooms.rooms.set(id, { id, name: zoneName, source: 'adapter', kind: 'zone', members: [...device.groupOf] });
+        device.roomId = id;
+        device.roomSource = 'adapter';
+        device.name = 'Alle Lichter';
+    }
+}
+
+/**
  * Erzeugt aus allen ioBroker-Objekten das Device-Model der Visualisierung.
  * Reine Funktion – erleichtert Tests mit exportierten Objekt-Dumps.
  *
@@ -286,6 +317,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
             }
         }
     }
+    placeHueZones(devices, hue.zones, rooms);
     devices.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
     // Namen aus der Rollladen-Automatik für nicht umbenannte Kanäle ("Küche Eckfenster Seite" statt "Rollladen 2")
     for (const sc of profiles.shutterControl) {
@@ -318,7 +350,16 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
     for (const group of hueSceneGroups(filtered, lang, hue.stale)) {
         const { lightChannels, ...rest } = group;
         scenes.push({ ...rest, devices: [...new Set([group.id, ...lightChannels].flatMap(devicesOf))] });
-        group.scenes.forEach(s => writableIds.add(s.state.id));
+        group.scenes.forEach(s => {
+            writableIds.add(s.state.id);
+            // Smart Scenes melden über ihren Schalter, ob sie laufen
+            if (s.smart) {
+                stateIds.add(s.state.id);
+            }
+        });
+        if (group.active) {
+            stateIds.add(group.active.id);
+        }
     }
 
     // ioBroker-Status (Hosts, Instanzen) aus allen Objekten – unabhängig von der Ignorierliste

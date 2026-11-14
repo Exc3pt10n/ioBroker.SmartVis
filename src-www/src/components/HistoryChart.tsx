@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { SvHistoryRange } from '../../../src/shared/protocol';
 import { READ_STEP_MS, valueAt } from '../../../src/shared/series';
 
@@ -86,11 +86,13 @@ export function HistoryChart({
     const [width, setWidth] = useState(320);
     const [hover, setHover] = useState<number | null>(null);
 
-    useEffect(() => {
+    // Breite vor dem ersten Zeichnen messen (sonst erscheint das Diagramm kurz in 320 px und springt dann um)
+    useLayoutEffect(() => {
         const el = wrap.current;
         if (!el) {
             return;
         }
+        setWidth(Math.max(240, el.getBoundingClientRect().width));
         const ro = new ResizeObserver(entries => setWidth(Math.max(240, entries[0].contentRect.width)));
         ro.observe(el);
         return () => ro.disconnect();

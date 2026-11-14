@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { SvSceneGroup } from '../../../src/shared/protocol';
-import { connection } from '../connection';
+import { connection, useConnection } from '../connection';
+import { activeScene, activeSceneName, isSceneActive } from '../scenes';
 
 /** Aufgeklappte Szenen-Bereiche (für diese Sitzung, damit sie beim Zurückkommen offen bleiben) */
 const expanded = new Set<string>();
@@ -16,7 +17,9 @@ export function ScenePanel({
     groups: SvSceneGroup[];
     collapsible?: boolean;
 }): React.JSX.Element | null {
-    const [groupId, setGroupId] = useState(groups[0]?.id);
+    const { states } = useConnection();
+    // Gruppe mit laufender Szene zuerst zeigen
+    const [groupId, setGroupId] = useState(() => activeScene(groups, states)?.group.id ?? groups[0]?.id);
     const memoryKey = groups.map(g => g.id).join('|');
     const [open, setOpen] = useState(() => expanded.has(memoryKey));
     const [fired, setFired] = useState<string | undefined>();
@@ -24,13 +27,23 @@ export function ScenePanel({
     if (!group) {
         return null;
     }
-    const fire = (id: string): void => {
-        connection.setState(id, true);
+    const fire = (id: string, val = true): void => {
+        connection.setState(id, val);
         setFired(id);
         window.setTimeout(() => setFired(current => (current === id ? undefined : current)), 2000);
     };
 
     const title = `🎨 Szenen${groups.length === 1 ? ` · ${group.name}` : ''}`;
+    const running = activeScene(groups, states);
+    const runningLabel = running && (
+        <span
+            className="scenes__running"
+            title="Gerade aktive Szene"
+        >
+            ▶ {running.name}
+            {groups.length > 1 ? ` · ${running.group.name}` : ''}
+        </span>
+    );
     const sceneCount = groups.reduce((n, g) => n + g.scenes.length, 0);
     const content = (
         <>
@@ -49,24 +62,39 @@ export function ScenePanel({
                             className={`flag${g.id === group.id ? ' flag--on' : ''}`}
                             onClick={() => setGroupId(g.id)}
                         >
+                            {activeSceneName(g, states) ? '▶ ' : ''}
                             {g.name}
                         </button>
                     ))}
                 </div>
             )}
             <div className="scenes__list">
-                {group.scenes.map(s => (
-                    <button
-                        key={s.state.id}
-                        type="button"
-                        className={`scene${fired === s.state.id ? ' scene--fired' : ''}`}
-                        title={s.smart ? 'Smart Scene – passt sich selbst an (z. B. über den Tag)' : undefined}
-                        onClick={() => fire(s.state.id)}
-                    >
-                        {fired === s.state.id ? '✓ ' : s.smart ? '✨ ' : ''}
-                        {s.name}
-                    </button>
-                ))}
+                {group.scenes.map(s => {
+                    const active = isSceneActive(group, s, states);
+                    return (
+                        <button
+                            key={s.state.id}
+                            type="button"
+                            aria-pressed={active}
+                            className={`scene${active ? ' scene--active' : ''}${fired === s.state.id ? ' scene--fired' : ''}`}
+                            title={
+                                s.smart
+                                    ? active
+                                        ? 'Smart Scene läuft – antippen beendet sie'
+                                        : 'Smart Scene – passt sich selbst an (z. B. über den Tag)'
+                                    : active
+                                      ? 'Diese Szene ist gerade aktiv'
+                                      : undefined
+                            }
+                            // Eine laufende Smart Scene (Schalter) lässt sich mit erneutem Antippen beenden
+                            onClick={() => fire(s.state.id, !(s.smart && active))}
+                        >
+                            {fired === s.state.id ? '✓ ' : s.smart ? '✨ ' : ''}
+                            {s.name}
+                            {active && <span className="scene__state">aktiv</span>}
+                        </button>
+                    );
+                })}
             </div>
         </>
     );
@@ -88,8 +116,11 @@ export function ScenePanel({
             >
                 <summary className="scenes__summary">
                     <h2 className="subtitle">
-                        {title}
-                        <span className="group__count">{sceneCount}</span>
+                        <span className="scenes__title">
+                            {title}
+                            <span className="group__count">{sceneCount}</span>
+                        </span>
+                        {runningLabel}
                     </h2>
                 </summary>
                 {open && <div className="scenes__body">{content}</div>}
@@ -102,7 +133,10 @@ export function ScenePanel({
             className="scenes"
             aria-label="Szenen"
         >
-            <h2 className="subtitle">{title}</h2>
+            <h2 className="subtitle">
+                {title}
+                {runningLabel}
+            </h2>
             {content}
         </section>
     );

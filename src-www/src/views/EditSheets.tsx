@@ -1,4 +1,4 @@
-import { ROOM_ICON_CHOICES, autoRoomIcon } from '../rooms';
+import { ROOM_ICON_CHOICES, roomDevices, roomIcon } from '../rooms';
 import { useState } from 'react';
 import type { SvDevice, SvEdit, SvRoom } from '../../../src/shared/protocol';
 
@@ -121,15 +121,18 @@ export function EditDeviceSheet({
                             patch({ roomId: roomId === detectedRoom ? '' : roomId });
                         }}
                     >
-                        {model.rooms.map(r => (
-                            <option
-                                key={r.id}
-                                value={r.id}
-                            >
-                                {r.name}
-                                {r.hidden ? ' (ausgeblendet)' : ''}
-                            </option>
-                        ))}
+                        {/* Zonen sind keine Räume: Geräte lassen sich nur Räumen zuordnen */}
+                        {model.rooms
+                            .filter(r => r.kind !== 'zone')
+                            .map(r => (
+                                <option
+                                    key={r.id}
+                                    value={r.id}
+                                >
+                                    {r.name}
+                                    {r.hidden ? ' (ausgeblendet)' : ''}
+                                </option>
+                            ))}
                         <option value={NO_ROOM}>Ohne Raum</option>
                         <option value={NEW_ROOM}>＋ Neuer Raum …</option>
                     </select>
@@ -194,7 +197,8 @@ export function EditDeviceSheet({
 export function EditRoomSheet({ room, onClose }: { room: SvRoom; onClose: () => void }): React.JSX.Element {
     const { model } = useConnection();
     const current = model?.rooms.find(r => r.id === room.id) || room;
-    const count = model?.devices.filter(d => d.roomId === room.id).length ?? 0;
+    const zone = current.kind === 'zone';
+    const count = model ? roomDevices(current, model.devices).length : 0;
     const source = { enum: 'aus ioBroker', adapter: 'aus Hue', name: 'aus Gerätenamen', custom: 'selbst angelegt' }[
         current.source
     ];
@@ -202,7 +206,7 @@ export function EditRoomSheet({ room, onClose }: { room: SvRoom; onClose: () => 
     return (
         <Sheet
             title={current.name}
-            subtitle={`Raum ${source} · ${count} ${count === 1 ? 'Gerät' : 'Geräte'}`}
+            subtitle={`${zone ? 'Zone aus Hue' : `Raum ${source}`} · ${count} ${count === 1 ? 'Gerät' : 'Geräte'}`}
             onClose={onClose}
         >
             <div className="detail__controls">
@@ -214,7 +218,7 @@ export function EditRoomSheet({ room, onClose }: { room: SvRoom; onClose: () => 
                 />
                 <SwitchRow
                     label="Ausblenden"
-                    hint="Raum in der Raumliste verbergen"
+                    hint={zone ? 'Zone in der Raumliste verbergen' : 'Raum in der Raumliste verbergen'}
                     checked={!!current.hidden}
                     onChange={v => connection.edit({ kind: 'room', id: current.id, patch: { hidden: v } })}
                 />
@@ -233,7 +237,7 @@ export function EditRoomSheet({ room, onClose }: { room: SvRoom; onClose: () => 
                         className={`icon-picker__auto${!current.icon ? ' is-selected' : ''}`}
                         onClick={() => connection.edit({ kind: 'room', id: current.id, patch: { icon: null } })}
                     >
-                        {autoRoomIcon(current.name)} Automatisch
+                        {roomIcon({ ...current, icon: undefined })} Automatisch
                     </button>
                     {ROOM_ICON_CHOICES.map(icon => (
                         <button

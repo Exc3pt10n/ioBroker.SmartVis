@@ -5,7 +5,8 @@ import { DragHandle, SortableGrid, useSortable } from '../components/SortableGri
 import { connection, useConnection } from '../connection';
 import { moved, useEditing, visibleDevices, visibleRooms } from '../editing';
 import { CreateRoomSheet, EditRoomSheet } from './EditSheets';
-import { roomIcon, roomStatus, type RoomStatus } from '../rooms';
+import { roomDevices, roomIcon, roomStatus, type RoomStatus } from '../rooms';
+import { activeScene, scenesForRoom } from '../scenes';
 import { switchLights } from '../lightActions';
 
 export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }): React.JSX.Element {
@@ -20,8 +21,17 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
     const withoutRoom = devices.filter(d => !d.roomId);
     // Im Bearbeiten-Modus auch leere (z. B. neu angelegte) und ausgeblendete Räume zeigen
     const rooms = visibleRooms(model, editing)
+        .filter(r => r.kind !== 'zone')
         .map(r => ({ room: r, devices: devices.filter(d => d.roomId === r.id) }))
         .filter(r => editing || r.devices.length > 0);
+    // Hue-Zonen über mehrere Räume: eigener Bereich unter den Räumen
+    const zones = visibleRooms(model, editing)
+        .filter(r => r.kind === 'zone')
+        .map(r => ({ room: r, devices: roomDevices(r, devices) }))
+        .filter(r => editing || r.devices.length > 0);
+    const sceneOf = (list: typeof devices): string | undefined => activeScene(scenesForRoom(model, list), states)?.name;
+    const openRoom = (room: SvRoom): void =>
+        editing ? setEditRoom(room) : onNavigate(`rooms/${encodeURIComponent(room.id)}`);
 
     return (
         <>
@@ -42,13 +52,12 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
                             key={room.id}
                             room={room}
                             status={roomStatus(list, states)}
+                            scene={sceneOf(list)}
                             count={list.length}
                             editing={editing}
                             canBack={i > 0}
                             canForward={i < order.length - 1}
-                            onOpen={() =>
-                                editing ? setEditRoom(room) : onNavigate(`rooms/${encodeURIComponent(room.id)}`)
-                            }
+                            onOpen={() => openRoom(room)}
                             onMove={delta => {
                                 const ids = moved(order, room.id, delta);
                                 if (ids) {
@@ -92,6 +101,33 @@ export function RoomsView({ onNavigate }: { onNavigate: (path: string) => void }
                     </>
                 }
             />
+            {zones.length > 0 && (
+                <section aria-labelledby="zones-title">
+                    <h2
+                        id="zones-title"
+                        className="subtitle"
+                    >
+                        🔆 Zonen
+                        <span className="group__count">{zones.length}</span>
+                    </h2>
+                    <div className="grid grid--rooms">
+                        {zones.map(({ room, devices: list }) => (
+                            <RoomCard
+                                key={room.id}
+                                room={room}
+                                status={roomStatus(list, states)}
+                                scene={sceneOf(list)}
+                                count={list.length}
+                                editing={editing}
+                                canBack={false}
+                                canForward={false}
+                                onOpen={() => openRoom(room)}
+                                onMove={() => undefined}
+                            />
+                        ))}
+                    </div>
+                </section>
+            )}
             {editRoom && (
                 <EditRoomSheet
                     room={editRoom}
@@ -110,6 +146,7 @@ function fmt(v: number, digits: number): string {
 function RoomCard({
     room,
     status,
+    scene,
     count,
     editing,
     canBack,
@@ -119,6 +156,8 @@ function RoomCard({
 }: {
     room: SvRoom;
     status: RoomStatus;
+    /** Name der gerade aktiven Szene */
+    scene?: string | undefined;
     count: number;
     editing: boolean;
     canBack: boolean;
@@ -130,13 +169,15 @@ function RoomCard({
     const lit = status.lights.length > 0;
     const warn = status.open > 0 || status.problems > 0;
     // Kurze Statusangaben – nur was gerade los ist
-    const badges: { key: string; text: string; label: string; warn?: boolean }[] = [
+    type Badge = { key: string; text: string; label: string; warn?: boolean; wide?: boolean };
+    const candidates: (Badge | false | '' | undefined)[] = [
         lit && {
             key: 'lights',
             text: `💡 ${status.lights.length}`,
             label: `${status.lights.length} ${status.lights.length === 1 ? 'Licht' : 'Lichter'} an`,
         },
         status.open > 0 && { key: 'open', text: `🪟 ${status.open}`, label: `${status.open} offen`, warn: true },
+        !!scene && { key: 'scene', text: `🎨 ${scene}`, label: `Szene „${scene}“ aktiv`, wide: true },
         status.climate && { key: 'climate', text: status.climate, label: 'Klima läuft' },
         status.playing > 0 && { key: 'media', text: '🎵', label: 'Musik läuft' },
         status.blindMin !== undefined && {
@@ -150,7 +191,8 @@ function RoomCard({
             label: `${status.problems} ${status.problems === 1 ? 'Störung' : 'Störungen'}`,
             warn: true,
         },
-    ].filter((b): b is { key: string; text: string; label: string; warn?: boolean } => !!b);
+    ];
+    const badges = candidates.filter((b): b is Badge => !!b);
 
     return (
         <div
@@ -183,7 +225,7 @@ function RoomCard({
                         {badges.map(b => (
                             <span
                                 key={b.key}
-                                className={`room__badge${b.warn ? ' room__badge--warn' : ''}`}
+                                className={`room__badge${b.warn ? ' room__badge--warn' : ''}${b.wide ? ' room__badge--text' : ''}`}
                                 title={b.label}
                                 aria-label={b.label}
                             >

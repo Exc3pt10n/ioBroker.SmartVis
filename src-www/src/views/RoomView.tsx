@@ -7,7 +7,7 @@ import { Icon } from '../components/Icon';
 import { useConnection } from '../connection';
 import { groupByType, isActive, isCoveredGroup } from '../device';
 import { switchLights } from '../lightActions';
-import { isLight, roomStatus } from '../rooms';
+import { isLight, roomDevices, roomStatus } from '../rooms';
 import { useEditing, visibleDevices } from '../editing';
 import { scenesForRoom } from '../scenes';
 
@@ -19,7 +19,9 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
     }
     const isNone = roomId === '_none';
     const room = model.rooms.find(r => r.id === roomId);
-    const devices = visibleDevices(model, editing).filter(d => (isNone ? !d.roomId : d.roomId === roomId));
+    const visible = visibleDevices(model, editing);
+    // Hue-Zone: eigener Zonen-Schalter plus ihre Lampen aus den anderen Räumen
+    const devices = isNone ? visible.filter(d => !d.roomId) : room ? roomDevices(room, visible) : [];
     const groups = groupByType(devices);
     const status = roomStatus(devices, states);
     // Lampen für "Alle aus/an" – Gruppen ("Alle Lichter") nicht zusätzlich, wenn ihre Lampen sichtbar sind
@@ -28,12 +30,19 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
     const anyOn = lamps.some(d => isActive(d, states));
     const roomLabel = isNone ? 'Ohne Raum' : room?.name || 'Unbekannter Raum';
     // Szenen: Lampen des Raums unabhängig von ausgeblendeten Kacheln
-    const sceneGroups = isNone
-        ? []
-        : scenesForRoom(
-              model,
-              model.devices.filter(d => d.roomId === roomId),
-          );
+    const sceneGroups = isNone ? [] : room ? scenesForRoom(model, roomDevices(room, model.devices)) : [];
+    // Zone: aus welchen Räumen ihre Lampen stammen
+    const zoneRooms =
+        room?.kind === 'zone'
+            ? [
+                  ...new Set(
+                      devices
+                          .filter(d => d.roomId !== room.id)
+                          .map(d => model.rooms.find(r => r.id === d.roomId)?.name)
+                          .filter((n): n is string => !!n),
+                  ),
+              ]
+            : [];
 
     // Bereiche: je Gerätegruppe eine Karte, Szenen direkt nach dem Licht (Anordnung gilt für alle Räume)
     const sections: SectionDef[] = groups.flatMap(({ group, devices: list }): SectionDef[] => [
@@ -110,8 +119,9 @@ export function RoomView({ roomId, onBack }: { roomId: string; onBack: () => voi
                 </button>
                 <div className="titlebar__text">
                     <h1 className="title">{roomLabel}</h1>
-                    {(status.temperature !== undefined || status.humidity !== undefined) && (
+                    {(zoneRooms.length > 0 || status.temperature !== undefined || status.humidity !== undefined) && (
                         <p className="titlebar__status">
+                            {zoneRooms.length > 0 && <span>🔆 Zone · {zoneRooms.join(', ')}</span>}
                             {status.temperature !== undefined && (
                                 <span>
                                     🌡️ {status.temperature.toLocaleString('de-DE', { maximumFractionDigits: 1 })}°

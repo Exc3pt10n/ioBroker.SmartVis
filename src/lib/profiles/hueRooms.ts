@@ -72,6 +72,8 @@ export interface HueRoomResult {
     stale: Set<string>;
     /** Hue-Gruppe (Raum/Zone) → Kanäle ihrer Lampen */
     members: Map<string, string[]>;
+    /** Zonen-Kanäle → Zonenname */
+    zones: Map<string, string>;
 }
 
 export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: string[]): HueRoomResult {
@@ -79,6 +81,7 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
     const roomGroups = new Set<string>();
     const stale = new Set<string>();
     const members = new Map<string, string[]>();
+    const zones = new Map<string, string>();
     // Alle Gruppen mit Lampenliste (auch Zonen) – für die Zuordnung Gruppe → Lampen
     const allGroups = new Map<string, { id: string; lights: string[] }[]>();
     const channelsByLevel = new Map<string, string[]>();
@@ -108,6 +111,9 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
         const lights = hueGroupLights(obj);
         if (lights && !HUE_IGNORED_GROUP_ROLES.has(role)) {
             allGroups.set(`${instance}|${depth}`, [...(allGroups.get(`${instance}|${depth}`) || []), { id, lights }]);
+        }
+        if (role === 'Zone' && lights) {
+            zones.set(id, native.name || getName(obj, lang) || parts[parts.length - 1]);
         }
         if (HUE_ROOM_ROLES.has(role) && lights) {
             const name = native.name || getName(obj, lang) || parts[parts.length - 1];
@@ -157,5 +163,5 @@ export function hueRoomHints(objects: ObjectMap, lang: string, knownRooms: strin
             }
         }
     }
-    return { hints, roomGroups, stale, members };
+    return { hints, roomGroups, stale, members, zones };
 }
