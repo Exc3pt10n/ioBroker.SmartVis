@@ -354,6 +354,12 @@ button {
     white-space: nowrap;
 }
 
+.room__badge--text {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .room--lit .room__badge {
     background: color-mix(in srgb, var(--surface) 70%, transparent);
 }
@@ -2487,6 +2493,51 @@ section + .chips {
 .scene:active,
 .scene--fired {
     background: var(--active-soft);
+}
+
+/* Gerade laufende Szene: Rahmen + "aktiv" (nicht nur Farbe) */
+.scene--active {
+    box-shadow: inset 0 0 0 2px var(--active);
+    background: var(--active-soft);
+    font-weight: 600;
+}
+
+.scene__state {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.scenes__summary .subtitle {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+}
+
+.scenes__summary .scenes__running {
+    margin-left: 0;
+}
+
+.scenes__title {
+    white-space: nowrap;
+}
+
+.scenes__running {
+    margin-left: 8px;
+    max-width: 100%;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--active-soft);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .scenes__summary {

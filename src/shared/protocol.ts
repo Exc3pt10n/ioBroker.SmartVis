@@ -19,6 +19,13 @@ export interface SvRoom {
     originalName?: string;
     /** Vom Nutzer gewähltes Symbol (Emoji); ohne: automatisch aus dem Namen */
     icon?: string;
+    /**
+     * Hue-Zone über mehrere Räume (z. B. "Erdgeschoss"): eigener Eintrag unter "Zonen". Ihre Lampen bleiben in
+     * ihren Räumen; members nennt sie, im Raum selbst steht nur der Zonen-Schalter.
+     */
+    kind?: 'zone';
+    /** Geräte-IDs der Lampen einer Zone */
+    members?: string[];
 }
 
 /** Wo der Verlauf eines Werts aufgezeichnet wird */
@@ -498,6 +505,8 @@ export interface SvSceneGroup {
     /** Geräte-IDs der Lampen dieser Gruppe (inkl. der Gruppe selbst, falls als Kachel erkannt) */
     devices: string[];
     scenes: SvScene[];
+    /** Name der gerade aktiven Szene (Text-State, leer = keine), z. B. hue-v2 "<Gruppe>.activeScene" */
+    active?: SvStateRef;
 }
 
 export interface SvModel {

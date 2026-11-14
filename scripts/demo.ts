@@ -126,6 +126,24 @@ hueScene('Esstisch', 'hell', 'Hell');
 hueScene('Esstisch', 'essen', 'Essen');
 hueScene('Wohnzimmer', 'entspannen', 'Entspannen');
 hueScene('Wohnzimmer', 'fernsehen', 'Fernsehen');
+// Zone über zwei Räume (Stehlampe im Wohnzimmer, Spots in der Küche) mit eigener Szene
+folder('hue.0.Erdgeschoss', 'channel', 'Erdgeschoss', 'Zone');
+objects['hue.0.Erdgeschoss'].native = { id: '10', type: 'Zone', name: 'Erdgeschoss', lights: ['1', '2'] };
+state('hue.0.Erdgeschoss.on', 'switch.light', 'boolean', true, false);
+state('hue.0.Erdgeschoss.level', 'level.dimmer', 'number', true, 0, { min: 0, max: 100, unit: '%' });
+hueScene('Erdgeschoss', 'abends', 'Abends');
+hueScene('Erdgeschoss', 'hell', 'Hell');
+// Aktive Szene je Gruppe (wie hue-v2 "<Gruppe>.activeScene") und eine Smart Scene
+for (const group of ['Wohnzimmer', 'Küche', 'Erdgeschoss']) {
+    state(`hue.0.${group}.activeScene`, 'text', 'string', false, group === 'Wohnzimmer' ? 'Entspannen' : '');
+}
+objects['hue.0.Wohnzimmer.smartScenes.Natürliches_Licht'] = {
+    _id: 'hue.0.Wohnzimmer.smartScenes.Natürliches_Licht',
+    type: 'state',
+    common: { name: 'Natürliches Licht', type: 'boolean', role: 'switch', read: true, write: true },
+    native: { id: 'smart-1', type: 'smart_scene' },
+} as unknown as Obj;
+states['hue.0.Wohnzimmer.smartScenes.Natürliches_Licht'] = { val: false, ack: true, ts: Date.now() };
 
 // HmIP-STHO Außensensor (Temperatur und Luftfeuchte)
 folder('hm-rpc.0.0000000000TH01', 'device', 'Temperatur- und Feuchtigkeitssensor');
@@ -634,7 +652,11 @@ const server = new SmartVisServer(
                 server.queueState(id, states[id]);
                 simulateShutterControl(id, val);
                 // Hue-Raumgruppe schaltet wie die Bridge ihre Lampen mit
-                const groupLamps: Record<string, string[]> = { 'hue.0.Küche': ['hue.0.Spots', 'hue.0.Pendelleuchte'] };
+                simulateHueScene(id, val);
+                const groupLamps: Record<string, string[]> = {
+                    'hue.0.Küche': ['hue.0.Spots', 'hue.0.Pendelleuchte'],
+                    'hue.0.Erdgeschoss': ['hue.0.Stehlampe', 'hue.0.Spots'],
+                };
                 const m = /^(hue\.0\.[^.]+)\.(on|level)$/.exec(id);
                 for (const lamp of (m && groupLamps[m[1]]) || []) {
                     const lid = `${lamp}.${m![2]}`;
@@ -647,6 +669,29 @@ const server = new SmartVisServer(
         log: console as unknown as ioBroker.Logger,
     },
 );
+
+/** Szene ausgelöst: wie die Bridge die aktive Szene der Gruppe melden (Smart Scenes laufen bis zum Ausschalten) */
+function simulateHueScene(id: string, val: unknown): void {
+    const set = (sid: string, v: SvStateValue['val']): void => {
+        states[sid] = { val: v, ack: true, ts: Date.now() };
+        server.queueState(sid, states[sid]);
+    };
+    const scene = /^(hue\.0\.[^.]+)\.scene_/.exec(id);
+    const smart = /^(hue\.0\.[^.]+)\.smartScenes\./.exec(id);
+    const group = scene?.[1] || smart?.[1];
+    if (!group) {
+        return;
+    }
+    for (const other of Object.keys(objects).filter(o => o.startsWith(`${group}.smartScenes.`) && o !== id)) {
+        set(other, false);
+    }
+    if (scene && val === true) {
+        const name = objects[id].common.name;
+        set(`${group}.activeScene`, (typeof name === 'string' ? name : '').replace(/^Scene /, ''));
+    } else if (smart) {
+        set(`${group}.activeScene`, '');
+    }
+}
 
 /** Simuliert schwankende PV-Leistung und leitet die übrigen Flüsse daraus ab */
 function simulateEnergy(): void {

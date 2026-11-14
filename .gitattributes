@@ -1,0 +1,2 @@
+# Zeilenenden im Repository immer LF (Prettier verlangt LF, auch beim Auschecken unter Windows)
+* text=auto eol=lf

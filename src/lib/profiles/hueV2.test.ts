@@ -77,7 +77,40 @@ function hueV2(withLights: boolean): [string, Obj][] {
             { name: 'Natürliches Licht', type: 'boolean', role: 'switch', write: true },
             { id: 'smart-natural', type: 'smart_scene' },
         ),
+        // Zweiter Raum mit einer Lampe (für eine Zone über mehrere Räume)
+        channel('hue-v2.0.lights.Spot', 'Spot', { id: 'light-spot', type: 'light', deviceId: 'dev-spot' }),
+        ...controls('hue-v2.0.lights.Spot', false),
+        channel('hue-v2.0.rooms.Küche', 'Küche', {
+            id: 'room-kitchen',
+            type: 'room',
+            groupedLightId: 'gl-kitchen',
+            ...lights(['light-spot']),
+        }),
+        ...controls('hue-v2.0.rooms.Küche', false),
         folder('hue-v2.0.zones', 'Zones'),
+        // Zone innerhalb eines Raums
+        channel('hue-v2.0.zones.Esstisch', 'Esstisch', {
+            id: 'zone-dining',
+            type: 'zone',
+            groupedLightId: 'gl-dining',
+            ...lights(['light-desk', 'light-hall']),
+        }),
+        ...controls('hue-v2.0.zones.Esstisch', true),
+        // Zone über zwei Räume, mit Szene
+        channel('hue-v2.0.zones.Erdgeschoss', 'Erdgeschoss', {
+            id: 'zone-ground',
+            type: 'zone',
+            groupedLightId: 'gl-ground',
+            ...lights(['light-desk', 'light-spot']),
+        }),
+        ...controls('hue-v2.0.zones.Erdgeschoss', true),
+        state('hue-v2.0.zones.Erdgeschoss.activeScene', { type: 'string', role: 'text' }),
+        folder('hue-v2.0.zones.Erdgeschoss.scenes', 'Scenes'),
+        state(
+            'hue-v2.0.zones.Erdgeschoss.scenes.Abends',
+            { name: 'Abends', type: 'boolean', role: 'button', read: false, write: true },
+            { id: 'scene-evening', type: 'scene' },
+        ),
         channel('hue-v2.0.zones.Arbeit', 'Arbeit', {
             id: 'zone-work',
             type: 'zone',
@@ -133,8 +166,34 @@ describe('hue-v2 and disabled instances', () => {
         ]);
         // Zone mit nur einer Lampe: keine eigene Kachel (wie bei ioBroker.hue)
         expect(byId['hue-v2.0.zones.Arbeit']).to.equal(undefined);
+        // Zone innerhalb eines Raums: Zonen-Schalter steht in diesem Raum
+        expect(byId['hue-v2.0.zones.Esstisch']?.roomId).to.equal(room!.id);
+        expect(byId['hue-v2.0.zones.Esstisch']?.name).to.equal('Esstisch');
         // "Alle Lampen" der Bridge ist kein eigenes Gerät
         expect(byId['hue-v2.0.all']).to.equal(undefined);
+    });
+
+    it('lists zones across several rooms separately', () => {
+        const { model } = run(true);
+        const byId = Object.fromEntries(model.devices.map(d => [d.id, d]));
+        const zone = model.rooms.find(r => r.kind === 'zone');
+        expect(zone?.name).to.equal('Erdgeschoss');
+        expect(zone?.members).to.have.members(['hue-v2.0.lights.Desk', 'hue-v2.0.lights.Spot']);
+        // Der Zonen-Schalter gehört zur Zone, die Lampen bleiben in ihren Räumen
+        expect(byId['hue-v2.0.zones.Erdgeschoss']?.roomId).to.equal(zone!.id);
+        expect(byId['hue-v2.0.zones.Erdgeschoss']?.name).to.equal('Alle Lichter');
+        expect(model.rooms.find(r => r.id === byId['hue-v2.0.lights.Spot'].roomId)?.name).to.equal('Küche');
+        expect(model.rooms.filter(r => r.kind === 'zone')).to.have.length(1);
+    });
+
+    it('reports the active scene of a group', () => {
+        const { model, stateIds } = run(true);
+        const zone = model.scenes.find(g => g.id === 'hue-v2.0.zones.Erdgeschoss');
+        expect(zone?.kind).to.equal('zone');
+        expect(zone?.active?.id).to.equal('hue-v2.0.zones.Erdgeschoss.activeScene');
+        expect(stateIds).to.include('hue-v2.0.zones.Erdgeschoss.activeScene');
+        // Smart Scenes melden über ihren Schalter, ob sie laufen
+        expect(stateIds).to.include('hue-v2.0.rooms.Wohnzimmer.smartScenes.Natürliches_Licht');
     });
 
     it('offers scenes and smart scenes of hue-v2', () => {

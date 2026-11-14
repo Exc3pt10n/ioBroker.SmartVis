@@ -53,6 +53,7 @@ SmartVis erkennt Geräte und Räume automatisch und zeigt sie ohne manuelles Anl
 - **Verläufe** aus `sql`, `history` oder `influxdb`: automatisch für alle aufgezeichneten Werte (Einstellung „Aufzeichnung aktiviert“ am Datenpunkt) – in der Detailansicht der Geräte, im Wetter-Verlauf (Link in der Wetterkarte) und in der Energie-Sicht; Zeiträume 6 Std./24 Std./7 Tage als Mittelwerte, mit Min./Ø/Max., Tooltip und Tabelle. Für die Q.HOME werden auch die aufgezeichneten kW-Varianten (`GridPwPurchase`, `GridPwFeedIn`) erkannt
 - **Hue-Szenen**: die Szenen der Hue-Räume und -Zonen lassen sich in der Detailansicht jeder Hue-Lampe und in der Raumansicht (unter „Licht“) auslösen; interne Bridge-Szenen und doppelte Gruppen werden ausgeblendet. Mit `hue-v2` auch Smart Scenes wie „Natürliches Licht“ (mit ✨ gekennzeichnet)
 - **Deaktivierte Instanzen**: Ist eine Adapter-Instanz in ioBroker deaktiviert, zeigt SmartVis ihre Geräte nicht an (ihre Werte aktualisieren sich ohnehin nicht mehr) – praktisch z. B. beim Umstieg von `hue` auf `hue-v2`
+- **Hue-Zonen**: Zonen innerhalb eines Raums erscheinen als Kachel im Raum, Zonen über mehrere Räume als eigener Eintrag unter „Zonen“; die gerade aktive Szene ist markiert (bei hue-v2 über `activeScene`, Smart Scenes über ihren Schalter)
 - **hue-v2**: Lampen unter `lights`, Räume und Zonen unter `rooms`/`zones` mit Szenen (`scenes`) und Smart Scenes (`smartScenes`). Für die Zuordnung der Lampen zu den Räumen braucht SmartVis am Raum-/Zonen-Kanal `native.lights` (IDs der Lampen wie in `native.id` der Lampen-Kanäle); fehlt die Liste, funktionieren Raum und Szenen trotzdem, die Lampen stehen dann aber unter „Ohne Raum“
 - Der Hinweis „Geräte ohne Raum“ auf der Startseite lässt sich mit ✕ ausblenden (gilt für alle Geräte); im Bearbeiten-Modus wieder einblenden
 - Startseite zeigt unter „Läuft gerade“ alle Medien-Player (z. B. Echos), die gerade abspielen
@@ -147,6 +148,12 @@ scripts/demo.ts Demo-Server ohne ioBroker
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+
+### 0.8.0 (2026-11-14)
+
+- (Exc3pt10n) Hue-Zonen (hue und hue-v2): Liegen alle Lampen einer Zone in einem Raum (z. B. „Esstisch“ im Wohnzimmer), steht der Zonen-Schalter als Kachel in diesem Raum; Zonen über mehrere Räume (z. B. „Erdgeschoss“) bekommen in der Raumübersicht einen eigenen Eintrag unter „Zonen“ mit Status, „Alle aus“ und einer eigenen Seite mit allen Lampen der Zone (aus allen Räumen), dem Zonen-Schalter und den Szenen
+- (Exc3pt10n) Aktive Szene sichtbar: Der Szenen-Knopf ist umrandet und mit „aktiv“ gekennzeichnet, der Name steht im Szenen-Kopf (auch eingeklappt) und auf der Raum- bzw. Zonenkarte; mit hue-v2 (`activeScene`) auch für Smart Scenes, die sich mit erneutem Antippen beenden lassen
+- (Exc3pt10n) Geräte lassen sich nur Räumen zuordnen, nicht Zonen
 
 ### 0.7.1 (2026-11-13)
 
