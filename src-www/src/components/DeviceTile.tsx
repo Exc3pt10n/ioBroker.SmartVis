@@ -8,6 +8,7 @@ import { MoveButtons } from './EditButton';
 import { DragHandle, useSortable } from './SortableGrid';
 import { autoStateInfo, shutterForDevice } from '../shutters';
 import { isLight } from '../rooms';
+import { onlyBatteryWarning } from '../battery';
 import { Icon, iconForType } from './Icon';
 
 /** Medien: Titel beim Abspielen, sonst "pausiert" */
@@ -122,11 +123,18 @@ export function DeviceTile({
                     <span
                         className="tile__warn"
                         title={warn.join(', ')}
+                        role="img"
+                        aria-label={warn.join(', ')}
                     >
-                        <Icon
-                            name="warning"
-                            size={16}
-                        />
+                        {/* Nur schwache Batterie: Batterie-Symbol statt Warndreieck */}
+                        {onlyBatteryWarning(warn) ? (
+                            <span className="tile__battery">🪫</span>
+                        ) : (
+                            <Icon
+                                name="warning"
+                                size={16}
+                            />
+                        )}
                     </span>
                 )}
                 <span className="tile__name">

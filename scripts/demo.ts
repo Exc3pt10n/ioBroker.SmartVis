@@ -145,6 +145,27 @@ objects['hue.0.Wohnzimmer.smartScenes.Natürliches_Licht'] = {
 } as unknown as Obj;
 states['hue.0.Wohnzimmer.smartScenes.Natürliches_Licht'] = { val: false, ack: true, ts: Date.now() };
 
+// Batteriegeräte ohne eigene Kachel: Fensterkontakt (Batterie schwach), Hue-Bewegungsmelder mit Ladestand
+folder('hm-rpc.0.0000000000WIN1', 'device', 'Fensterkontakt Küche');
+objects['hm-rpc.0.0000000000WIN1'].native = { TYPE: 'HmIP-SWDO' };
+folder('hm-rpc.0.0000000000WIN1.0', 'channel', 'Fensterkontakt Küche:0');
+objects['hm-rpc.0.0000000000WIN1.0'].native = { TYPE: 'MAINTENANCE' };
+state('hm-rpc.0.0000000000WIN1.0.LOW_BAT', 'indicator.lowbat', 'boolean', false, true);
+folder('hm-rpc.0.0000000000SW01', 'device', 'Rollladenschalter Wohnzimmer');
+objects['hm-rpc.0.0000000000SW01'].native = { TYPE: 'HmIP-WRC2' };
+folder('hm-rpc.0.0000000000SW01.0', 'channel', 'Rollladenschalter Wohnzimmer:0');
+objects['hm-rpc.0.0000000000SW01.0'].native = { TYPE: 'MAINTENANCE' };
+state('hm-rpc.0.0000000000SW01.0.LOW_BAT', 'indicator.lowbat', 'boolean', false, false);
+for (const [key, name, level] of [
+    ['Bewegungsmelder_Flur', 'Bewegungsmelder Flur', 12],
+    ['Bewegungsmelder_Badezimmer', 'Bewegungsmelder Badezimmer', 64],
+    ['Schalter_Schlafzimmer', 'Schalter Schlafzimmer', 88],
+] as const) {
+    folder(`hue.0.${key}`, 'channel', name, 'ZLLPresence');
+    objects[`hue.0.${key}`].native = { id: key, type: 'ZLLPresence', modelid: 'SML001' };
+    state(`hue.0.${key}.battery`, 'value.battery', 'number', false, level, { unit: '%' });
+}
+
 // HmIP-STHO Außensensor (Temperatur und Luftfeuchte)
 folder('hm-rpc.0.0000000000TH01', 'device', 'Temperatur- und Feuchtigkeitssensor');
 objects['hm-rpc.0.0000000000TH01'].native = { TYPE: 'HmIP-STHO' };

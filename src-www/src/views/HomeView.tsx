@@ -15,6 +15,8 @@ import { ForecastCard } from '../components/ForecastCard';
 import { switchLights } from '../lightActions';
 import { DASHBOARD_QUERY, useMediaQuery } from '../media';
 import { motionAllowed } from '../motion';
+import { lowBatteries, onlyBatteryWarning } from '../battery';
+import { BatteryList } from '../components/BatteryList';
 
 const LIGHT_TYPES = ['light', 'dimmer', 'ct', 'hue', 'rgb', 'rgbSingle', 'rgbwSingle', 'cie'];
 const OPENING_TYPES = ['window', 'windowTilt', 'door'];
@@ -62,7 +64,12 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
               ? '❄️'
               : '🌡️';
     const open = devices.filter(d => OPENING_TYPES.includes(d.type) && isActive(d, states));
-    const problems = devices.filter(d => warnings(d, states).length > 0);
+    // Störungen ohne schwache Batterien – die haben einen eigenen Bereich
+    const problems = devices.filter(d => {
+        const w = warnings(d, states);
+        return w.length > 0 && !onlyBatteryWarning(w);
+    });
+    const weakBatteries = lowBatteries(model.batteries, states);
     const withoutRoom = devices.filter(d => !d.roomId).length;
     const hintHidden = !!model.ui?.hideNoRoomHint;
     const energy = model.energy[0] ? snapshot(model.energy[0], states, model.wallboxes) : undefined;
@@ -178,6 +185,14 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
             warn: true,
         },
         holiday && { key: 'holiday', icon: '🏖️', value: 'aktiv', label: 'Urlaubszeiten', onClick: toShutters },
+        weakBatteries.length > 0 && {
+            key: 'batteries',
+            icon: '🪫',
+            value: String(weakBatteries.length),
+            label: weakBatteries.length === 1 ? 'Batterie schwach' : 'Batterien schwach',
+            onClick: jump('batteries'),
+            warn: true,
+        },
         problems.length > 0 && {
             key: 'problems',
             icon: '⚠️',
@@ -364,12 +379,33 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                     roomName={roomName}
                 />
             ) : (
-                placeholder('Erscheint bei nicht erreichbaren Geräten oder leerer Batterie.')
+                placeholder('Erscheint bei nicht erreichbaren oder gestörten Geräten.')
+            ),
+        },
+        {
+            key: 'batteries',
+            label: 'Batterie schwach',
+            node: weakBatteries.length ? (
+                <section id="home-batteries">
+                    <h2 className="subtitle">
+                        🪫 Batterie schwach
+                        <span className="group__count">{weakBatteries.length}</span>
+                    </h2>
+                    <div className="card card--list">
+                        <BatteryList
+                            items={weakBatteries}
+                            rooms={model.rooms}
+                            states={states}
+                        />
+                    </div>
+                </section>
+            ) : (
+                placeholder('Erscheint, sobald eine Batterie schwach ist (Anzeige des Geräts oder höchstens 20 %).')
             ),
         },
     ];
     // Standardbreiten im Desktop-Raster: Übersichtskarten und kurze Listen je ein Drittel
-    const thirds = new Set(['weather', 'energy', 'playing', 'climate', 'open', 'problems']);
+    const thirds = new Set(['weather', 'energy', 'playing', 'climate', 'open', 'problems', 'batteries']);
     const deskOrder = [
         'weather',
         'energy',
@@ -379,6 +415,7 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
         'climate',
         'open',
         'problems',
+        'batteries',
         'lights',
     ];
     const deskSections: SectionDef[] = [...overviewSections, ...mainSections]
@@ -391,7 +428,8 @@ export function HomeView({ onNavigate }: { onNavigate: (path: string) => void })
                 deskOrder.indexOf(x.key.startsWith('forecast-') ? 'forecast' : x.key) -
                 deskOrder.indexOf(y.key.startsWith('forecast-') ? 'forecast' : y.key),
         );
-    const allQuiet = !editing && lightsOn.length + climateOn.length + open.length + problems.length === 0;
+    const allQuiet =
+        !editing && lightsOn.length + climateOn.length + open.length + problems.length + weakBatteries.length === 0;
 
     const hint = (
         <>

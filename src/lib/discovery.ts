@@ -1,5 +1,6 @@
 import ChannelDetector, { Types, type PatternControl } from '@iobroker/type-detector';
 import type { RoomSource, SvDevice, SvModel, SvRoom, SvSceneGroup, SvStateRef } from '../shared/protocol';
+import { batteryDevices } from './batteries';
 import { attachHistory } from './history';
 import { getName } from './names';
 import { profileStateRefs, pvForecastRefs, runProfiles, shutterControlRefs } from './profiles';
@@ -362,6 +363,24 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         }
     }
 
+    // Batteriebetriebene Geräte (auch ohne Kachel); Ladestände der Energie-Profile (Hausspeicher) zählen nicht
+    const energyIds = new Set(
+        [...profiles.energy, ...profiles.wallboxes].flatMap(item => profileStateRefs(item).map(r => r.id)),
+    );
+    const knownRooms = roomList.filter(r => r.kind !== 'zone');
+    const roomFromName = (name: string): { roomId: string; name: string } | undefined => {
+        const guess = guessRoom(
+            [name],
+            knownRooms.map(r => r.name),
+        );
+        const room = guess && knownRooms.find(r => normalize(r.name) === normalize(guess.name));
+        return room ? { roomId: room.id, name: stripRoomFromName(name, room.name) } : undefined;
+    };
+    const batteries = batteryDevices(filtered, lang, devices, memberToRoom, energyIds, roomFromName);
+    for (const b of batteries) {
+        [b.level, b.low].forEach(ref => ref && stateIds.add(ref.id));
+    }
+
     // ioBroker-Status (Hosts, Instanzen) aus allen Objekten – unabhängig von der Ignorierliste
     const system = systemStatus(objects, lang);
     for (const instance of system.instances) {
@@ -380,6 +399,7 @@ export function discover(objects: ObjectMap, options: DiscoveryOptions): Discove
         weather: profiles.weather,
         shutterControl: profiles.shutterControl,
         scenes,
+        batteries,
         system,
         generatedAt: Date.now(),
         editable: false,

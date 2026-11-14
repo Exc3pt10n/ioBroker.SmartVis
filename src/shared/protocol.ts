@@ -509,6 +509,21 @@ export interface SvSceneGroup {
     active?: SvStateRef;
 }
 
+/** Batteriebetriebenes Gerät (auch ohne eigene Kachel, z. B. Fensterkontakt oder Bewegungsmelder) */
+export interface SvBattery {
+    /** Objekt-ID des Geräts (device bzw. channel) */
+    id: string;
+    name: string;
+    roomId: string | null;
+    adapter: string;
+    /** Ladestand in % (value.battery) */
+    level?: SvStateRef;
+    /** Batterie schwach (indicator.lowbat) */
+    low?: SvStateRef;
+    /** Erkannte Kachel dieses Geräts (für die Detailansicht) */
+    deviceId?: string;
+}
+
 export interface SvModel {
     rooms: SvRoom[];
     devices: SvDevice[];
@@ -521,6 +536,8 @@ export interface SvModel {
     shutterControl: SvShutterControl[];
     /** Hue-Szenen je Raum/Zone */
     scenes: SvSceneGroup[];
+    /** Batteriebetriebene Geräte */
+    batteries?: SvBattery[];
     /** Zustand von ioBroker (Hosts, Instanzen) */
     system?: SvSystemStatus;
     /** Zeitpunkt der letzten Erkennung (ms) */
